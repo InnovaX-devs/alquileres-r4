@@ -1,0 +1,29 @@
+# ==========================================
+# BASE DE DATOS - Supabase (PostgreSQL)
+# ==========================================
+spring.datasource.url=jdbc:postgresql://db.TUPROJECTID.supabase.co:5432/postgres
+spring.datasource.username=postgres
+spring.datasource.password=TU_PASSWORD_DE_SUPABASE
+spring.datasource.driver-class-name=org.postgresql.Driver
+
+# ==========================================
+# JPA / HIBERNATE
+# ==========================================
+spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+spring.jpa.open-in-view=false
+
+# ==========================================
+# JWT
+# ==========================================
+jwt.secret=TU_CLAVE_SECRETA_LARGA_Y_SEGURA
+jwt.expiration=86400000
+
+# ==========================================
+# APP
+# ==========================================
+spring.application.name=app
+server.port=8080
+spring.thymeleaf.check-template-location=false
