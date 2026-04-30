@@ -1,0 +1,27 @@
+Setup inicial 
+ 
+1. Hacer pull del repositorio
+git pull
+
+ 
+2. Crear el archivo de configuración
+
+cp src/main/resources/application.properties.example src/main/resources/application.properties
+
+Ese comando copia el contenido de `application.properties.example` en `application.properties`.
+ 
+3. Completar los datos de conexión
+Abrí `src/main/resources/application.properties` y:
+- Línea 4: reemplazá la URL por `jdbc:postgresql://db.fbcxqwsmbnomqxrwyufs.supabase.co:5432/postgres`
+- Línea 6: poné la contraseña `AlquileresR4!`
+> ⚠️ El archivo `application.properties` está en `.gitignore` y nunca debe subirse al repositorio.
+ 
+4. Instalar dependencias
+mvn clean install
+
+ 
+5. Correr la app
+mvn spring-boot:run
+
+ 
+La app levanta en `http://localhost:8080`

@@ -1,0 +1,90 @@
+🧭 ROADMAP ORDENADO (de cero a funcional)
+🧱 Fase 1 — Base del proyecto (sin esto nada funciona)
+Crear estructura de paquetes
+Configurar conexión a base de datos
+Configurar JPA / Hibernate
+Configurar CORS global
+Configurar PasswordEncoder
+
+👉 Resultado: la app levanta, se conecta a la DB y puede persistir datos.
+
+👤 Fase 2 — Modelo principal (entidades base)
+Crear entidad Usuario
+Crear entidad Inmobiliaria
+Relación Usuario → Inmobiliaria
+
+👉 Resultado: ya tenés el núcleo del sistema (usuarios y publicadores).
+
+🔐 Fase 3 — Seguridad completa (bloque crítico)
+Implementar SecurityConfig
+Implementar JwtUtil
+Implementar JwtFilter
+Endpoint /auth/register
+Endpoint /auth/login
+Proteger endpoints con JWT
+
+👉 Resultado: sistema con autenticación funcionando.
+
+🏠 Fase 4 — Propiedades (feature principal)
+Crear entidad Propiedad
+Crear entidad ImagenPropiedad
+Asociar propiedad a publicador
+Endpoint publicar propiedad
+Endpoint listar propiedades públicas
+Endpoint detalle de propiedad
+
+👉 Resultado: ya podés publicar y ver propiedades.
+
+📅 Fase 5 — Visitas (interacción clave)
+Crear entidad SolicitudVisita
+Asociar solicitud a usuario y propiedad
+Endpoint solicitar visita
+Endpoint cambiar estado
+
+👉 Resultado: usuarios interactúan con publicaciones.
+
+✉️ Fase 6 — Emails (notificaciones básicas)
+Implementar EmailService
+Template básico de email
+Email al solicitar visita
+
+👉 Resultado: el sistema ya notifica eventos reales.
+
+⭐ Fase 7 — Favoritos (engagement)
+Crear entidad FavoritoPropiedad
+Crear entidad FavoritoInmobiliaria
+Endpoint guardar propiedad en favoritos
+Endpoint guardar inmobiliaria en favoritos
+Endpoint listar favoritos
+
+👉 Resultado: el usuario puede hacer seguimiento.
+
+🔔 Fase 8 — Alertas (feature avanzada)
+Crear entidad Alerta
+Endpoint crear alerta
+Evaluar alertas al publicar propiedad
+Email cuando una alerta coincide
+
+👉 Resultado: sistema proactivo (no solo reactivo).
+
+🌐 Fase 9 — Scraping (nivel pro)
+Crear entidad FuenteExterna
+Implementar ScrapingService
+Importar propiedades desde fuente externa
+Marcar propiedades con Fuente = WEB
+
+👉 Resultado: contenido automático en el sistema.
+
+🛡️ Fase 10 — Validaciones
+
+43–47. Validaciones de acceso y formularios
+
+👉 Resultado: sistema robusto (no acepta datos basura ni accesos inválidos).
+
+🧼 Fase 11 — Calidad de arquitectura
+Crear DTOs
+Manejo global de excepciones
+Estandarizar respuestas HTTP
+Agregar logs básicos
+
+👉 Resultado: backend profesional, mantenible y listo para escalar.
