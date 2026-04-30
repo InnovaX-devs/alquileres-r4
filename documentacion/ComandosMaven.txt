@@ -1,0 +1,28 @@
+## Comandos Maven
+ 
+# Comandos principales
+ 
+mvn clean install ---> Borra compilaciones anteriores, descarga dependencias y compila 
+mvn spring-boot:run ---> Corre la app en `http://localhost:8080` 
+mvn compile ---> Compila el proyecto 
+mvn test ---> Compila y corre los tests 
+mvn package ---> Compila y genera el JAR en `/target` 
+mvn dependency:resolve ---> Descarga todas las dependencias del pom.xml 
+ 
+# Opciones útiles
+ 
+mvn clean install -DskipTests ---> Instala sin correr los tests 
+mvn clean ---> Solo borra la carpeta `target/` 
+ 
+# Flujo del día a día
+ 
+Primera vez o después de cambiar el pom.xml
+mvn clean install
+ 
+Para correr la app mientras desarrollás
+mvn spring-boot:run
+ 
+# Notas 
+- El comando `clean` borra la carpeta `target/` para asegurarse de compilar desde cero
+- Las dependencias se descargan automáticamente desde Maven Central la primera vez
+- DevTools recarga la app automáticamente cuando cambiás código (sin necesidad de reiniciar)
