@@ -139,8 +139,6 @@ server.port=8080
 - #1 Crear estructura de paquetes
 - #2 Configurar conexión a base de datos
 - #3 Configurar JPA / Hibernate
-
-### 🔜 Próximos (Fase 1 restante)
 - #4 Configurar CORS global
 - #5 Configurar PasswordEncoder
 
