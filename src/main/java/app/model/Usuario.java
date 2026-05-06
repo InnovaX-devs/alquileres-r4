@@ -42,6 +42,9 @@ public class Usuario {
         this.createdAt = LocalDateTime.now();
     }
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "inmobiliaria_id")
+    private Inmobiliaria inmobiliaria;
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -71,4 +74,7 @@ public class Usuario {
     public void setDescripcionPerfil(String descripcionPerfil) { this.descripcionPerfil = descripcionPerfil; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
+
+    public Inmobiliaria getInmobiliaria() { return inmobiliaria; }
+    public void setInmobiliaria(Inmobiliaria inmobiliaria) { this.inmobiliaria = inmobiliaria; }
 }
