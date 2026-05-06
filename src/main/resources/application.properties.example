@@ -1,9 +1,9 @@
 # ==========================================
 # BASE DE DATOS - Supabase (PostgreSQL)
 # ==========================================
-spring.datasource.url=jdbc:postgresql://db.TUPROJECTID.supabase.co:5432/postgres
+jdbc:postgresql://db.fbcxqwsmbnomqxrwyufs.supabase.co:5432/postgres
 spring.datasource.username=postgres
-spring.datasource.password=TU_PASSWORD_DE_SUPABASE
+spring.datasource.password=AlquileresR4!
 spring.datasource.driver-class-name=org.postgresql.Driver
 
 # ==========================================
