@@ -1,0 +1,47 @@
+MANEJO DE SESIONES — Alquileres R4
+
+El sistema no utiliza sesiones. La autenticación es stateless basada en JWT.
+
+
+FLUJO DE AUTENTICACIÓN
+─────────────────────────────────────────────────────────────
+1. POST /auth/login  →  usuario manda email + contraseña
+2. Servidor valida credenciales contra la DB
+3. Si son correctas, genera un JWT firmado con jwt.secret y lo devuelve
+4. El cliente guarda el token y lo manda en cada request:
+   Authorization: Bearer <token>
+5. JwtFilter intercepta cada request, valida el token y autentica al usuario
+
+
+COMPONENTES INVOLUCRADOS
+─────────────────────────────────────────────────────────────
+JwtUtil
+   Genera y valida tokens. Extrae el email del payload
+   y verifica que la firma no fue alterada.
+
+JwtFilter
+   Se ejecuta una vez por request. Lee el header Authorization,
+   valida el token con JwtUtil y si es válido registra al usuario
+   en el SecurityContext de Spring.
+
+SecurityConfig
+   Define las reglas de acceso.
+   Públicos (sin token): /auth/login, /auth/register, listado de propiedades
+   Protegidos (con token): todo lo demás → devuelve 401 si no hay token válido
+
+
+POR QUÉ NO HAY SESIONES
+─────────────────────────────────────────────────────────────
+Sesiones tradicionales     → el servidor recuerda quién está logueado
+                             estado guardado en memoria o DB
+                             complica el escalado horizontal
+
+JWT stateless              → el servidor no recuerda nada
+                             todo el estado va dentro del token
+                             cualquier instancia valida cualquier token
+
+
+VENCIMIENTO DEL TOKEN
+─────────────────────────────────────────────────────────────
+Configurado en application.properties con jwt.expiration (en milisegundos).
+Una vez vencido el token es rechazado y el cliente debe volver a hacer login.
