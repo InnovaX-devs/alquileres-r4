@@ -49,6 +49,10 @@ public class Propiedad {
     @JoinColumn(name = "inmobiliaria_id")
     private Inmobiliaria inmobiliaria;
 
+    @ManyToOne
+    @JoinColumn(name = "usuario_id")
+    private Usuario usuario;
+
     // Getters y setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -100,4 +104,7 @@ public class Propiedad {
 
     public Inmobiliaria getInmobiliaria() { return inmobiliaria; }
     public void setInmobiliaria(Inmobiliaria inmobiliaria) { this.inmobiliaria = inmobiliaria; }
+
+    public Usuario getUsuario(){ return usuario;}
+    public void setUsuario(Usuario usuario){ this.usuario = usuario;}
 }
