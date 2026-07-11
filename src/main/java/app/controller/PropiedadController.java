@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
+import java.util.List;
 
 @RestController
 @RequestMapping("/propiedades")
@@ -34,5 +35,10 @@ public class PropiedadController {
         String email = authentication != null ? authentication.getName() : null;
         PropiedadDetalleResponse response = propiedadService.getDetalle(id, email);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<PropiedadDetalleResponse>> listar() {
+        return ResponseEntity.ok(propiedadService.listar());
     }
 }

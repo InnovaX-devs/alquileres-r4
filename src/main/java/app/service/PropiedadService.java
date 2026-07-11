@@ -9,6 +9,7 @@ import app.model.Usuario;
 import app.repository.PropiedadRepository;
 import app.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
+import java.util.List;
 
 @Service
 public class PropiedadService {
@@ -73,5 +74,13 @@ public class PropiedadService {
         }
 
         return null;
+    }
+
+    // Listar propiedades para usuarios sin autenticar
+    public List<PropiedadDetalleResponse> listar() {
+        return propiedadRepository.findAll()
+                .stream()
+                .map(propiedad -> PropiedadDetalleResponse.from(propiedad, null))
+                .toList();
     }
 }
