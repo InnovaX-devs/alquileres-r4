@@ -1,5 +1,6 @@
 package app.controller;
 
+import app.controller.dto.CambiarEstadoVisitaRequest;
 import app.controller.dto.SolicitudVisitaRequest;
 import app.controller.dto.SolicitudVisitaResponse;
 import app.model.SolicitudVisita;
@@ -26,5 +27,15 @@ public class VisitaController {
     ) {
         SolicitudVisita solicitud = visitaService.solicitarVisita(request, authentication.getName());
         return ResponseEntity.status(HttpStatus.CREATED).body(SolicitudVisitaResponse.from(solicitud));
+    }
+
+    @PatchMapping("/{id}/estado")
+    public ResponseEntity<SolicitudVisitaResponse> cambiarEstado(
+            @PathVariable Long id,
+            @RequestBody CambiarEstadoVisitaRequest request,
+            Authentication authentication
+    ) {
+        SolicitudVisita solicitud = visitaService.cambiarEstado(id, request, authentication.getName());
+        return ResponseEntity.ok(SolicitudVisitaResponse.from(solicitud));
     }
 }
