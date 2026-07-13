@@ -2,6 +2,7 @@ package app.model;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
 @Table(name = "propiedad")
@@ -52,6 +53,9 @@ public class Propiedad {
     @ManyToOne
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
+
+    @OneToMany(mappedBy = "propiedad", cascade = CascadeType.ALL)
+    private List<ImagenPropiedad> imagenes;
 
     // Getters y setters
     public Long getId() { return id; }
@@ -107,4 +111,7 @@ public class Propiedad {
 
     public Usuario getUsuario(){ return usuario;}
     public void setUsuario(Usuario usuario){ this.usuario = usuario;}
+
+    public List<ImagenPropiedad> getImagenes() { return imagenes; }
+    public void setImagenes(List<ImagenPropiedad> imagenes) { this.imagenes = imagenes; }
 }

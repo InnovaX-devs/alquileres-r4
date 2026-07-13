@@ -3,6 +3,7 @@ package app.controller.dto;
 import java.math.BigDecimal;
 
 import app.model.Propiedad;
+import java.util.List;
 
 public class PropiedadDetalleResponse {
     private Long id;
@@ -20,6 +21,7 @@ public class PropiedadDetalleResponse {
     private Integer plazoActualizacionMeses;
     private String requisitosIngreso;
     private ContactoPublicadorResponse contacto; // null si no está verificado
+    private List<String> imagenes;
 
     public static PropiedadDetalleResponse from(Propiedad propiedad, ContactoPublicadorResponse contacto) {
         PropiedadDetalleResponse dto = new PropiedadDetalleResponse();
@@ -38,6 +40,9 @@ public class PropiedadDetalleResponse {
         dto.plazoActualizacionMeses = propiedad.getPlazoActualizacionMeses();
         dto.requisitosIngreso = propiedad.getRequisitosIngreso();
         dto.contacto = contacto;
+        dto.imagenes = propiedad.getImagenes() != null
+            ? propiedad.getImagenes().stream().map(img -> img.getUrl()).toList()
+            : List.of();
         return dto;
     }
 
@@ -56,4 +61,5 @@ public class PropiedadDetalleResponse {
     public Integer getPlazoActualizacionMeses() { return plazoActualizacionMeses; }
     public String getRequisitosIngreso() { return requisitosIngreso; }
     public ContactoPublicadorResponse getContacto() { return contacto; }
+    public List<String> getImagenes() { return imagenes; }
 }
