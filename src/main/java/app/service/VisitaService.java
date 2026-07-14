@@ -14,19 +14,23 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 
+
 @Service
 public class VisitaService {
 
     private final SolicitudVisitaRepository solicitudVisitaRepository;
     private final PropiedadRepository propiedadRepository;
     private final UsuarioRepository usuarioRepository;
+    private final EmailService emailService;
 
     public VisitaService(SolicitudVisitaRepository solicitudVisitaRepository,
                          PropiedadRepository propiedadRepository,
-                         UsuarioRepository usuarioRepository) {
+                         UsuarioRepository usuarioRepository,
+                         EmailService emailService) {
         this.solicitudVisitaRepository = solicitudVisitaRepository;
         this.propiedadRepository = propiedadRepository;
         this.usuarioRepository = usuarioRepository;
+        this.emailService = emailService;
     }
 
     public SolicitudVisita solicitarVisita(SolicitudVisitaRequest request, String emailUsuario) {
@@ -48,8 +52,35 @@ public class VisitaService {
         solicitud.setPropiedad(propiedad);
         solicitud.setFechaPropuesta(request.getFechaPropuesta());
         solicitud.setObservaciones(request.getObservaciones());
+        
+        SolicitudVisita guardada = solicitudVisitaRepository.save(solicitud);
 
-        return solicitudVisitaRepository.save(solicitud);
+        try {
+            String emailPublicador;
+            String nombrePublicador;
+
+            if (propiedad.getInmobiliaria() != null) {
+                emailPublicador = propiedad.getInmobiliaria().getEmail();
+                nombrePublicador = propiedad.getInmobiliaria().getNombre();
+            } else {
+                emailPublicador = propiedad.getUsuario().getEmail();
+                nombrePublicador = propiedad.getUsuario().getNombre();
+            }
+
+            emailService.enviarNotificacionVisita(
+                emailPublicador,
+                nombrePublicador,
+                propiedad.getTitulo(),
+                usuario.getNombre(),
+                usuario.getEmail(),
+                usuario.getTelefono(),
+                request.getObservaciones()
+            );
+        } catch (Exception e) {
+            System.err.println("Error al enviar email de notificación: " + e.getMessage());
+        }
+
+        return guardada;
     }
 
     public SolicitudVisita cambiarEstado(Long solicitudId, CambiarEstadoVisitaRequest request, String emailUsuario) {
