@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 
-
 @Service
 public class VisitaService {
 
@@ -84,27 +83,27 @@ public class VisitaService {
     }
 
     public SolicitudVisita cambiarEstado(Long solicitudId, CambiarEstadoVisitaRequest request, String emailUsuario) {
-    Usuario usuario = usuarioRepository.findByEmail(emailUsuario)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuario no encontrado"));
+        Usuario usuario = usuarioRepository.findByEmail(emailUsuario)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuario no encontrado"));
 
-    SolicitudVisita solicitud = solicitudVisitaRepository.findById(solicitudId)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Solicitud no encontrada"));
+        SolicitudVisita solicitud = solicitudVisitaRepository.findById(solicitudId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Solicitud no encontrada"));
 
-    Propiedad propiedad = solicitud.getPropiedad();
+        Propiedad propiedad = solicitud.getPropiedad();
 
-    boolean esPublicador = esPublicadorDeLaPropiedad(usuario, propiedad);
+        boolean esPublicador = esPublicadorDeLaPropiedad(usuario, propiedad);
 
-    if (!esPublicador) {
-        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tenés permisos para modificar esta solicitud");
-    }
+        if (!esPublicador) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tenés permisos para modificar esta solicitud");
+        }
 
-    if (request.getEstado() == EstadoSolicitud.PENDIENTE) {
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No podés volver el estado a PENDIENTE");
-    }
+        if (request.getEstado() == EstadoSolicitud.PENDIENTE) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No podés volver el estado a PENDIENTE");
+        }
 
-    solicitud.setEstado(request.getEstado());
+        solicitud.setEstado(request.getEstado());
 
-    return solicitudVisitaRepository.save(solicitud);
+        return solicitudVisitaRepository.save(solicitud);
     }
 
     private boolean esPublicadorDeLaPropiedad(Usuario usuario, Propiedad propiedad) {
