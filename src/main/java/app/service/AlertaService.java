@@ -14,11 +14,14 @@ public class AlertaService {
 
     private final AlertaRepository alertaRepository;
     private final UsuarioRepository usuarioRepository;
+    private final EmailService emailService;
 
     public AlertaService(AlertaRepository alertaRepository,
-                         UsuarioRepository usuarioRepository) {
+                        UsuarioRepository usuarioRepository,
+                        EmailService emailService) {
         this.alertaRepository = alertaRepository;
         this.usuarioRepository = usuarioRepository;
+        this.emailService = emailService;
     }
 
     public Alerta crearAlerta(AlertaRequest request, String emailUsuario) {
@@ -41,9 +44,19 @@ public class AlertaService {
 
         for (Alerta alerta : alertasActivas) {
             if (coincide(propiedad, alerta)) {
-                // por ahora solo log, el email va en el próximo issue
-                System.out.println("Alerta coincidente para usuario: " 
-                    + alerta.getUsuario().getEmail());
+                try {
+                    emailService.enviarNotificacionAlerta(
+                        alerta.getUsuario().getEmail(),
+                        alerta.getUsuario().getNombre(),
+                        propiedad.getTitulo(),
+                        propiedad.getCalle(),
+                        propiedad.getAltura(),
+                        propiedad.getPrecio(),
+                        propiedad.getMoneda() != null ? propiedad.getMoneda().name() : ""
+                    );
+                } catch (Exception e) {
+                    System.err.println("Error al enviar email de alerta: " + e.getMessage());
+                }
             }
         }
     }
