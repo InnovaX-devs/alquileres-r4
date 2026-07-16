@@ -16,11 +16,15 @@ public class PropiedadService {
 
     private final PropiedadRepository propiedadRepository;
     private final UsuarioRepository usuarioRepository;
+    private final AlertaService alertaService;
+
 
     public PropiedadService(PropiedadRepository propiedadRepository,
-                            UsuarioRepository usuarioRepository) {
+                            UsuarioRepository usuarioRepository,
+                            AlertaService alertaService) {
         this.propiedadRepository = propiedadRepository;
         this.usuarioRepository = usuarioRepository;
+        this.alertaService = alertaService;
     }
 
     public Propiedad publicar(PropiedadRequest request, String emailUsuario) {
@@ -44,7 +48,15 @@ public class PropiedadService {
         propiedad.setFuente(Fuente.MANUAL);
         propiedad.setUsuario(usuario);
 
-        return propiedadRepository.save(propiedad);
+        Propiedad guardada = propiedadRepository.save(propiedad);
+
+        try {
+            alertaService.evaluarAlertas(guardada);
+        } catch (Exception e) {
+            System.err.println("Error al evaluar alertas: " + e.getMessage());
+        }
+
+        return guardada;
     }
 
     // ── Detalle de propiedad ──────────────────────────────────────────────────
