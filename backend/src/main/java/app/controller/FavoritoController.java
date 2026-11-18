@@ -1,6 +1,8 @@
 package app.controller;
 
+import app.controller.dto.FavoritoInmobiliariaResponse;
 import app.controller.dto.FavoritoPropiedadResponse;
+import app.model.FavoritoInmobiliaria;
 import app.model.FavoritoPropiedad;
 import app.service.FavoritoService;
 import org.springframework.http.HttpStatus;
@@ -25,5 +27,14 @@ public class FavoritoController {
     ) {
         FavoritoPropiedad favorito = favoritoService.guardarPropiedadFavorita(propiedadId, authentication.getName());
         return ResponseEntity.status(HttpStatus.CREATED).body(FavoritoPropiedadResponse.from(favorito));
+    }
+
+    @PostMapping("/inmobiliarias/{inmobiliariaId}")
+    public ResponseEntity<FavoritoInmobiliariaResponse> guardarInmobiliariaFavorita(
+            @PathVariable Long inmobiliariaId,
+            Authentication authentication
+    ) {
+        FavoritoInmobiliaria favorito = favoritoService.guardarInmobiliariaFavorita(inmobiliariaId, authentication.getName());
+        return ResponseEntity.status(HttpStatus.CREATED).body(FavoritoInmobiliariaResponse.from(favorito));
     }
 }
