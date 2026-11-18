@@ -33,5 +33,11 @@ release.properties
 # VS Code
 .vscode/
 
-# Secrets 
-src/main/resources/application.properties
+# Secrets
+backend/src/main/resources/application.properties
+.env
+*.env.local
+
+# Frontend
+node_modules/
+dist/
