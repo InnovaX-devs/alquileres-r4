@@ -1,5 +1,8 @@
 package app.service;
 
+import app.controller.dto.FavoritosResponse;
+import app.controller.dto.InmobiliariaFavoritaResponse;
+import app.controller.dto.PropiedadFavoritaResponse;
 import app.model.FavoritoInmobiliaria;
 import app.model.FavoritoPropiedad;
 import app.model.Inmobiliaria;
@@ -13,7 +16,10 @@ import app.repository.UsuarioRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
 
 @Service
 public class FavoritoService {
@@ -80,5 +86,23 @@ public class FavoritoService {
             // Dos requests simultáneos: la restricción única de la tabla evita el duplicado
             throw new ResponseStatusException(HttpStatus.CONFLICT, "La inmobiliaria ya está en tus favoritos");
         }
+    }
+
+    @Transactional(readOnly = true)
+    public FavoritosResponse listarFavoritos(String emailUsuario) {
+        Usuario usuario = usuarioRepository.findByEmail(emailUsuario)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuario no encontrado"));
+
+        List<PropiedadFavoritaResponse> propiedades = favoritoPropiedadRepository
+                .findByUsuarioOrderByFechaGuardadoDesc(usuario).stream()
+                .map(PropiedadFavoritaResponse::from)
+                .toList();
+
+        List<InmobiliariaFavoritaResponse> inmobiliarias = favoritoInmobiliariaRepository
+                .findByUsuarioOrderByFechaGuardadoDesc(usuario).stream()
+                .map(InmobiliariaFavoritaResponse::from)
+                .toList();
+
+        return new FavoritosResponse(propiedades, inmobiliarias);
     }
 }

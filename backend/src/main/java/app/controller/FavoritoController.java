@@ -1,6 +1,7 @@
 package app.controller;
 
 import app.controller.dto.FavoritoInmobiliariaResponse;
+import app.controller.dto.FavoritosResponse;
 import app.controller.dto.FavoritoPropiedadResponse;
 import app.model.FavoritoInmobiliaria;
 import app.model.FavoritoPropiedad;
@@ -18,6 +19,11 @@ public class FavoritoController {
 
     public FavoritoController(FavoritoService favoritoService) {
         this.favoritoService = favoritoService;
+    }
+
+    @GetMapping
+    public ResponseEntity<FavoritosResponse> listarFavoritos(Authentication authentication) {
+        return ResponseEntity.ok(favoritoService.listarFavoritos(authentication.getName()));
     }
 
     @PostMapping("/propiedades/{propiedadId}")
