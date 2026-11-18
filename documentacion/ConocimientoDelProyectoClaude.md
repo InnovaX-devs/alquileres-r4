@@ -67,9 +67,9 @@ src/
 ## Configuración (application.properties)
 ```properties
 # Base de datos
-spring.datasource.url=jdbc:postgresql://db.fbcxqwsmbnomqxrwyufs.supabase.co:5432/postgres
+spring.datasource.url=jdbc:postgresql://TU_HOST:5432/postgres
 spring.datasource.username=postgres
-spring.datasource.password=AlquileresR4!
+spring.datasource.password=TU_PASSWORD_DB
 spring.datasource.driver-class-name=org.postgresql.Driver
 
 # JPA / Hibernate
@@ -91,11 +91,11 @@ server.port=8080
 ---
 
 ## Base de datos - Supabase
-- **Host:** db.fbcxqwsmbnomqxrwyufs.supabase.co
+- **Host:** TU_HOST
 - **Puerto:** 5432
 - **DB:** postgres
 - **Usuario:** postgres
-- **Contraseña:** AlquileresR4!
+- **Contraseña:** TU_PASSWORD_DB
 - **Región:** South America (São Paulo)
 - **Nota importante:** Supabase free tier usa IPv6. La conexión directa falla localmente en redes IPv4 pero Hibernate igual levanta gracias a `spring.jpa.database-platform`. Se resuelve al deployar en Railway.
 
