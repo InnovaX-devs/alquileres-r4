@@ -26,7 +26,7 @@ JwtFilter
 
 SecurityConfig
    Define las reglas de acceso.
-   Públicos (sin token): /auth/login, /auth/register, listado de propiedades
+   Públicos (sin token): POST /auth/login, POST /auth/register, GET /propiedades, GET /propiedades/{id}
    Protegidos (con token): todo lo demás → devuelve 401 si no hay token válido
 
 
