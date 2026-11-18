@@ -4,7 +4,9 @@ Setup inicial
 git pull
 
  
-2. Crear el archivo de configuración
+2. Crear el archivo de configuración (desde la carpeta backend/)
+
+cd backend
 
 cp src/main/resources/application.properties.example src/main/resources/application.properties
 
@@ -12,11 +14,11 @@ Ese comando copia el contenido de `application.properties.example` en `applicati
  
 3. Completar los datos de conexión
 Abrí `src/main/resources/application.properties` y:
-- Línea 4: reemplazá la URL por `jdbc:postgresql://db.fbcxqwsmbnomqxrwyufs.supabase.co:5432/postgres`
-- Línea 6: poné la contraseña `AlquileresR4!`
+- Completá la URL, usuario y contraseña de la base (pedíselos al equipo, no se guardan en el repo)
+- Completá el email y la contraseña de aplicación de Gmail
 > ⚠️ El archivo `application.properties` está en `.gitignore` y nunca debe subirse al repositorio.
  
-4. Instalar dependencias
+4. Instalar dependencias (desde backend/)
 mvn clean install
 
  

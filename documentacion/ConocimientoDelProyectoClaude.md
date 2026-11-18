@@ -31,7 +31,7 @@ Sistema de gestión de propiedades inmobiliarias. Permite publicar propiedades, 
 ### Estructura del monorepo
 ```
 alquileres-r4/
-├── backend/         → Spring Boot (actualmente aquí está todo el proyecto)
+├── backend/         → Spring Boot
 │   ├── src/
 │   ├── pom.xml
 │   └── ...
@@ -42,7 +42,7 @@ alquileres-r4/
 └── README.md
 ```
 
-> ⚠️ Por ahora el backend está en la raíz del repo. Cuando arranque el frontend se reorganiza a la estructura monorepo.
+> Los comandos de Maven se corren desde `backend/`.
 
 ---
 
