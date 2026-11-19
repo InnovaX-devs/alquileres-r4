@@ -1,5 +1,6 @@
 package app.exception;
 
+import app.controller.dto.ApiResponse;
 import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +23,8 @@ import java.util.List;
 
 /**
  * Manejo global de excepciones (issue #50).
- * Todas las respuestas de error salen como {@link ErrorResponse}.
+ * Todas las respuestas de error salen como {@link ApiResponse} con data null,
+ * salvo las validaciones, que llevan en data el detalle por campo (issue #51).
  *
  * Extiende ResponseEntityExceptionHandler para cubrir también las excepciones estándar de
  * Spring MVC (405, 415, 404 de ruta inexistente, tipos de parámetro inválidos, etc.)
@@ -41,7 +43,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                                                              WebRequest request) {
         return ResponseEntity.status(statusCode)
                 .headers(headers)
-                .body(new ErrorResponse(statusCode.value(), mensajePara(ex, statusCode)));
+                .body(new ApiResponse<>(statusCode.value(), mensajePara(ex, statusCode), null));
     }
 
     /** @Valid sobre @RequestBody: devuelve el detalle por campo (lo usarán las validaciones de la Fase 10). */
@@ -54,7 +56,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .map(f -> f.getField() + ": " + f.getDefaultMessage())
                 .toList();
         return ResponseEntity.status(status)
-                .body(new ErrorResponse(status.value(), "Datos inválidos", detalles));
+                .body(new ApiResponse<>(status.value(), "Datos inválidos", detalles));
     }
 
     @Override
@@ -63,24 +65,24 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                                                                   HttpStatusCode status,
                                                                   WebRequest request) {
         return ResponseEntity.status(status)
-                .body(new ErrorResponse(status.value(), "El cuerpo de la solicitud es inválido o está mal formado"));
+                .body(new ApiResponse<>(status.value(), "El cuerpo de la solicitud es inválido o está mal formado", null));
     }
 
     /** @Validated sobre parámetros de path/query. */
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ErrorResponse> handleConstraintViolation(ConstraintViolationException ex) {
+    public ResponseEntity<ApiResponse<List<String>>> handleConstraintViolation(ConstraintViolationException ex) {
         List<String> detalles = ex.getConstraintViolations().stream()
                 .map(v -> v.getPropertyPath() + ": " + v.getMessage())
                 .toList();
-        return ResponseEntity.badRequest().body(new ErrorResponse(400, "Datos inválidos", detalles));
+        return ResponseEntity.badRequest().body(new ApiResponse<>(400, "Datos inválidos", detalles));
     }
 
     /** Violación de unique / FK que no fue atrapada en el service. No se filtra el detalle de la base. */
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<ErrorResponse> handleDataIntegrity(DataIntegrityViolationException ex) {
+    public ResponseEntity<ApiResponse<Void>> handleDataIntegrity(DataIntegrityViolationException ex) {
         log.warn("Violación de integridad de datos: {}", ex.getMostSpecificCause().getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(new ErrorResponse(409, "La operación viola una restricción de integridad de datos"));
+                .body(new ApiResponse<>(409, "La operación viola una restricción de integridad de datos", null));
     }
 
     /**
@@ -95,10 +97,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     /** Último recurso: error no previsto. Se loguea con stacktrace y no se expone el detalle al cliente. */
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGeneral(Exception ex) {
+    public ResponseEntity<ApiResponse<Void>> handleGeneral(Exception ex) {
         log.error("Error no controlado", ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse(500, "Error interno del servidor"));
+                .body(new ApiResponse<>(500, "Error interno del servidor", null));
     }
 
     private static String mensajePara(Exception ex, HttpStatusCode status) {
