@@ -1,11 +1,12 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
+import { useAuth } from '../hooks/useAuth'
 
 export default function ProtectedRoute() {
   const location = useLocation()
-  // Provisorio: se reemplaza por AuthContext en los issues #68 y #69
-  const hayToken = !!localStorage.getItem('token')
+  // El chequeo de token vencido se completa en el issue #69
+  const { estaAutenticado } = useAuth()
 
-  if (!hayToken) {
+  if (!estaAutenticado) {
     return <Navigate to="/login" replace state={{ from: location }} />
   }
 
