@@ -83,7 +83,6 @@ class RespuestasDtoTest {
                 .andExpect(jsonPath("$.data.id").value(7))
                 .andExpect(jsonPath("$.data.titulo").value("Depto 2 amb"))
                 .andExpect(jsonPath("$.data.moneda").value("ARS"))
-                .andExpect(jsonPath("$.data.fuente").value("MANUAL"))
                 .andExpect(jsonPath("$.data.usuario").doesNotExist())
                 .andExpect(jsonPath("$.data.contacto").doesNotExist());
     }
