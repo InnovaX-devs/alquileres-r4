@@ -46,6 +46,8 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // Públicos: solo los métodos de lectura / login / registro
                 .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/register").permitAll()
+                // /propiedades/mias va antes que /{id}: si no, ese patrón la volvería pública (issue #55)
+                .requestMatchers(HttpMethod.GET, "/propiedades/mias").authenticated()
                 .requestMatchers(HttpMethod.GET, "/propiedades", "/propiedades/{id}").permitAll()
                 // /error: el contenedor redirige ahí cuando un controller devuelve 403/404/409...
                 // Si estuviera protegido, esos errores se verían como 401.
