@@ -65,12 +65,12 @@ class ValidacionesRequestTest {
                         .contentType(MediaType.APPLICATION_JSON).content("{}"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400))
-                .andExpect(jsonPath("$.error").value("Datos inválidos"))
-                .andExpect(jsonPath("$.detalles", hasItem("titulo: El título es obligatorio")))
-                .andExpect(jsonPath("$.detalles", hasItem("precio: El precio es obligatorio")))
-                .andExpect(jsonPath("$.detalles", hasItem("moneda: La moneda es obligatoria")))
-                .andExpect(jsonPath("$.detalles", hasItem("calle: La calle es obligatoria")))
-                .andExpect(jsonPath("$.detalles", hasItem("altura: La altura es obligatoria")));
+                .andExpect(jsonPath("$.mensaje").value("Datos inválidos"))
+                .andExpect(jsonPath("$.data", hasItem("titulo: El título es obligatorio")))
+                .andExpect(jsonPath("$.data", hasItem("precio: El precio es obligatorio")))
+                .andExpect(jsonPath("$.data", hasItem("moneda: La moneda es obligatoria")))
+                .andExpect(jsonPath("$.data", hasItem("calle: La calle es obligatoria")))
+                .andExpect(jsonPath("$.data", hasItem("altura: La altura es obligatoria")));
         verifyNoInteractions(propiedadService);
     }
 
@@ -81,10 +81,10 @@ class ValidacionesRequestTest {
         mockMvc.perform(post("/propiedades").principal(principal)
                         .contentType(MediaType.APPLICATION_JSON).content(body))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.detalles", hasItem("titulo: El título es obligatorio")))
-                .andExpect(jsonPath("$.detalles", hasItem("precio: El precio debe ser mayor a 0")))
-                .andExpect(jsonPath("$.detalles", hasItem("calle: La calle es obligatoria")))
-                .andExpect(jsonPath("$.detalles", hasItem("altura: La altura es obligatoria")));
+                .andExpect(jsonPath("$.data", hasItem("titulo: El título es obligatorio")))
+                .andExpect(jsonPath("$.data", hasItem("precio: El precio debe ser mayor a 0")))
+                .andExpect(jsonPath("$.data", hasItem("calle: La calle es obligatoria")))
+                .andExpect(jsonPath("$.data", hasItem("altura: La altura es obligatoria")));
         verifyNoInteractions(propiedadService);
     }
 
@@ -95,7 +95,7 @@ class ValidacionesRequestTest {
                 {"titulo":"Depto 2 amb","precio":350000,"moneda":"ARS","calle":"Sarmiento","altura":"123"}""";
         mockMvc.perform(post("/propiedades").principal(principal)
                         .contentType(MediaType.APPLICATION_JSON).content(body))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
         verify(propiedadService).publicar(any(), anyString());
     }
 
@@ -106,8 +106,8 @@ class ValidacionesRequestTest {
         mockMvc.perform(post("/visitas").principal(principal)
                         .contentType(MediaType.APPLICATION_JSON).content("{\"propiedadId\":1}"))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value("Datos inválidos"))
-                .andExpect(jsonPath("$.detalles", hasItem("fechaPropuesta: La fecha propuesta es obligatoria")));
+                .andExpect(jsonPath("$.mensaje").value("Datos inválidos"))
+                .andExpect(jsonPath("$.data", hasItem("fechaPropuesta: La fecha propuesta es obligatoria")));
         verifyNoInteractions(visitaService);
     }
 
@@ -117,7 +117,7 @@ class ValidacionesRequestTest {
         mockMvc.perform(post("/visitas").principal(principal)
                         .contentType(MediaType.APPLICATION_JSON).content("{\"fechaPropuesta\":\"" + fecha + "\"}"))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.detalles", hasItem("propiedadId: La propiedad es obligatoria")));
+                .andExpect(jsonPath("$.data", hasItem("propiedadId: La propiedad es obligatoria")));
         verifyNoInteractions(visitaService);
     }
 
@@ -128,7 +128,7 @@ class ValidacionesRequestTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"propiedadId\":1,\"fechaPropuesta\":\"" + fecha + "\"}"))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.detalles", hasItem("fechaPropuesta: La fecha propuesta debe ser futura")));
+                .andExpect(jsonPath("$.data", hasItem("fechaPropuesta: La fecha propuesta debe ser futura")));
         verifyNoInteractions(visitaService);
     }
 
@@ -153,8 +153,8 @@ class ValidacionesRequestTest {
         mockMvc.perform(post("/alertas").principal(principal)
                         .contentType(MediaType.APPLICATION_JSON).content("{}"))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value("Datos inválidos"))
-                .andExpect(jsonPath("$.detalles", hasItem(
+                .andExpect(jsonPath("$.mensaje").value("Datos inválidos"))
+                .andExpect(jsonPath("$.data", hasItem(
                         "criterios: Debe indicar al menos un criterio: precio mínimo, precio máximo, habitaciones mínimas o calle")));
         verifyNoInteractions(alertaService);
     }
@@ -172,7 +172,7 @@ class ValidacionesRequestTest {
         mockMvc.perform(post("/alertas").principal(principal)
                         .contentType(MediaType.APPLICATION_JSON).content("{\"precioMax\":500000}"))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.detalles", hasItem(
+                .andExpect(jsonPath("$.data", hasItem(
                         "monedaConPrecio: La moneda es obligatoria cuando se indica un precio mínimo o máximo")));
     }
 
@@ -182,7 +182,7 @@ class ValidacionesRequestTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"precioMin\":600000,\"precioMax\":500000,\"moneda\":\"ARS\"}"))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.detalles", hasItem(
+                .andExpect(jsonPath("$.data", hasItem(
                         "rangoPrecioValido: El precio mínimo no puede ser mayor al precio máximo")));
     }
 
@@ -191,7 +191,7 @@ class ValidacionesRequestTest {
         when(alertaService.crearAlerta(any(), anyString())).thenReturn(new Alerta());
         mockMvc.perform(post("/alertas").principal(principal)
                         .contentType(MediaType.APPLICATION_JSON).content("{\"habitacionesMin\":2}"))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
         verify(alertaService).crearAlerta(any(), anyString());
     }
 
@@ -201,6 +201,6 @@ class ValidacionesRequestTest {
         mockMvc.perform(post("/alertas").principal(principal)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"precioMin\":300000,\"precioMax\":500000,\"moneda\":\"ARS\"}"))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
     }
 }
