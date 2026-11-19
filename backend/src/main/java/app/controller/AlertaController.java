@@ -1,6 +1,7 @@
 package app.controller;
 
 import app.controller.dto.AlertaRequest;
+import app.controller.dto.AlertaResponse;
 import app.model.Alerta;
 import app.service.AlertaService;
 import jakarta.validation.Valid;
@@ -19,9 +20,9 @@ public class AlertaController {
     }
 
     @PostMapping
-    public ResponseEntity<Alerta> crearAlerta(@Valid @RequestBody AlertaRequest request,
+    public ResponseEntity<AlertaResponse> crearAlerta(@Valid @RequestBody AlertaRequest request,
                                                Principal principal) {
         Alerta alerta = alertaService.crearAlerta(request, principal.getName());
-        return ResponseEntity.ok(alerta);
+        return ResponseEntity.ok(AlertaResponse.from(alerta));
     }
 }

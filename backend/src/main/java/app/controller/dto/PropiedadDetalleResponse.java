@@ -33,7 +33,7 @@ public class PropiedadDetalleResponse {
         dto.descripcion = propiedad.getDescripcion();
         dto.precio = propiedad.getPrecio();
         dto.expensas = propiedad.getExpensas();
-        dto.moneda = propiedad.getMoneda().name();
+        dto.moneda = propiedad.getMoneda() != null ? propiedad.getMoneda().name() : null;
         dto.calle = propiedad.getCalle();
         dto.altura = propiedad.getAltura();
         dto.piso = propiedad.getPiso();
