@@ -8,7 +8,9 @@ import app.model.Propiedad;
 import app.model.Usuario;
 import app.repository.PropiedadRepository;
 import app.repository.UsuarioRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 @Service
@@ -29,7 +31,7 @@ public class PropiedadService {
 
     public Propiedad publicar(PropiedadRequest request, String emailUsuario) {
         Usuario usuario = usuarioRepository.findByEmail(emailUsuario)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuario no encontrado"));
 
         Propiedad propiedad = new Propiedad();
         propiedad.setTitulo(request.getTitulo());
@@ -63,7 +65,7 @@ public class PropiedadService {
 
     public PropiedadDetalleResponse getDetalle(Long id, String emailAutenticado) {
         Propiedad propiedad = propiedadRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Propiedad no encontrada"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Propiedad no encontrada"));
 
         ContactoPublicadorResponse contacto = resolverContacto(propiedad, emailAutenticado);
 

@@ -3,7 +3,9 @@ package app.service;
 import app.controller.dto.ActualizarPerfilRequest;
 import app.model.Usuario;
 import app.repository.UsuarioRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class UsuarioService {
@@ -16,7 +18,7 @@ public class UsuarioService {
 
     public Usuario actualizarPerfil(String email, ActualizarPerfilRequest request) {
         Usuario usuario = usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuario no encontrado"));
 
         if (request.getNombre() != null) {
             usuario.setNombre(request.getNombre());

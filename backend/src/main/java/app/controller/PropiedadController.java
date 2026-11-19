@@ -32,13 +32,9 @@ public class PropiedadController {
             @PathVariable Long id,
             Authentication authentication
     ) {
-        try {
-            String email = authentication != null ? authentication.getName() : null;
-            PropiedadDetalleResponse response = propiedadService.getDetalle(id, email);
-            return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+        String email = authentication != null ? authentication.getName() : null;
+        PropiedadDetalleResponse response = propiedadService.getDetalle(id, email);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping
