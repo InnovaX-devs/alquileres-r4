@@ -1,5 +1,6 @@
 package app.controller;
 
+import app.controller.dto.ApiResponse;
 import app.controller.dto.PropiedadDetalleResponse;
 import app.controller.dto.PropiedadRequest;
 import app.model.Propiedad;
@@ -22,24 +23,24 @@ public class PropiedadController {
     }
 
     @PostMapping
-    public ResponseEntity<PropiedadDetalleResponse> publicar(@Valid @RequestBody PropiedadRequest request,
+    public ResponseEntity<ApiResponse<PropiedadDetalleResponse>> publicar(@Valid @RequestBody PropiedadRequest request,
                                                Principal principal) {
         Propiedad propiedad = propiedadService.publicar(request, principal.getName());
-        return ResponseEntity.ok(PropiedadDetalleResponse.from(propiedad, null));
+        return ApiResponse.created("Propiedad publicada", PropiedadDetalleResponse.from(propiedad, null));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PropiedadDetalleResponse> getDetalle(
+    public ResponseEntity<ApiResponse<PropiedadDetalleResponse>> getDetalle(
             @PathVariable Long id,
             Authentication authentication
     ) {
         String email = authentication != null ? authentication.getName() : null;
         PropiedadDetalleResponse response = propiedadService.getDetalle(id, email);
-        return ResponseEntity.ok(response);
+        return ApiResponse.ok("Propiedad obtenida", response);
     }
 
     @GetMapping
-    public ResponseEntity<List<PropiedadDetalleResponse>> listar() {
-        return ResponseEntity.ok(propiedadService.listar());
+    public ResponseEntity<ApiResponse<List<PropiedadDetalleResponse>>> listar() {
+        return ApiResponse.ok("Propiedades obtenidas", propiedadService.listar());
     }
 }

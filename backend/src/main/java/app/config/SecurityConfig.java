@@ -66,6 +66,6 @@ public class SecurityConfig {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
         response.getWriter().write(
-            "{\"status\":" + status.value() + ",\"error\":\"" + mensaje + "\"}");
+            "{\"status\":" + status.value() + ",\"mensaje\":\"" + mensaje + "\",\"data\":null}");
     }
 }

@@ -69,8 +69,8 @@ class GlobalExceptionHandlerTest {
                 .andExpect(status().isConflict())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.status").value(409))
-                .andExpect(jsonPath("$.error").value("El email ya está registrado"))
-                .andExpect(jsonPath("$.detalles").doesNotExist());
+                .andExpect(jsonPath("$.mensaje").value("El email ya está registrado"))
+                .andExpect(jsonPath("$.data").doesNotExist());
     }
 
     @Test
@@ -78,7 +78,7 @@ class GlobalExceptionHandlerTest {
         mockMvc.perform(get("/test/no-encontrado"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404))
-                .andExpect(jsonPath("$.error").value("Propiedad no encontrada"));
+                .andExpect(jsonPath("$.mensaje").value("Propiedad no encontrada"));
     }
 
     @Test
@@ -86,7 +86,7 @@ class GlobalExceptionHandlerTest {
         mockMvc.perform(get("/test/integridad"))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.status").value(409))
-                .andExpect(jsonPath("$.error").value("La operación viola una restricción de integridad de datos"));
+                .andExpect(jsonPath("$.mensaje").value("La operación viola una restricción de integridad de datos"));
     }
 
     @Test
@@ -94,7 +94,7 @@ class GlobalExceptionHandlerTest {
         mockMvc.perform(get("/test/inesperado"))
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.status").value(500))
-                .andExpect(jsonPath("$.error").value("Error interno del servidor"));
+                .andExpect(jsonPath("$.mensaje").value("Error interno del servidor"));
     }
 
     @Test
@@ -102,7 +102,7 @@ class GlobalExceptionHandlerTest {
         mockMvc.perform(post("/test/body").contentType(MediaType.APPLICATION_JSON).content("{ no es json"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400))
-                .andExpect(jsonPath("$.error").value("El cuerpo de la solicitud es inválido o está mal formado"));
+                .andExpect(jsonPath("$.mensaje").value("El cuerpo de la solicitud es inválido o está mal formado"));
     }
 
     @Test
@@ -117,7 +117,7 @@ class GlobalExceptionHandlerTest {
         mockMvc.perform(post("/test/conflicto"))
                 .andExpect(status().isMethodNotAllowed())
                 .andExpect(jsonPath("$.status").value(405))
-                .andExpect(jsonPath("$.error").value("Método HTTP no permitido"));
+                .andExpect(jsonPath("$.mensaje").value("Método HTTP no permitido"));
     }
 
     @Test

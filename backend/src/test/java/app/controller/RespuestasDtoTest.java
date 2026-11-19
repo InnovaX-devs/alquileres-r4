@@ -30,6 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Issue #49: los controllers responden con DTOs y no exponen entidades JPA
  * (en particular, el usuario dueño y su hash de contraseña).
+ * Issue #51: las respuestas siguen el formato común {status, mensaje, data}.
  */
 class RespuestasDtoTest {
 
@@ -76,13 +77,15 @@ class RespuestasDtoTest {
                 {"titulo":"Depto 2 amb","precio":350000,"moneda":"ARS","calle":"Sarmiento","altura":"123"}""";
         mockMvc.perform(post("/propiedades").principal(principal)
                         .contentType(MediaType.APPLICATION_JSON).content(body))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(7))
-                .andExpect(jsonPath("$.titulo").value("Depto 2 amb"))
-                .andExpect(jsonPath("$.moneda").value("ARS"))
-                .andExpect(jsonPath("$.fuente").value("MANUAL"))
-                .andExpect(jsonPath("$.usuario").doesNotExist())
-                .andExpect(jsonPath("$.contacto").doesNotExist());
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.status").value(201))
+                .andExpect(jsonPath("$.mensaje").value("Propiedad publicada"))
+                .andExpect(jsonPath("$.data.id").value(7))
+                .andExpect(jsonPath("$.data.titulo").value("Depto 2 amb"))
+                .andExpect(jsonPath("$.data.moneda").value("ARS"))
+                .andExpect(jsonPath("$.data.fuente").value("MANUAL"))
+                .andExpect(jsonPath("$.data.usuario").doesNotExist())
+                .andExpect(jsonPath("$.data.contacto").doesNotExist());
     }
 
     @Test
@@ -95,19 +98,23 @@ class RespuestasDtoTest {
 
         mockMvc.perform(post("/alertas").principal(principal)
                         .contentType(MediaType.APPLICATION_JSON).content("{\"habitacionesMin\":2}"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(3))
-                .andExpect(jsonPath("$.habitacionesMin").value(2))
-                .andExpect(jsonPath("$.activa").value(true))
-                .andExpect(jsonPath("$.usuario").doesNotExist());
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.status").value(201))
+                .andExpect(jsonPath("$.mensaje").value("Alerta creada"))
+                .andExpect(jsonPath("$.data.id").value(3))
+                .andExpect(jsonPath("$.data.habitacionesMin").value(2))
+                .andExpect(jsonPath("$.data.activa").value(true))
+                .andExpect(jsonPath("$.data.usuario").doesNotExist());
     }
 
     @Test
-    void register_devuelveMensajeJson() throws Exception {
+    void register_devuelveFormatoComunSinData() throws Exception {
         mockMvc.perform(post("/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"nombre\":\"Ana\",\"email\":\"a@test.com\",\"password\":\"123456\"}"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.mensaje").value("Usuario registrado correctamente"));
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.status").value(201))
+                .andExpect(jsonPath("$.mensaje").value("Usuario registrado correctamente"))
+                .andExpect(jsonPath("$.data").isEmpty());
     }
 }

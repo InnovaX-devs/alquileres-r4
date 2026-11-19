@@ -1,5 +1,6 @@
 package app.controller;
 
+import app.controller.dto.ApiResponse;
 import app.controller.dto.AlertaRequest;
 import app.controller.dto.AlertaResponse;
 import app.model.Alerta;
@@ -20,9 +21,9 @@ public class AlertaController {
     }
 
     @PostMapping
-    public ResponseEntity<AlertaResponse> crearAlerta(@Valid @RequestBody AlertaRequest request,
+    public ResponseEntity<ApiResponse<AlertaResponse>> crearAlerta(@Valid @RequestBody AlertaRequest request,
                                                Principal principal) {
         Alerta alerta = alertaService.crearAlerta(request, principal.getName());
-        return ResponseEntity.ok(AlertaResponse.from(alerta));
+        return ApiResponse.created("Alerta creada", AlertaResponse.from(alerta));
     }
 }

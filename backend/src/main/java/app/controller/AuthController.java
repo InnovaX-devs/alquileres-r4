@@ -1,8 +1,8 @@
 package app.controller;
 
+import app.controller.dto.ApiResponse;
 import app.controller.dto.AuthResponse;
 import app.controller.dto.LoginRequest;
-import app.controller.dto.MensajeResponse;
 import app.controller.dto.RegisterRequest;
 import app.service.AuthService;
 import org.springframework.http.ResponseEntity;
@@ -19,14 +19,14 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<MensajeResponse> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<ApiResponse<Void>> register(@RequestBody RegisterRequest request) {
         authService.register(request);
-        return ResponseEntity.ok(new MensajeResponse("Usuario registrado correctamente"));
+        return ApiResponse.created("Usuario registrado correctamente", null);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<ApiResponse<AuthResponse>> login(@RequestBody LoginRequest request) {
         AuthResponse response = authService.login(request);
-        return ResponseEntity.ok(response);
+        return ApiResponse.ok("Login exitoso", response);
     }
 }
