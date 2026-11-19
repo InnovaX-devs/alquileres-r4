@@ -1,4 +1,5 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom'
+import { getToken, clearToken } from '../services/session'
 
 const linkClass = ({ isActive }) =>
   `px-3 py-2 rounded-md text-sm font-medium ${
@@ -8,10 +9,10 @@ const linkClass = ({ isActive }) =>
 export default function Navbar() {
   const navigate = useNavigate()
   // Provisorio: se reemplaza por AuthContext en el issue #68
-  const hayToken = !!localStorage.getItem('token')
+  const hayToken = !!getToken()
 
   const cerrarSesion = () => {
-    localStorage.removeItem('token')
+    clearToken()
     navigate('/login')
   }
 
