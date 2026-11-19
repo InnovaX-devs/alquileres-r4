@@ -26,8 +26,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import java.util.Date;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
@@ -128,6 +132,7 @@ class AccessControlTest {
             "POST,/favoritos/inmobiliarias/1",
             "PATCH,/usuarios/perfil",
             "GET,/usuarios/me",
+            "GET,/propiedades/mias",
             "POST,/visitas",
             "PATCH,/visitas/1/estado",
             "POST,/fuentes-externas/1/importar"
@@ -191,7 +196,8 @@ class AccessControlTest {
             "GET,/favoritos",
             "POST,/visitas",
             "PATCH,/usuarios/perfil",
-            "GET,/usuarios/me"
+            "GET,/usuarios/me",
+            "GET,/propiedades/mias"
     })
     void privadosConTokenValidoNoDan401ni403(String metodo, String path) throws Exception {
         String token = jwtUtil.generateToken("user@test.com", Rol.USER);
@@ -224,6 +230,21 @@ class AccessControlTest {
                 .andExpect(jsonPath("$.data.verificado").value(false))
                 .andExpect(jsonPath("$.data.rol").value("USER"))
                 .andExpect(jsonPath("$.data.passwordHash").doesNotExist());
+    }
+
+    // ── GET /propiedades/mias (issue #55) ────────────────────────────────────
+
+    @Test
+    void propiedadesMiasNoSeConfundeConElDetalle() throws Exception {
+        when(propiedadService.listarMias("user@test.com")).thenReturn(List.of());
+        String token = jwtUtil.generateToken("user@test.com", Rol.USER);
+
+        mockMvc.perform(get("/propiedades/mias").header("Authorization", bearer(token)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").isArray());
+
+        verify(propiedadService).listarMias("user@test.com");
+        verify(propiedadService, never()).getDetalle(any(), any());
     }
 
     // ── Roles: /fuentes-externas/** solo para ADMIN ──────────────────────────

@@ -29,6 +29,12 @@ public class PropiedadController {
         return ApiResponse.created("Propiedad publicada", PropiedadDetalleResponse.from(propiedad, null));
     }
 
+    /** Propiedades publicadas por el usuario autenticado o su inmobiliaria (issue #55). */
+    @GetMapping("/mias")
+    public ResponseEntity<ApiResponse<List<PropiedadDetalleResponse>>> listarMias(Authentication authentication) {
+        return ApiResponse.ok("Propiedades obtenidas", propiedadService.listarMias(authentication.getName()));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<PropiedadDetalleResponse>> getDetalle(
             @PathVariable Long id,
