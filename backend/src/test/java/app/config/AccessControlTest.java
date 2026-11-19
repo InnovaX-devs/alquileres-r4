@@ -124,6 +124,7 @@ class AccessControlTest {
             "POST,/favoritos/propiedades/1",
             "POST,/favoritos/inmobiliarias/1",
             "PATCH,/usuarios/perfil",
+            "GET,/usuarios/me",
             "POST,/visitas",
             "PATCH,/visitas/1/estado",
             "POST,/fuentes-externas/1/importar"
@@ -186,7 +187,8 @@ class AccessControlTest {
             "POST,/alertas",
             "GET,/favoritos",
             "POST,/visitas",
-            "PATCH,/usuarios/perfil"
+            "PATCH,/usuarios/perfil",
+            "GET,/usuarios/me"
     })
     void privadosConTokenValidoNoDan401ni403(String metodo, String path) throws Exception {
         String token = jwtUtil.generateToken("user@test.com", Rol.USER);

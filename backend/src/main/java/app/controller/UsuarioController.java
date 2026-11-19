@@ -19,6 +19,12 @@ public class UsuarioController {
         this.usuarioService = usuarioService;
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<UsuarioResponse> me(Authentication authentication) {
+        Usuario usuario = usuarioService.obtenerPorEmail(authentication.getName());
+        return ResponseEntity.ok(new UsuarioResponse(usuario));
+    }
+
     @PatchMapping("/perfil")
     public ResponseEntity<ApiResponse<UsuarioResponse>> actualizarPerfil(
             @RequestBody ActualizarPerfilRequest request,

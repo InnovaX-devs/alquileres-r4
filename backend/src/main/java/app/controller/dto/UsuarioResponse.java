@@ -1,5 +1,6 @@
 package app.controller.dto;
 
+import app.model.Rol;
 import app.model.Usuario;
 
 public class UsuarioResponse {
@@ -10,6 +11,7 @@ public class UsuarioResponse {
     private String documento;
     private String descripcionPerfil;
     private boolean verificado;
+    private Rol rol;
 
     public UsuarioResponse(Usuario usuario) {
         this.id = usuario.getId();
@@ -19,6 +21,7 @@ public class UsuarioResponse {
         this.documento = usuario.getDocumento();
         this.descripcionPerfil = usuario.getDescripcionPerfil();
         this.verificado = usuario.isVerificado();
+        this.rol = usuario.getRol();
     }
 
     public Long getId() { return id; }
@@ -28,4 +31,5 @@ public class UsuarioResponse {
     public String getDocumento() { return documento; }
     public String getDescripcionPerfil() { return descripcionPerfil; }
     public boolean isVerificado() { return verificado; }
+    public Rol getRol() { return rol; }
 }
