@@ -47,6 +47,9 @@ public class SecurityConfig {
                 // Públicos: solo los métodos de lectura / login / registro
                 .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/register").permitAll()
                 .requestMatchers(HttpMethod.GET, "/propiedades", "/propiedades/{id}").permitAll()
+                // /error: el contenedor redirige ahí cuando un controller devuelve 403/404/409...
+                // Si estuviera protegido, esos errores se verían como 401.
+                .requestMatchers("/error").permitAll()
                 // Solo ADMIN: importación desde fuentes externas
                 .requestMatchers("/fuentes-externas/**").hasRole("ADMIN")
                 // Todo lo demás (incluido POST /propiedades) requiere JWT válido

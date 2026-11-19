@@ -105,6 +105,14 @@ class AccessControlTest {
                 .andExpect(status().isOk());
     }
 
+    @Test
+    void errorEndpointEsPublico() throws Exception {
+        // Si /error exigiera token, cualquier 403/404/409 de un controller se vería como 401.
+        int status = statusTrasSeguridad(req("GET", "/error"));
+        assertNotEquals(401, status);
+        assertNotEquals(403, status);
+    }
+
     // ── Endpoints privados: sin token -> 401 ─────────────────────────────────
 
     @ParameterizedTest
