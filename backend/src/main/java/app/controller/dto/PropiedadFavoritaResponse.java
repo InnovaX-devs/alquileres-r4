@@ -1,7 +1,6 @@
 package app.controller.dto;
 
 import app.model.FavoritoPropiedad;
-import app.model.Fuente;
 import app.model.ImagenPropiedad;
 import app.model.Moneda;
 import app.model.Propiedad;
@@ -24,7 +23,6 @@ public class PropiedadFavoritaResponse {
     private Integer metrosCuadrados;
     private String imagenPrincipal;
     private LocalDateTime fechaGuardado;
-    private Fuente fuente;
 
     public static PropiedadFavoritaResponse from(FavoritoPropiedad favorito) {
         Propiedad propiedad = favorito.getPropiedad();
@@ -45,7 +43,6 @@ public class PropiedadFavoritaResponse {
                 .filter(Objects::nonNull)
                 .orElse(null);
         dto.fechaGuardado = favorito.getFechaGuardado();
-        dto.fuente = PropiedadDetalleResponse.fuenteDe(propiedad);
         return dto;
     }
 
@@ -61,5 +58,4 @@ public class PropiedadFavoritaResponse {
     public Integer getMetrosCuadrados() { return metrosCuadrados; }
     public String getImagenPrincipal() { return imagenPrincipal; }
     public LocalDateTime getFechaGuardado() { return fechaGuardado; }
-    public Fuente getFuente() { return fuente; }
 }
