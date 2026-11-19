@@ -1,5 +1,5 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom'
-import { getToken, clearToken } from '../services/session'
+import { useAuth } from '../hooks/useAuth'
 
 const linkClass = ({ isActive }) =>
   `px-3 py-2 rounded-md text-sm font-medium ${
@@ -8,11 +8,10 @@ const linkClass = ({ isActive }) =>
 
 export default function Navbar() {
   const navigate = useNavigate()
-  // Provisorio: se reemplaza por AuthContext en el issue #68
-  const hayToken = !!getToken()
+  const { estaAutenticado, usuario, logout } = useAuth()
 
   const cerrarSesion = () => {
-    clearToken()
+    logout()
     navigate('/login')
   }
 
@@ -26,10 +25,12 @@ export default function Navbar() {
         <div className="flex items-center gap-1">
           <NavLink to="/" end className={linkClass}>Propiedades</NavLink>
 
-          {hayToken ? (
+          {estaAutenticado ? (
             <>
               <NavLink to="/publicar" className={linkClass}>Publicar</NavLink>
-              <NavLink to="/perfil" className={linkClass}>Mi perfil</NavLink>
+              <NavLink to="/perfil" className={linkClass}>
+                {usuario?.nombre || 'Mi perfil'}
+              </NavLink>
               <button
                 onClick={cerrarSesion}
                 className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100"

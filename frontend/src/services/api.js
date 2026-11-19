@@ -60,8 +60,10 @@ async function leerCuerpo(response) {
  * @param {object|FormData} [opciones.body]  objeto (se envía como JSON) o FormData (subida de archivos)
  * @param {boolean} [opciones.auth=true]     false para login/registro: no manda token
  *                                           y un 401 no cierra la sesión (son credenciales inválidas)
+ * @param {string}  [opciones.token]         usa este token en lugar del guardado (lo usa el login
+ *                                           para pedir /usuarios/me antes de guardar la sesión)
  */
-export async function request(path, { method = 'GET', body, auth = true } = {}) {
+export async function request(path, { method = 'GET', body, auth = true, token: tokenExplicito } = {}) {
   const headers = { Accept: 'application/json' }
   const esFormData = body instanceof FormData
 
@@ -69,7 +71,7 @@ export async function request(path, { method = 'GET', body, auth = true } = {}) 
     headers['Content-Type'] = 'application/json'
   }
 
-  const token = getToken()
+  const token = tokenExplicito ?? getToken()
   if (auth && token) {
     headers.Authorization = `Bearer ${token}`
   }
@@ -91,7 +93,7 @@ export async function request(path, { method = 'GET', body, auth = true } = {}) 
     return cuerpo?.data ?? null
   }
 
-  if (response.status === 401 && auth) {
+  if (response.status === 401 && auth && !tokenExplicito) {
     clearToken()
     onUnauthorized?.()
   }
