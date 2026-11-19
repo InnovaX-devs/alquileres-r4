@@ -90,6 +90,26 @@ public class PropiedadService {
         return null;
     }
 
+    // ── Mis propiedades (issue #55) ──────────────────────────────────────────
+
+    /**
+     * Propiedades del publicador autenticado: las que creó él y, si pertenece a una inmobiliaria,
+     * las de esa inmobiliaria (mismo criterio de publicador que VisitaService).
+     */
+    public List<PropiedadDetalleResponse> listarMias(String emailUsuario) {
+        Usuario usuario = usuarioRepository.findByEmail(emailUsuario)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuario no encontrado"));
+
+        List<Propiedad> propiedades = usuario.getInmobiliaria() != null
+                ? propiedadRepository.findDelUsuarioOSuInmobiliaria(usuario.getId(), usuario.getInmobiliaria().getId())
+                : propiedadRepository.findByUsuarioIdOrderByIdDesc(usuario.getId());
+
+        // El contacto es el propio publicador: no hace falta mostrarlo.
+        return propiedades.stream()
+                .map(propiedad -> PropiedadDetalleResponse.from(propiedad, null))
+                .toList();
+    }
+
     // Listar propiedades para usuarios sin autenticar
     public List<PropiedadDetalleResponse> listar() {
         return propiedadRepository.findAll()
