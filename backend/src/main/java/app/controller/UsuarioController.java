@@ -19,6 +19,13 @@ public class UsuarioController {
         this.usuarioService = usuarioService;
     }
 
+    /** Datos del usuario autenticado, para que el front los cargue después del login (issue #54). */
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponse<UsuarioResponse>> obtenerMiPerfil(Authentication authentication) {
+        Usuario usuario = usuarioService.obtenerPorEmail(authentication.getName());
+        return ApiResponse.ok("Usuario obtenido", new UsuarioResponse(usuario));
+    }
+
     @PatchMapping("/perfil")
     public ResponseEntity<ApiResponse<UsuarioResponse>> actualizarPerfil(
             @RequestBody ActualizarPerfilRequest request,
