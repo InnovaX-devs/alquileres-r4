@@ -6,7 +6,9 @@ import app.model.Propiedad;
 import app.model.Usuario;
 import app.repository.AlertaRepository;
 import app.repository.UsuarioRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 @Service
@@ -26,7 +28,7 @@ public class AlertaService {
 
     public Alerta crearAlerta(AlertaRequest request, String emailUsuario) {
         Usuario usuario = usuarioRepository.findByEmail(emailUsuario)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuario no encontrado"));
 
         Alerta alerta = new Alerta();
         alerta.setUsuario(usuario);
