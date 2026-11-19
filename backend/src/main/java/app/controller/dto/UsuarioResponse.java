@@ -10,6 +10,7 @@ public class UsuarioResponse {
     private String documento;
     private String descripcionPerfil;
     private boolean verificado;
+    private String rol;
 
     public UsuarioResponse(Usuario usuario) {
         this.id = usuario.getId();
@@ -19,6 +20,7 @@ public class UsuarioResponse {
         this.documento = usuario.getDocumento();
         this.descripcionPerfil = usuario.getDescripcionPerfil();
         this.verificado = usuario.isVerificado();
+        this.rol = usuario.getRol() != null ? usuario.getRol().name() : null;
     }
 
     public Long getId() { return id; }
@@ -28,4 +30,5 @@ public class UsuarioResponse {
     public String getDocumento() { return documento; }
     public String getDescripcionPerfil() { return descripcionPerfil; }
     public boolean isVerificado() { return verificado; }
+    public String getRol() { return rol; }
 }
