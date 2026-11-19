@@ -2,6 +2,7 @@ package app.controller;
 
 import app.controller.dto.AuthResponse;
 import app.controller.dto.LoginRequest;
+import app.controller.dto.MensajeResponse;
 import app.controller.dto.RegisterRequest;
 import app.service.AuthService;
 import org.springframework.http.ResponseEntity;
@@ -18,9 +19,9 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<MensajeResponse> register(@RequestBody RegisterRequest request) {
         authService.register(request);
-        return ResponseEntity.ok("Usuario registrado correctamente");
+        return ResponseEntity.ok(new MensajeResponse("Usuario registrado correctamente"));
     }
 
     @PostMapping("/login")
