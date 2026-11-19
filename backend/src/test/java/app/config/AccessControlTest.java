@@ -5,7 +5,6 @@ import app.model.Usuario;
 import app.service.AlertaService;
 import app.service.AuthService;
 import app.service.FavoritoService;
-import app.service.ImportacionService;
 import app.service.PropiedadService;
 import app.service.UsuarioService;
 import app.service.VisitaService;
@@ -61,7 +60,6 @@ class AccessControlTest {
     @MockBean AlertaService alertaService;
     @MockBean AuthService authService;
     @MockBean FavoritoService favoritoService;
-    @MockBean ImportacionService importacionService;
     @MockBean PropiedadService propiedadService;
     @MockBean UsuarioService usuarioService;
     @MockBean VisitaService visitaService;
