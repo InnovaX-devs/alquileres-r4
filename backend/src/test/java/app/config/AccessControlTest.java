@@ -1,6 +1,7 @@
 package app.config;
 
 import app.model.Rol;
+import app.model.Usuario;
 import app.service.AlertaService;
 import app.service.AuthService;
 import app.service.FavoritoService;
@@ -27,6 +28,8 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.request;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -124,6 +127,7 @@ class AccessControlTest {
             "POST,/favoritos/propiedades/1",
             "POST,/favoritos/inmobiliarias/1",
             "PATCH,/usuarios/perfil",
+            "GET,/usuarios/me",
             "POST,/visitas",
             "PATCH,/visitas/1/estado",
             "POST,/fuentes-externas/1/importar"
@@ -186,7 +190,8 @@ class AccessControlTest {
             "POST,/alertas",
             "GET,/favoritos",
             "POST,/visitas",
-            "PATCH,/usuarios/perfil"
+            "PATCH,/usuarios/perfil",
+            "GET,/usuarios/me"
     })
     void privadosConTokenValidoNoDan401ni403(String metodo, String path) throws Exception {
         String token = jwtUtil.generateToken("user@test.com", Rol.USER);
@@ -195,6 +200,30 @@ class AccessControlTest {
 
         assertNotEquals(401, status, metodo + " " + path + " con token válido");
         assertNotEquals(403, status, metodo + " " + path + " con token válido");
+    }
+
+    // ── GET /usuarios/me (issue #54) ─────────────────────────────────────────
+
+    @Test
+    void usuariosMeConTokenDevuelveElUsuarioSinPassword() throws Exception {
+        Usuario usuario = new Usuario();
+        usuario.setId(5L);
+        usuario.setNombre("Ana");
+        usuario.setEmail("user@test.com");
+        usuario.setPasswordHash("$2a$10$hash-secreto");
+        usuario.setRol(Rol.USER);
+        when(usuarioService.obtenerPorEmail("user@test.com")).thenReturn(usuario);
+        String token = jwtUtil.generateToken("user@test.com", Rol.USER);
+
+        mockMvc.perform(get("/usuarios/me").header("Authorization", bearer(token)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value(200))
+                .andExpect(jsonPath("$.data.id").value(5))
+                .andExpect(jsonPath("$.data.nombre").value("Ana"))
+                .andExpect(jsonPath("$.data.email").value("user@test.com"))
+                .andExpect(jsonPath("$.data.verificado").value(false))
+                .andExpect(jsonPath("$.data.rol").value("USER"))
+                .andExpect(jsonPath("$.data.passwordHash").doesNotExist());
     }
 
     // ── Roles: /fuentes-externas/** solo para ADMIN ──────────────────────────

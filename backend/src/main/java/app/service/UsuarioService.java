@@ -16,9 +16,14 @@ public class UsuarioService {
         this.usuarioRepository = usuarioRepository;
     }
 
-    public Usuario actualizarPerfil(String email, ActualizarPerfilRequest request) {
-        Usuario usuario = usuarioRepository.findByEmail(email)
+    /** Usuario autenticado. Si el token es válido pero el usuario ya no existe, se responde 401. */
+    public Usuario obtenerPorEmail(String email) {
+        return usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuario no encontrado"));
+    }
+
+    public Usuario actualizarPerfil(String email, ActualizarPerfilRequest request) {
+        Usuario usuario = obtenerPorEmail(email);
 
         if (request.getNombre() != null) {
             usuario.setNombre(request.getNombre());
