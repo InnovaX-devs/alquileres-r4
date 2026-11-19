@@ -2,7 +2,6 @@ package app.controller.dto;
 
 import java.math.BigDecimal;
 
-import app.model.Fuente;
 import app.model.Propiedad;
 import java.util.List;
 
@@ -23,8 +22,6 @@ public class PropiedadDetalleResponse {
     private String requisitosIngreso;
     private ContactoPublicadorResponse contacto; // null si no está verificado
     private List<String> imagenes;
-    private String fuente; // MANUAL (creada por un usuario) o WEB (importada)
-    private String urlOriginal; // solo para propiedades importadas
 
     public static PropiedadDetalleResponse from(Propiedad propiedad, ContactoPublicadorResponse contacto) {
         PropiedadDetalleResponse dto = new PropiedadDetalleResponse();
@@ -46,14 +43,7 @@ public class PropiedadDetalleResponse {
         dto.imagenes = propiedad.getImagenes() != null
             ? propiedad.getImagenes().stream().map(img -> img.getUrl()).toList()
             : List.of();
-        dto.fuente = fuenteDe(propiedad).name();
-        dto.urlOriginal = propiedad.getUrlOriginal();
         return dto;
-    }
-
-    /** Las propiedades sin fuente son anteriores a este campo y fueron cargadas a mano. */
-    static Fuente fuenteDe(Propiedad propiedad) {
-        return propiedad.getFuente() != null ? propiedad.getFuente() : Fuente.MANUAL;
     }
 
     public Long getId() { return id; }
@@ -72,6 +62,4 @@ public class PropiedadDetalleResponse {
     public String getRequisitosIngreso() { return requisitosIngreso; }
     public ContactoPublicadorResponse getContacto() { return contacto; }
     public List<String> getImagenes() { return imagenes; }
-    public String getFuente() { return fuente; }
-    public String getUrlOriginal() { return urlOriginal; }
 }
