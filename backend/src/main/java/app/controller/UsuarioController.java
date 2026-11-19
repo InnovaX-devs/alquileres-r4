@@ -1,5 +1,6 @@
 package app.controller;
 
+import app.controller.dto.ApiResponse;
 import app.controller.dto.ActualizarPerfilRequest;
 import app.controller.dto.UsuarioResponse;
 import app.model.Usuario;
@@ -19,12 +20,12 @@ public class UsuarioController {
     }
 
     @PatchMapping("/perfil")
-    public ResponseEntity<UsuarioResponse> actualizarPerfil(
+    public ResponseEntity<ApiResponse<UsuarioResponse>> actualizarPerfil(
             @RequestBody ActualizarPerfilRequest request,
             Authentication authentication
     ) {
         String email = authentication.getName();
         Usuario actualizado = usuarioService.actualizarPerfil(email, request);
-        return ResponseEntity.ok(new UsuarioResponse(actualizado));
+        return ApiResponse.ok("Perfil actualizado", new UsuarioResponse(actualizado));
     }
 }

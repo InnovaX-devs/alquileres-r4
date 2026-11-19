@@ -1,5 +1,6 @@
 package app.controller;
 
+import app.controller.dto.ApiResponse;
 import app.controller.dto.ImportacionResponse;
 import app.service.ImportacionService;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +17,7 @@ public class FuenteExternaController {
     }
 
     @PostMapping("/{id}/importar")
-    public ResponseEntity<ImportacionResponse> importar(@PathVariable Long id) {
-        return ResponseEntity.ok(importacionService.importar(id));
+    public ResponseEntity<ApiResponse<ImportacionResponse>> importar(@PathVariable Long id) {
+        return ApiResponse.ok("Importación finalizada", importacionService.importar(id));
     }
 }
