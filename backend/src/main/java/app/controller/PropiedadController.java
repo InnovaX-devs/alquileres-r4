@@ -22,10 +22,10 @@ public class PropiedadController {
     }
 
     @PostMapping
-    public ResponseEntity<Propiedad> publicar(@Valid @RequestBody PropiedadRequest request,
+    public ResponseEntity<PropiedadDetalleResponse> publicar(@Valid @RequestBody PropiedadRequest request,
                                                Principal principal) {
         Propiedad propiedad = propiedadService.publicar(request, principal.getName());
-        return ResponseEntity.ok(propiedad);
+        return ResponseEntity.ok(PropiedadDetalleResponse.from(propiedad, null));
     }
 
     @GetMapping("/{id}")
