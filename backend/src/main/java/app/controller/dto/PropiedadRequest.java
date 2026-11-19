@@ -1,21 +1,39 @@
 package app.controller.dto;
 
 import app.model.Moneda;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
 
 public class PropiedadRequest {
 
+    @NotBlank(message = "El título es obligatorio")
+    @Size(max = 255, message = "El título no puede superar los 255 caracteres")
     private String titulo;
     private String descripcion;
+    @NotNull(message = "El precio es obligatorio")
+    @DecimalMin(value = "0.0", inclusive = false, message = "El precio debe ser mayor a 0")
     private BigDecimal precio;
+    @DecimalMin(value = "0.0", message = "Las expensas no pueden ser negativas")
     private BigDecimal expensas;
+    @NotNull(message = "La moneda es obligatoria")
     private Moneda moneda;
+    @NotBlank(message = "La calle es obligatoria")
+    @Size(max = 255, message = "La calle no puede superar los 255 caracteres")
     private String calle;
+    @NotBlank(message = "La altura es obligatoria")
+    @Size(max = 255, message = "La altura no puede superar los 255 caracteres")
     private String altura;
     private String piso;
+    @Min(value = 0, message = "Las habitaciones no pueden ser negativas")
     private Integer habitaciones;
+    @Min(value = 1, message = "Los metros cuadrados deben ser mayores a 0")
     private Integer metrosCuadrados;
     private Boolean incluyeImpuestos;
+    @Min(value = 1, message = "El plazo de actualización debe ser de al menos 1 mes")
     private Integer plazoActualizacionMeses;
     private String requisitosIngreso;
 

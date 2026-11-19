@@ -4,6 +4,7 @@ import app.controller.dto.PropiedadDetalleResponse;
 import app.controller.dto.PropiedadRequest;
 import app.model.Propiedad;
 import app.service.PropiedadService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +22,7 @@ public class PropiedadController {
     }
 
     @PostMapping
-    public ResponseEntity<Propiedad> publicar(@RequestBody PropiedadRequest request,
+    public ResponseEntity<Propiedad> publicar(@Valid @RequestBody PropiedadRequest request,
                                                Principal principal) {
         Propiedad propiedad = propiedadService.publicar(request, principal.getName());
         return ResponseEntity.ok(propiedad);
