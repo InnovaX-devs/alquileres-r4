@@ -11,6 +11,7 @@ import app.repository.SolicitudVisitaRepository;
 import app.repository.UsuarioRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 
@@ -82,6 +83,7 @@ public class VisitaService {
         return guardada;
     }
 
+    @Transactional
     public SolicitudVisita cambiarEstado(Long solicitudId, CambiarEstadoVisitaRequest request, String emailUsuario) {
         Usuario usuario = usuarioRepository.findByEmail(emailUsuario)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuario no encontrado"));
@@ -97,6 +99,10 @@ public class VisitaService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tenés permisos para modificar esta solicitud");
         }
 
+        if (request.getEstado() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El estado es obligatorio");
+        }
+
         if (request.getEstado() == EstadoSolicitud.PENDIENTE) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No podés volver el estado a PENDIENTE");
         }
@@ -106,15 +112,19 @@ public class VisitaService {
         return solicitudVisitaRepository.save(solicitud);
     }
 
+    /**
+     * Es publicador quien creó la propiedad o quien pertenece a la inmobiliaria que la publica.
+     * Se evalúan ambas condiciones: el contacto que se muestra prioriza a la inmobiliaria,
+     * así que sus miembros también deben poder gestionar las solicitudes.
+     */
     private boolean esPublicadorDeLaPropiedad(Usuario usuario, Propiedad propiedad) {
-        if (propiedad.getUsuario() != null) {
-            return propiedad.getUsuario().getId().equals(usuario.getId());
-        }
+        boolean esDuenio = propiedad.getUsuario() != null
+                && propiedad.getUsuario().getId().equals(usuario.getId());
 
-        if (propiedad.getInmobiliaria() != null && usuario.getInmobiliaria() != null) {
-            return propiedad.getInmobiliaria().getId().equals(usuario.getInmobiliaria().getId());
-        }
+        boolean esDeLaInmobiliaria = propiedad.getInmobiliaria() != null
+                && usuario.getInmobiliaria() != null
+                && propiedad.getInmobiliaria().getId().equals(usuario.getInmobiliaria().getId());
 
-        return false;
+        return esDuenio || esDeLaInmobiliaria;
     }
 }
