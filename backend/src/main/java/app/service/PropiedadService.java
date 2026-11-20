@@ -18,8 +18,13 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Service
 public class PropiedadService {
+
+    private static final Logger log = LoggerFactory.getLogger(PropiedadService.class);
 
     private final PropiedadRepository propiedadRepository;
     private final UsuarioRepository usuarioRepository;
@@ -56,11 +61,13 @@ public class PropiedadService {
         propiedad.setUsuario(usuario);
 
         Propiedad guardada = propiedadRepository.save(propiedad);
+        log.info("Propiedad publicada: id={}, usuarioId={}, fuente={}",
+                guardada.getId(), usuario.getId(), guardada.getFuente());
 
         try {
             alertaService.evaluarAlertas(guardada);
         } catch (Exception e) {
-            System.err.println("Error al evaluar alertas: " + e.getMessage());
+            log.error("Error al evaluar alertas para la propiedad id={}", guardada.getId(), e);
         }
 
         return guardada;

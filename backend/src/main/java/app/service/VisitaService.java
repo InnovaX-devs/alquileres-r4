@@ -16,9 +16,14 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 @Service
 public class VisitaService {
+
+        private static final Logger log = LoggerFactory.getLogger(AlertaService.class);
 
     private final SolicitudVisitaRepository solicitudVisitaRepository;
     private final PropiedadRepository propiedadRepository;
@@ -35,7 +40,7 @@ public class VisitaService {
         this.emailService = emailService;
     }
 
-    public SolicitudVisita solicitarVisita(SolicitudVisitaRequest request, String emailUsuario) {
+        public SolicitudVisita solicitarVisita(SolicitudVisitaRequest request, String emailUsuario) {
         Usuario usuario = usuarioRepository.findByEmail(emailUsuario)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuario no encontrado"));
 
@@ -46,6 +51,8 @@ public class VisitaService {
                 .existsByUsuarioAndPropiedad(usuario, propiedad);
 
         if (yaExiste) {
+            log.warn("Solicitud de visita duplicada: usuarioId={}, propiedadId={}",
+                    usuario.getId(), propiedad.getId());
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Ya tenés una solicitud para esta propiedad");
         }
 
@@ -54,8 +61,10 @@ public class VisitaService {
         solicitud.setPropiedad(propiedad);
         solicitud.setFechaPropuesta(request.getFechaPropuesta());
         solicitud.setObservaciones(request.getObservaciones());
-        
+
         SolicitudVisita guardada = solicitudVisitaRepository.save(solicitud);
+        log.info("Solicitud de visita creada: id={}, usuarioId={}, propiedadId={}, estado={}",
+                guardada.getId(), usuario.getId(), propiedad.getId(), guardada.getEstado());
 
         try {
             String emailPublicador;
@@ -78,8 +87,9 @@ public class VisitaService {
                 usuario.getTelefono(),
                 request.getObservaciones()
             );
+            log.info("Notificación de visita enviada: solicitudId={}", guardada.getId());
         } catch (Exception e) {
-            System.err.println("Error al enviar email de notificación: " + e.getMessage());
+            log.error("Error al enviar el email de notificación: solicitudId={}", guardada.getId(), e);
         }
 
         return guardada;
@@ -114,6 +124,7 @@ public class VisitaService {
         boolean esPublicador = esPublicadorDeLaPropiedad(usuario, propiedad);
 
         if (!esPublicador) {
+            log.warn("Cambio de estado denegado: solicitudId={}, usuarioId={}", solicitudId, usuario.getId());
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tenés permisos para modificar esta solicitud");
         }
 
@@ -125,9 +136,13 @@ public class VisitaService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No podés volver el estado a PENDIENTE");
         }
 
+        EstadoSolicitud anterior = solicitud.getEstado();
         solicitud.setEstado(request.getEstado());
+        SolicitudVisita actualizada = solicitudVisitaRepository.save(solicitud);
+        log.info("Estado de solicitud actualizado: id={}, {} -> {}, usuarioId={}",
+                solicitudId, anterior, actualizada.getEstado(), usuario.getId());
 
-        return solicitudVisitaRepository.save(solicitud);
+        return actualizada;
     }
 
     /**

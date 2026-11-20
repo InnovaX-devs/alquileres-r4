@@ -38,3 +38,9 @@ spring.mail.username=TU_EMAIL
 spring.mail.password=TU_APP_PASSWORD
 spring.mail.properties.mail.smtp.auth=true
 spring.mail.properties.mail.smtp.starttls.enable=true
+
+# ==========================================
+# LOGGING
+# ==========================================
+logging.level.root=INFO
+logging.level.app=INFO
