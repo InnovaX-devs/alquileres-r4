@@ -2,12 +2,13 @@ package app.repository;
 
 import app.model.Propiedad;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface PropiedadRepository extends JpaRepository<Propiedad, Long> {
+public interface PropiedadRepository extends JpaRepository<Propiedad, Long>, JpaSpecificationExecutor<Propiedad> {
     boolean existsByUrlOriginal(String urlOriginal);
 
     List<Propiedad> findByUsuarioIdOrderByIdDesc(Long usuarioId);

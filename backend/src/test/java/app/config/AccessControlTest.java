@@ -132,7 +132,11 @@ class AccessControlTest {
             "GET,/usuarios/me",
             "GET,/propiedades/mias",
             "POST,/visitas",
+            "GET,/visitas/recibidas",
             "PATCH,/visitas/1/estado",
+            "GET,/alertas",
+            "PATCH,/alertas/1",
+            "DELETE,/alertas/1",
             "POST,/fuentes-externas/1/importar"
     })
     void privadosSinTokenDan401(String metodo, String path) throws Exception {
@@ -193,6 +197,8 @@ class AccessControlTest {
             "POST,/alertas",
             "GET,/favoritos",
             "POST,/visitas",
+            "GET,/visitas/recibidas",
+            "GET,/alertas",
             "PATCH,/usuarios/perfil",
             "GET,/usuarios/me",
             "GET,/propiedades/mias"

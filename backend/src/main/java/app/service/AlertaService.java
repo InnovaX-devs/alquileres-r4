@@ -8,6 +8,7 @@ import app.repository.AlertaRepository;
 import app.repository.UsuarioRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
@@ -39,6 +40,47 @@ public class AlertaService {
         alerta.setCalle(request.getCalle());
 
         return alertaRepository.save(alerta);
+    }
+
+    // ── Gestión de alertas (issue #60) ───────────────────────────────────────
+
+    @Transactional(readOnly = true)
+    public List<Alerta> listarAlertas(String emailUsuario) {
+        Usuario usuario = buscarUsuario(emailUsuario);
+        return alertaRepository.findByUsuarioIdOrderByCreadaEnDesc(usuario.getId());
+    }
+
+    @Transactional
+    public Alerta cambiarEstado(Long alertaId, boolean activa, String emailUsuario) {
+        Alerta alerta = obtenerAlertaPropia(alertaId, buscarUsuario(emailUsuario));
+        alerta.setActiva(activa);
+        return alertaRepository.save(alerta);
+    }
+
+    @Transactional
+    public void eliminarAlerta(Long alertaId, String emailUsuario) {
+        Alerta alerta = obtenerAlertaPropia(alertaId, buscarUsuario(emailUsuario));
+        alertaRepository.delete(alerta);
+    }
+
+    private Usuario buscarUsuario(String emailUsuario) {
+        return usuarioRepository.findByEmail(emailUsuario)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuario no encontrado"));
+    }
+
+    /** 404 si la alerta no existe, 403 si existe pero es de otro usuario. */
+    private Alerta obtenerAlertaPropia(Long alertaId, Usuario usuario) {
+        Alerta alerta = alertaRepository.findById(alertaId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Alerta no encontrada"));
+
+        boolean esDuenio = alerta.getUsuario() != null
+                && alerta.getUsuario().getId().equals(usuario.getId());
+
+        if (!esDuenio) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tenés permisos sobre esta alerta");
+        }
+
+        return alerta;
     }
 
     public void evaluarAlertas(Propiedad propiedad) {

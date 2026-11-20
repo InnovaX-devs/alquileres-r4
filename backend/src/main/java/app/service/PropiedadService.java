@@ -4,13 +4,18 @@ import app.controller.dto.ContactoPublicadorResponse;
 import app.controller.dto.PropiedadDetalleResponse;
 import app.controller.dto.PropiedadRequest;
 import app.model.Fuente;
+import app.model.Moneda;
 import app.model.Propiedad;
 import app.model.Usuario;
 import app.repository.PropiedadRepository;
 import app.repository.UsuarioRepository;
+import jakarta.persistence.criteria.Predicate;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -112,9 +117,55 @@ public class PropiedadService {
 
     // Listar propiedades para usuarios sin autenticar
     public List<PropiedadDetalleResponse> listar() {
-        return propiedadRepository.findAll()
-                .stream()
+        return listar(null, null, null, null, null);
+    }
+
+    /**
+     * Listado público con filtros opcionales (issue #58). Los filtros que vienen null o vacíos se ignoran
+     * y los que vienen informados se combinan con AND. Sin ningún filtro devuelve todas las propiedades.
+     */
+    public List<PropiedadDetalleResponse> listar(BigDecimal precioMin, BigDecimal precioMax, Moneda moneda,
+                                                 Integer habitacionesMin, String calle) {
+        if (precioMin != null && precioMax != null && precioMin.compareTo(precioMax) > 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "El precio mínimo no puede ser mayor al precio máximo");
+        }
+
+        String calleFiltro = calle != null && !calle.isBlank() ? calle.trim() : null;
+        boolean sinFiltros = precioMin == null && precioMax == null && moneda == null
+                && habitacionesMin == null && calleFiltro == null;
+
+        List<Propiedad> propiedades = sinFiltros
+                ? propiedadRepository.findAll()
+                : propiedadRepository.findAll(filtros(precioMin, precioMax, moneda, habitacionesMin, calleFiltro));
+
+        return propiedades.stream()
                 .map(propiedad -> PropiedadDetalleResponse.from(propiedad, null))
                 .toList();
+    }
+
+    private Specification<Propiedad> filtros(BigDecimal precioMin, BigDecimal precioMax, Moneda moneda,
+                                             Integer habitacionesMin, String calle) {
+        return (root, query, cb) -> {
+            List<Predicate> predicados = new ArrayList<>();
+
+            if (precioMin != null) {
+                predicados.add(cb.greaterThanOrEqualTo(root.get("precio"), precioMin));
+            }
+            if (precioMax != null) {
+                predicados.add(cb.lessThanOrEqualTo(root.get("precio"), precioMax));
+            }
+            if (moneda != null) {
+                predicados.add(cb.equal(root.get("moneda"), moneda));
+            }
+            if (habitacionesMin != null) {
+                predicados.add(cb.greaterThanOrEqualTo(root.get("habitaciones"), habitacionesMin));
+            }
+            if (calle != null) {
+                predicados.add(cb.like(cb.lower(root.get("calle")), "%" + calle.toLowerCase() + "%"));
+            }
+
+            return cb.and(predicados.toArray(new Predicate[0]));
+        };
     }
 }
