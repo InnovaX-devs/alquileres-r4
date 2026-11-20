@@ -12,9 +12,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Service
 public class AuthService {
 
+    private static final Logger log = LoggerFactory.getLogger(AlertaService.class);
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
@@ -40,17 +44,25 @@ public class AuthService {
         usuario.setVerificado(false);
 
         usuarioRepository.save(usuario);
+
+        Usuario guardado = usuarioRepository.save(usuario);
+        log.info("Usuario registrado: id={}", guardado.getId());
     }
 
     public AuthResponse login(LoginRequest request) {
         Usuario usuario = usuarioRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Credenciales inválidas"));
+                .orElseThrow(() -> {
+                    log.warn("Login fallido: usuario inexistente");
+                    return new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Credenciales inválidas");
+                });
 
         if (!passwordEncoder.matches(request.getPassword(), usuario.getPasswordHash())) {
+            log.warn("Login fallido: contraseña incorrecta, usuarioId={}", usuario.getId());
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Credenciales inválidas");
         }
 
         String token = jwtUtil.generateToken(usuario.getEmail(), usuario.getRol());
+        log.info("Login exitoso: usuarioId={}", usuario.getId());
         return new AuthResponse(token);
     }
 }
