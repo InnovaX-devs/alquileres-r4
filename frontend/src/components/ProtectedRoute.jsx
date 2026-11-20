@@ -1,13 +1,35 @@
+import { useEffect } from 'react'
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
+import { tokenVencido } from '../services/jwt'
+import { clearToken } from '../services/session'
 
+/**
+ * Protege las rutas privadas (#69): sin token, o con el token vencido, redirige al login
+ * recordando a dónde quería ir el usuario para volver ahí después de ingresar.
+ */
 export default function ProtectedRoute() {
   const location = useLocation()
-  // El chequeo de token vencido se completa en el issue #69
-  const { estaAutenticado } = useAuth()
+  const { token, cargando } = useAuth()
+  const vencido = !!token && tokenVencido(token)
 
-  if (!estaAutenticado) {
-    return <Navigate to="/login" replace state={{ from: location }} />
+  useEffect(() => {
+    if (vencido) clearToken()
+  }, [vencido])
+
+  if (!token || vencido) {
+    return (
+      <Navigate
+        to="/login"
+        replace
+        state={{ from: location, sesionExpirada: vencido }}
+      />
+    )
+  }
+
+  // Al recargar la página: hay token pero todavía no llegó el usuario
+  if (cargando) {
+    return <p className="text-center text-gray-500 py-16">Cargando...</p>
   }
 
   return <Outlet />
