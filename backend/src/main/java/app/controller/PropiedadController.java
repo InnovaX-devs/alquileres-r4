@@ -3,12 +3,14 @@ package app.controller;
 import app.controller.dto.ApiResponse;
 import app.controller.dto.PropiedadDetalleResponse;
 import app.controller.dto.PropiedadRequest;
+import app.model.Moneda;
 import app.model.Propiedad;
 import app.service.PropiedadService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import java.math.BigDecimal;
 import java.security.Principal;
 import java.util.List;
 
@@ -45,8 +47,16 @@ public class PropiedadController {
         return ApiResponse.ok("Propiedad obtenida", response);
     }
 
+    /** Listado público; todos los filtros son opcionales y combinables (issue #58). */
     @GetMapping
-    public ResponseEntity<ApiResponse<List<PropiedadDetalleResponse>>> listar() {
-        return ApiResponse.ok("Propiedades obtenidas", propiedadService.listar());
+    public ResponseEntity<ApiResponse<List<PropiedadDetalleResponse>>> listar(
+            @RequestParam(required = false) BigDecimal precioMin,
+            @RequestParam(required = false) BigDecimal precioMax,
+            @RequestParam(required = false) Moneda moneda,
+            @RequestParam(required = false) Integer habitacionesMin,
+            @RequestParam(required = false) String calle
+    ) {
+        return ApiResponse.ok("Propiedades obtenidas",
+                propiedadService.listar(precioMin, precioMax, moneda, habitacionesMin, calle));
     }
 }

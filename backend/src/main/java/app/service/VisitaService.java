@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
+
 
 @Service
 public class VisitaService {
@@ -81,6 +83,22 @@ public class VisitaService {
         }
 
         return guardada;
+    }
+
+    /**
+     * Solicitudes recibidas por el publicador autenticado (issue #57): las de las propiedades que creó
+     * y, si pertenece a una inmobiliaria, las de las propiedades de esa inmobiliaria
+     * (mismo criterio de publicador que {@link #esPublicadorDeLaPropiedad}).
+     */
+    @Transactional(readOnly = true)
+    public List<SolicitudVisita> listarRecibidas(String emailUsuario) {
+        Usuario usuario = usuarioRepository.findByEmail(emailUsuario)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuario no encontrado"));
+
+        return usuario.getInmobiliaria() != null
+                ? solicitudVisitaRepository.findRecibidasPorUsuarioOInmobiliaria(
+                        usuario.getId(), usuario.getInmobiliaria().getId())
+                : solicitudVisitaRepository.findRecibidasPorUsuario(usuario.getId());
     }
 
     @Transactional

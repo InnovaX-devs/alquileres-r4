@@ -2,6 +2,7 @@ package app.controller;
 
 import app.controller.dto.ApiResponse;
 import app.controller.dto.CambiarEstadoVisitaRequest;
+import app.controller.dto.SolicitudVisitaRecibidaResponse;
 import app.controller.dto.SolicitudVisitaRequest;
 import app.controller.dto.SolicitudVisitaResponse;
 import app.model.SolicitudVisita;
@@ -10,6 +11,8 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/visitas")
@@ -28,6 +31,18 @@ public class VisitaController {
     ) {
         SolicitudVisita solicitud = visitaService.solicitarVisita(request, authentication.getName());
         return ApiResponse.created("Solicitud de visita creada", SolicitudVisitaResponse.from(solicitud));
+    }
+
+    /** Solicitudes de visita recibidas sobre las propiedades del publicador autenticado (issue #57). */
+    @GetMapping("/recibidas")
+    public ResponseEntity<ApiResponse<List<SolicitudVisitaRecibidaResponse>>> listarRecibidas(
+            Authentication authentication
+    ) {
+        List<SolicitudVisitaRecibidaResponse> recibidas = visitaService.listarRecibidas(authentication.getName())
+                .stream()
+                .map(SolicitudVisitaRecibidaResponse::from)
+                .toList();
+        return ApiResponse.ok("Solicitudes recibidas obtenidas", recibidas);
     }
 
     @PatchMapping("/{id}/estado")

@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface AlertaRepository extends JpaRepository<Alerta, Long> {
     List<Alerta> findByActivaTrue();
+
+    List<Alerta> findByUsuarioIdOrderByCreadaEnDesc(Long usuarioId);
 }
