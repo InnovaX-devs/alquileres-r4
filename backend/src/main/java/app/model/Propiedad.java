@@ -55,7 +55,27 @@ public class Propiedad {
     private Usuario usuario;
 
     @OneToMany(mappedBy = "propiedad", cascade = CascadeType.ALL)
+    @OrderBy("orden ASC, id ASC")
     private List<ImagenPropiedad> imagenes;
+
+    /**
+     * Es publicador quien creó la propiedad o quien pertenece a la inmobiliaria que la publica.
+     * Se evalúan ambas condiciones: el contacto que se muestra prioriza a la inmobiliaria,
+     * así que sus miembros también deben poder gestionar la propiedad (solicitudes, imágenes, etc.).
+     */
+    public boolean esPublicadaPor(Usuario usuario) {
+        if (usuario == null || usuario.getId() == null) return false;
+
+        boolean esDuenio = this.usuario != null
+                && usuario.getId().equals(this.usuario.getId());
+
+        boolean esDeLaInmobiliaria = this.inmobiliaria != null
+                && usuario.getInmobiliaria() != null
+                && this.inmobiliaria.getId() != null
+                && this.inmobiliaria.getId().equals(usuario.getInmobiliaria().getId());
+
+        return esDuenio || esDeLaInmobiliaria;
+    }
 
     // Getters y setters
     public Long getId() { return id; }

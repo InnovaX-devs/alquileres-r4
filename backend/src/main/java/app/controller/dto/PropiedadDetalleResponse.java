@@ -2,10 +2,17 @@ package app.controller.dto;
 
 import java.math.BigDecimal;
 
+import app.model.ImagenPropiedad;
 import app.model.Propiedad;
+import java.util.Comparator;
 import java.util.List;
 
 public class PropiedadDetalleResponse {
+    /** Las imágenes ya vienen ordenadas por @OrderBy; se reordena por si la lista se armó en memoria. */
+    private static final Comparator<ImagenPropiedad> ORDEN_IMAGENES = Comparator
+            .comparing(ImagenPropiedad::getOrden, Comparator.nullsLast(Comparator.naturalOrder()))
+            .thenComparing(ImagenPropiedad::getId, Comparator.nullsLast(Comparator.naturalOrder()));
+
     private Long id;
     private String titulo;
     private String descripcion;
@@ -41,7 +48,10 @@ public class PropiedadDetalleResponse {
         dto.requisitosIngreso = propiedad.getRequisitosIngreso();
         dto.contacto = contacto;
         dto.imagenes = propiedad.getImagenes() != null
-            ? propiedad.getImagenes().stream().map(img -> img.getUrl()).toList()
+            ? propiedad.getImagenes().stream()
+                .sorted(ORDEN_IMAGENES)
+                .map(ImagenPropiedad::getUrl)
+                .toList()
             : List.of();
         return dto;
     }
