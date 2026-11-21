@@ -13,6 +13,7 @@ import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -75,6 +76,9 @@ public class PropiedadService {
 
     // ── Detalle de propiedad ──────────────────────────────────────────────────
 
+    // readOnly: el DTO recorre la colección lazy de imágenes y con open-in-view=false
+    // necesita una sesión abierta para cargarla (issue #59).
+    @Transactional(readOnly = true)
     public PropiedadDetalleResponse getDetalle(Long id, String emailAutenticado) {
         Propiedad propiedad = propiedadRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Propiedad no encontrada"));
@@ -108,6 +112,7 @@ public class PropiedadService {
      * Propiedades del publicador autenticado: las que creó él y, si pertenece a una inmobiliaria,
      * las de esa inmobiliaria (mismo criterio de publicador que VisitaService).
      */
+    @Transactional(readOnly = true)
     public List<PropiedadDetalleResponse> listarMias(String emailUsuario) {
         Usuario usuario = usuarioRepository.findByEmail(emailUsuario)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuario no encontrado"));
@@ -131,6 +136,7 @@ public class PropiedadService {
      * Listado público con filtros opcionales (issue #58). Los filtros que vienen null o vacíos se ignoran
      * y los que vienen informados se combinan con AND. Sin ningún filtro devuelve todas las propiedades.
      */
+    @Transactional(readOnly = true)
     public List<PropiedadDetalleResponse> listar(BigDecimal precioMin, BigDecimal precioMax, Moneda moneda,
                                                  Integer habitacionesMin, String calle) {
         if (precioMin != null && precioMax != null && precioMin.compareTo(precioMax) > 0) {

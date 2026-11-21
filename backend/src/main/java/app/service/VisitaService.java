@@ -98,7 +98,7 @@ public class VisitaService {
     /**
      * Solicitudes recibidas por el publicador autenticado (issue #57): las de las propiedades que creó
      * y, si pertenece a una inmobiliaria, las de las propiedades de esa inmobiliaria
-     * (mismo criterio de publicador que {@link #esPublicadorDeLaPropiedad}).
+     * (mismo criterio de publicador que {@link Propiedad#esPublicadaPor}).
      */
     @Transactional(readOnly = true)
     public List<SolicitudVisita> listarRecibidas(String emailUsuario) {
@@ -121,7 +121,7 @@ public class VisitaService {
 
         Propiedad propiedad = solicitud.getPropiedad();
 
-        boolean esPublicador = esPublicadorDeLaPropiedad(usuario, propiedad);
+        boolean esPublicador = propiedad.esPublicadaPor(usuario);
 
         if (!esPublicador) {
             log.warn("Cambio de estado denegado: solicitudId={}, usuarioId={}", solicitudId, usuario.getId());
@@ -145,19 +145,4 @@ public class VisitaService {
         return actualizada;
     }
 
-    /**
-     * Es publicador quien creó la propiedad o quien pertenece a la inmobiliaria que la publica.
-     * Se evalúan ambas condiciones: el contacto que se muestra prioriza a la inmobiliaria,
-     * así que sus miembros también deben poder gestionar las solicitudes.
-     */
-    private boolean esPublicadorDeLaPropiedad(Usuario usuario, Propiedad propiedad) {
-        boolean esDuenio = propiedad.getUsuario() != null
-                && propiedad.getUsuario().getId().equals(usuario.getId());
-
-        boolean esDeLaInmobiliaria = propiedad.getInmobiliaria() != null
-                && usuario.getInmobiliaria() != null
-                && propiedad.getInmobiliaria().getId().equals(usuario.getInmobiliaria().getId());
-
-        return esDuenio || esDeLaInmobiliaria;
-    }
 }
