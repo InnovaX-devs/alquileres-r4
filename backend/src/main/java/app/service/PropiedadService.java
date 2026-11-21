@@ -60,10 +60,14 @@ public class PropiedadService {
         propiedad.setRequisitosIngreso(request.getRequisitosIngreso());
         propiedad.setFuente(Fuente.MANUAL);
         propiedad.setUsuario(usuario);
+        // Si el usuario pertenece a una inmobiliaria, la propiedad se publica a su nombre (issue #61).
+        propiedad.setInmobiliaria(usuario.getInmobiliaria());
 
         Propiedad guardada = propiedadRepository.save(propiedad);
-        log.info("Propiedad publicada: id={}, usuarioId={}, fuente={}",
-                guardada.getId(), usuario.getId(), guardada.getFuente());
+        log.info("Propiedad publicada: id={}, usuarioId={}, inmobiliariaId={}, fuente={}",
+                guardada.getId(), usuario.getId(),
+                guardada.getInmobiliaria() != null ? guardada.getInmobiliaria().getId() : null,
+                guardada.getFuente());
 
         try {
             alertaService.evaluarAlertas(guardada);

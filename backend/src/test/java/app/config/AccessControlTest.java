@@ -6,6 +6,7 @@ import app.service.AlertaService;
 import app.service.AuthService;
 import app.service.FavoritoService;
 import app.service.ImagenPropiedadService;
+import app.service.InmobiliariaService;
 import app.service.PropiedadService;
 import app.service.UsuarioService;
 import app.service.VisitaService;
@@ -62,6 +63,7 @@ class AccessControlTest {
     @MockBean AuthService authService;
     @MockBean FavoritoService favoritoService;
     @MockBean ImagenPropiedadService imagenPropiedadService;
+    @MockBean InmobiliariaService inmobiliariaService;
     @MockBean PropiedadService propiedadService;
     @MockBean UsuarioService usuarioService;
     @MockBean VisitaService visitaService;
@@ -127,6 +129,7 @@ class AccessControlTest {
     @CsvSource({
             "POST,/propiedades",
             "POST,/propiedades/1/imagenes",
+            "POST,/inmobiliarias",
             "POST,/alertas",
             "GET,/favoritos",
             "POST,/favoritos/propiedades/1",
@@ -198,6 +201,7 @@ class AccessControlTest {
     @CsvSource({
             "POST,/propiedades",
             "POST,/propiedades/1/imagenes",
+            "POST,/inmobiliarias",
             "POST,/alertas",
             "GET,/favoritos",
             "POST,/visitas",
