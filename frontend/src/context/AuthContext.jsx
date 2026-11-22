@@ -112,6 +112,17 @@ export function AuthProvider({ children }) {
     return datos
   }, [])
 
+  /**
+   * Guarda los datos del perfil con PATCH /usuarios/perfil (#71) y actualiza el usuario de la
+   * sesión con la respuesta (incluye el `verificado` recalculado por el backend).
+   * Solo se mandan los campos a cambiar; si falla lanza un ApiError.
+   */
+  const actualizarPerfil = useCallback(async (cambios) => {
+    const datos = await api.patch('/usuarios/perfil', cambios)
+    setUsuario(datos)
+    return datos
+  }, [])
+
   const valor = useMemo(
     () => ({
       token,
@@ -121,8 +132,9 @@ export function AuthProvider({ children }) {
       login,
       logout,
       recargarUsuario,
+      actualizarPerfil,
     }),
-    [token, usuario, cargando, login, logout, recargarUsuario],
+    [token, usuario, cargando, login, logout, recargarUsuario, actualizarPerfil],
   )
 
   return <AuthContext.Provider value={valor}>{children}</AuthContext.Provider>
