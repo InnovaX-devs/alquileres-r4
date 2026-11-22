@@ -15,6 +15,7 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -50,6 +51,36 @@ class InmobiliariaControllerTest {
                 .andExpect(jsonPath("$.data.id").value(7))
                 .andExpect(jsonPath("$.data.nombre").value("Inmo Centro"))
                 .andExpect(jsonPath("$.data.verificada").value(false));
+    }
+
+    @Test
+    void agregarMiembroSinEmailDevuelve400() throws Exception {
+        mockMvc.perform(post("/inmobiliarias/7/miembros").principal(principal)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(service);
+    }
+
+    @Test
+    void verificacionSinValorDevuelve400() throws Exception {
+        mockMvc.perform(patch("/inmobiliarias/7/verificacion").principal(principal)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(service);
+    }
+
+    @Test
+    void editarConNombreEnBlancoDevuelve400() throws Exception {
+        mockMvc.perform(patch("/inmobiliarias/7").principal(principal)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"nombre\":\"   \"}"))
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(service);
     }
 
     @Test

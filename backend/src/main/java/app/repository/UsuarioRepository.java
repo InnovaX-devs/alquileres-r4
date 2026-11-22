@@ -6,4 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     boolean existsByEmail(String email);
     java.util.Optional<Usuario> findByEmail(String email);
+    java.util.List<Usuario> findByInmobiliariaIdOrderByNombreAsc(Long inmobiliariaId);
 }

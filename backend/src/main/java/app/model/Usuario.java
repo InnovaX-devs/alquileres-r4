@@ -46,6 +46,10 @@ public class Usuario {
     @JoinColumn(name = "inmobiliaria_id")
     private Inmobiliaria inmobiliaria;
 
+    /** Rol dentro de la inmobiliaria; null si no pertenece a ninguna (issue #61). */
+    @Enumerated(EnumType.STRING)
+    private RolInmobiliaria rolInmobiliaria;
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -77,4 +81,17 @@ public class Usuario {
 
     public Inmobiliaria getInmobiliaria() { return inmobiliaria; }
     public void setInmobiliaria(Inmobiliaria inmobiliaria) { this.inmobiliaria = inmobiliaria; }
+
+    public RolInmobiliaria getRolInmobiliaria() { return rolInmobiliaria; }
+    public void setRolInmobiliaria(RolInmobiliaria rolInmobiliaria) { this.rolInmobiliaria = rolInmobiliaria; }
+
+    /** Pertenece a la inmobiliaria con ese id (como administrador o agente). */
+    public boolean esMiembroDe(Long inmobiliariaId) {
+        return inmobiliaria != null && inmobiliariaId != null && inmobiliariaId.equals(inmobiliaria.getId());
+    }
+
+    /** Puede editar los datos de la inmobiliaria y gestionar sus miembros. */
+    public boolean esAdministradorDe(Long inmobiliariaId) {
+        return esMiembroDe(inmobiliariaId) && rolInmobiliaria == RolInmobiliaria.ADMINISTRADOR;
+    }
 }

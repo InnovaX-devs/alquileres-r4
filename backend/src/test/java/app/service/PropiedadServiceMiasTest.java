@@ -57,7 +57,7 @@ class PropiedadServiceMiasTest {
     @Test
     void sinInmobiliariaDevuelveSoloLasDelUsuario() {
         when(usuarioRepository.findByEmail("pub@test.com")).thenReturn(Optional.of(usuario(1L, null)));
-        when(propiedadRepository.findByUsuarioIdOrderByIdDesc(1L)).thenReturn(List.of(propiedad(10L)));
+        when(propiedadRepository.findByUsuarioIdAndInmobiliariaIsNullOrderByIdDesc(1L)).thenReturn(List.of(propiedad(10L)));
 
         List<PropiedadDetalleResponse> mias = service.listarMias("pub@test.com");
 
@@ -79,7 +79,7 @@ class PropiedadServiceMiasTest {
         List<PropiedadDetalleResponse> mias = service.listarMias("pub@test.com");
 
         assertEquals(List.of(11L, 10L), mias.stream().map(PropiedadDetalleResponse::getId).toList());
-        verify(propiedadRepository, never()).findByUsuarioIdOrderByIdDesc(any());
+        verify(propiedadRepository, never()).findByUsuarioIdAndInmobiliariaIsNullOrderByIdDesc(any());
     }
 
     @Test

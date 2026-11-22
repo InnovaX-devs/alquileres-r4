@@ -259,6 +259,27 @@ class AccessControlTest {
         verify(propiedadService, never()).getDetalle(any(), any());
     }
 
+    // ── Roles: verificar inmobiliarias solo ADMIN (issue #61) ────────────────
+
+    @Test
+    void verificarInmobiliariaComoUserDa403() throws Exception {
+        String token = jwtUtil.generateToken("user@test.com", Rol.USER);
+
+        mockMvc.perform(req("PATCH", "/inmobiliarias/1/verificacion").header("Authorization", bearer(token)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void verificarInmobiliariaComoAdminTieneAcceso() throws Exception {
+        String token = jwtUtil.generateToken("admin@test.com", Rol.ADMIN);
+
+        int status = statusTrasSeguridad(req("PATCH", "/inmobiliarias/1/verificacion")
+                .header("Authorization", bearer(token)));
+
+        assertNotEquals(401, status);
+        assertNotEquals(403, status);
+    }
+
     // ── Roles: /fuentes-externas/** solo para ADMIN ──────────────────────────
 
     @Test
