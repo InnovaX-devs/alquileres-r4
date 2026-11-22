@@ -2,7 +2,7 @@ import { useContext } from 'react'
 import { AuthContext } from '../context/authContextValue'
 
 /**
- * const { usuario, token, cargando, estaAutenticado, login, logout, recargarUsuario } = useAuth()
+ * const { usuario, token, cargando, estaAutenticado, login, logout, recargarUsuario, actualizarPerfil } = useAuth()
  */
 export function useAuth() {
   const contexto = useContext(AuthContext)
