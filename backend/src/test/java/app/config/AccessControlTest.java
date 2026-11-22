@@ -6,6 +6,7 @@ import app.service.AlertaService;
 import app.service.AuthService;
 import app.service.FavoritoService;
 import app.service.ImagenPropiedadService;
+import app.service.InmobiliariaService;
 import app.service.PropiedadService;
 import app.service.UsuarioService;
 import app.service.VisitaService;
@@ -62,6 +63,7 @@ class AccessControlTest {
     @MockBean AuthService authService;
     @MockBean FavoritoService favoritoService;
     @MockBean ImagenPropiedadService imagenPropiedadService;
+    @MockBean InmobiliariaService inmobiliariaService;
     @MockBean PropiedadService propiedadService;
     @MockBean UsuarioService usuarioService;
     @MockBean VisitaService visitaService;
@@ -127,6 +129,7 @@ class AccessControlTest {
     @CsvSource({
             "POST,/propiedades",
             "POST,/propiedades/1/imagenes",
+            "POST,/inmobiliarias",
             "POST,/alertas",
             "GET,/favoritos",
             "POST,/favoritos/propiedades/1",
@@ -198,6 +201,7 @@ class AccessControlTest {
     @CsvSource({
             "POST,/propiedades",
             "POST,/propiedades/1/imagenes",
+            "POST,/inmobiliarias",
             "POST,/alertas",
             "GET,/favoritos",
             "POST,/visitas",
@@ -253,6 +257,27 @@ class AccessControlTest {
 
         verify(propiedadService).listarMias("user@test.com");
         verify(propiedadService, never()).getDetalle(any(), any());
+    }
+
+    // ── Roles: verificar inmobiliarias solo ADMIN (issue #61) ────────────────
+
+    @Test
+    void verificarInmobiliariaComoUserDa403() throws Exception {
+        String token = jwtUtil.generateToken("user@test.com", Rol.USER);
+
+        mockMvc.perform(req("PATCH", "/inmobiliarias/1/verificacion").header("Authorization", bearer(token)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void verificarInmobiliariaComoAdminTieneAcceso() throws Exception {
+        String token = jwtUtil.generateToken("admin@test.com", Rol.ADMIN);
+
+        int status = statusTrasSeguridad(req("PATCH", "/inmobiliarias/1/verificacion")
+                .header("Authorization", bearer(token)));
+
+        assertNotEquals(401, status);
+        assertNotEquals(403, status);
     }
 
     // ── Roles: /fuentes-externas/** solo para ADMIN ──────────────────────────

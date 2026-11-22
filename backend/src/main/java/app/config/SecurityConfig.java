@@ -52,6 +52,8 @@ public class SecurityConfig {
                 // /error: el contenedor redirige ahí cuando un controller devuelve 403/404/409...
                 // Si estuviera protegido, esos errores se verían como 401.
                 .requestMatchers("/error").permitAll()
+                // Solo ADMIN: verificar inmobiliarias (issue #61)
+                .requestMatchers(HttpMethod.PATCH, "/inmobiliarias/{id}/verificacion").hasRole("ADMIN")
                 // Solo ADMIN: importación desde fuentes externas
                 .requestMatchers("/fuentes-externas/**").hasRole("ADMIN")
                 // Todo lo demás (incluido POST /propiedades) requiere JWT válido

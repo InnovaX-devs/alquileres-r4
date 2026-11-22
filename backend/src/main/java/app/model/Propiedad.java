@@ -59,22 +59,19 @@ public class Propiedad {
     private List<ImagenPropiedad> imagenes;
 
     /**
-     * Es publicador quien creó la propiedad o quien pertenece a la inmobiliaria que la publica.
-     * Se evalúan ambas condiciones: el contacto que se muestra prioriza a la inmobiliaria,
-     * así que sus miembros también deben poder gestionar la propiedad (solicitudes, imágenes, etc.).
+     * Quién puede gestionar la propiedad (subir imágenes, responder solicitudes de visita, etc.):
+     * - Si se publicó a nombre de una inmobiliaria, es de la inmobiliaria: la gestionan sus miembros
+     *   actuales. Quien la cargó deja de poder gestionarla si lo desvinculan de la inmobiliaria.
+     * - Si se publicó como particular (sin inmobiliaria), la gestiona solo quien la creó.
      */
     public boolean esPublicadaPor(Usuario usuario) {
         if (usuario == null || usuario.getId() == null) return false;
 
-        boolean esDuenio = this.usuario != null
-                && usuario.getId().equals(this.usuario.getId());
+        if (this.inmobiliaria != null) {
+            return usuario.esMiembroDe(this.inmobiliaria.getId());
+        }
 
-        boolean esDeLaInmobiliaria = this.inmobiliaria != null
-                && usuario.getInmobiliaria() != null
-                && this.inmobiliaria.getId() != null
-                && this.inmobiliaria.getId().equals(usuario.getInmobiliaria().getId());
-
-        return esDuenio || esDeLaInmobiliaria;
+        return this.usuario != null && usuario.getId().equals(this.usuario.getId());
     }
 
     // Getters y setters

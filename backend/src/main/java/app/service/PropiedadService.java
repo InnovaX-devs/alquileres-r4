@@ -60,10 +60,14 @@ public class PropiedadService {
         propiedad.setRequisitosIngreso(request.getRequisitosIngreso());
         propiedad.setFuente(Fuente.MANUAL);
         propiedad.setUsuario(usuario);
+        // Si el usuario pertenece a una inmobiliaria, la propiedad se publica a su nombre (issue #61).
+        propiedad.setInmobiliaria(usuario.getInmobiliaria());
 
         Propiedad guardada = propiedadRepository.save(propiedad);
-        log.info("Propiedad publicada: id={}, usuarioId={}, fuente={}",
-                guardada.getId(), usuario.getId(), guardada.getFuente());
+        log.info("Propiedad publicada: id={}, usuarioId={}, inmobiliariaId={}, fuente={}",
+                guardada.getId(), usuario.getId(),
+                guardada.getInmobiliaria() != null ? guardada.getInmobiliaria().getId() : null,
+                guardada.getFuente());
 
         try {
             alertaService.evaluarAlertas(guardada);
@@ -109,8 +113,8 @@ public class PropiedadService {
     // ── Mis propiedades (issue #55) ──────────────────────────────────────────
 
     /**
-     * Propiedades del publicador autenticado: las que creó él y, si pertenece a una inmobiliaria,
-     * las de esa inmobiliaria (mismo criterio de publicador que VisitaService).
+     * Propiedades del publicador autenticado: las que publicó como particular y, si pertenece a una
+     * inmobiliaria, todas las de esa inmobiliaria (mismo criterio que Propiedad#esPublicadaPor).
      */
     @Transactional(readOnly = true)
     public List<PropiedadDetalleResponse> listarMias(String emailUsuario) {
@@ -119,7 +123,7 @@ public class PropiedadService {
 
         List<Propiedad> propiedades = usuario.getInmobiliaria() != null
                 ? propiedadRepository.findDelUsuarioOSuInmobiliaria(usuario.getId(), usuario.getInmobiliaria().getId())
-                : propiedadRepository.findByUsuarioIdOrderByIdDesc(usuario.getId());
+                : propiedadRepository.findByUsuarioIdAndInmobiliariaIsNullOrderByIdDesc(usuario.getId());
 
         // El contacto es el propio publicador: no hace falta mostrarlo.
         return propiedades.stream()
