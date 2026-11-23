@@ -95,6 +95,15 @@ public class VisitaService {
         return guardada;
     }
 
+    /** Solicitudes realizadas por el usuario autenticado (issue #56). */
+    @Transactional(readOnly = true)
+    public List<SolicitudVisita> listarMias(String emailUsuario) {
+        Usuario usuario = usuarioRepository.findByEmail(emailUsuario)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuario no encontrado"));
+
+        return solicitudVisitaRepository.findRealizadasPorUsuario(usuario.getId());
+    }
+
     /**
      * Solicitudes recibidas por el publicador autenticado (issue #57): las de las propiedades que creó
      * y, si pertenece a una inmobiliaria, las de las propiedades de esa inmobiliaria

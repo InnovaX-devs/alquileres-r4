@@ -12,6 +12,15 @@ import java.util.List;
 public interface SolicitudVisitaRepository extends JpaRepository<SolicitudVisita, Long> {
     boolean existsByUsuarioAndPropiedad(Usuario usuario, Propiedad propiedad);
 
+    /** Solicitudes realizadas por el usuario, de la más reciente a la más antigua (issue #56). */
+    @Query("""
+            select s from SolicitudVisita s
+            join fetch s.propiedad
+            join fetch s.usuario u
+            where u.id = :usuarioId
+            order by s.fechaSolicitud desc""")
+    List<SolicitudVisita> findRealizadasPorUsuario(@Param("usuarioId") Long usuarioId);
+
     /** Solicitudes sobre propiedades que el usuario publicó como particular (issue #57). */
     @Query("""
             select s from SolicitudVisita s

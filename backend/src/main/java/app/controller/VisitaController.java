@@ -33,6 +33,16 @@ public class VisitaController {
         return ApiResponse.created("Solicitud de visita creada", SolicitudVisitaResponse.from(solicitud));
     }
 
+    /** Solicitudes de visita realizadas por el usuario autenticado (issue #56). */
+    @GetMapping("/mias")
+    public ResponseEntity<ApiResponse<List<SolicitudVisitaResponse>>> listarMias(Authentication authentication) {
+        List<SolicitudVisitaResponse> mias = visitaService.listarMias(authentication.getName())
+                .stream()
+                .map(SolicitudVisitaResponse::from)
+                .toList();
+        return ApiResponse.ok("Solicitudes obtenidas", mias);
+    }
+
     /** Solicitudes de visita recibidas sobre las propiedades del publicador autenticado (issue #57). */
     @GetMapping("/recibidas")
     public ResponseEntity<ApiResponse<List<SolicitudVisitaRecibidaResponse>>> listarRecibidas(
