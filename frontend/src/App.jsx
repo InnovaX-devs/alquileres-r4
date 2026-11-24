@@ -8,6 +8,7 @@ import Register from './pages/Register'
 import Perfil from './pages/Perfil'
 import PublicarPropiedad from './pages/PublicarPropiedad'
 import MisVisitas from './pages/MisVisitas'
+import VisitasRecibidas from './pages/VisitasRecibidas'
 import NotFound from './pages/NotFound'
 
 export default function App() {
@@ -25,6 +26,7 @@ export default function App() {
           <Route path="/perfil" element={<Perfil />} />
           <Route path="/publicar" element={<PublicarPropiedad />} />
           <Route path="/visitas" element={<MisVisitas />} />
+          <Route path="/visitas/recibidas" element={<VisitasRecibidas />} />
         </Route>
 
         {/* 404 */}
