@@ -28,3 +28,15 @@ export function formatearHabitaciones(habitaciones) {
   if (habitaciones === 0) return 'Monoambiente'
   return `${habitaciones} ${habitaciones === 1 ? 'habitación' : 'habitaciones'}`
 }
+
+/** 12 → "Actualiza cada 12 meses" · 1 → "Actualiza cada mes" · sin dato → null */
+export function formatearPlazoActualizacion(meses) {
+  if (!meses) return null
+  return meses === 1 ? 'Actualiza cada mes' : `Actualiza cada ${meses} meses`
+}
+
+/** true → "Impuestos incluidos" · false → "Impuestos aparte" · sin dato → null */
+export function formatearImpuestos(incluyeImpuestos) {
+  if (incluyeImpuestos === null || incluyeImpuestos === undefined) return null
+  return incluyeImpuestos ? 'Impuestos incluidos' : 'Impuestos aparte'
+}

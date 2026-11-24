@@ -1,6 +1,8 @@
-import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect, useMemo, useState } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
 import TarjetaPropiedad from '../components/TarjetaPropiedad'
+import FiltrosPropiedades from '../components/FiltrosPropiedades'
+import { CLAVES_FILTROS, hayFiltrosActivos } from '../utils/filtros'
 import { listarPropiedades } from '../services/propiedades'
 import { useAuth } from '../hooks/useAuth'
 
@@ -22,36 +24,53 @@ function TarjetaCargando() {
 
 const grilla = 'grid gap-6 sm:grid-cols-2 lg:grid-cols-3'
 
-// Listado público de propiedades (#72)
+// Listado público de propiedades (#72) con filtros (#73).
+// Los filtros viven en la URL (?moneda=ARS&habitacionesMin=2): se mantienen al recargar,
+// funcionan con el botón atrás y una búsqueda se puede compartir con un link.
 export default function Home() {
   const { estaAutenticado } = useAuth()
-  const [propiedades, setPropiedades] = useState([])
-  const [cargando, setCargando] = useState(true)
-  const [error, setError] = useState(null)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const consulta = searchParams.toString()
+
+  const filtros = useMemo(() => {
+    const params = new URLSearchParams(consulta)
+    return Object.fromEntries(CLAVES_FILTROS.map((clave) => [clave, params.get(clave) ?? '']))
+  }, [consulta])
+  const conFiltros = hayFiltrosActivos(filtros)
+
+  // Resultado de la última carga y la búsqueda a la que corresponde
+  const [resultado, setResultado] = useState(null)
   // Cambiarlo vuelve a disparar la carga (botón "Reintentar")
   const [intento, setIntento] = useState(0)
+  const clave = `${consulta}#${intento}`
 
   useEffect(() => {
     let cancelado = false
-    listarPropiedades()
+    listarPropiedades(filtros)
       .then((datos) => {
-        if (!cancelado) setPropiedades(datos ?? [])
+        if (!cancelado) setResultado({ clave, propiedades: datos ?? [], error: null })
       })
       .catch((e) => {
-        if (!cancelado) setError(e.mensaje || 'No se pudieron cargar las propiedades')
-      })
-      .finally(() => {
-        if (!cancelado) setCargando(false)
+        if (!cancelado) setResultado({ clave, propiedades: [], error: e.mensaje || 'No se pudieron cargar las propiedades' })
       })
     return () => {
       cancelado = true
     }
-  }, [intento])
+  }, [filtros, clave])
 
-  const reintentar = () => {
-    setError(null)
-    setCargando(true)
-    setIntento((n) => n + 1)
+  const cargando = !resultado || resultado.clave !== clave
+  const propiedades = cargando ? [] : resultado.propiedades
+  const error = cargando ? null : resultado.error
+
+  const reintentar = () => setIntento((n) => n + 1)
+
+  const aplicarFiltros = (nuevos) => {
+    const params = new URLSearchParams()
+    for (const c of CLAVES_FILTROS) {
+      const valor = String(nuevos[c] ?? '').trim()
+      if (valor !== '') params.set(c, valor)
+    }
+    setSearchParams(params)
   }
 
   let contenido
@@ -72,6 +91,19 @@ export default function Home() {
           className="mt-4 px-4 py-2 rounded-md bg-blue-600 text-white font-medium hover:bg-blue-700"
         >
           Reintentar
+        </button>
+      </div>
+    )
+  } else if (propiedades.length === 0 && conFiltros) {
+    contenido = (
+      <div className="rounded-lg border border-dashed border-gray-300 bg-white py-16 text-center">
+        <p className="text-lg font-medium text-gray-900">No hay propiedades que coincidan con tu búsqueda</p>
+        <p className="mt-1 text-sm text-gray-500">Probá con otros filtros o limpialos para ver todas.</p>
+        <button
+          onClick={() => aplicarFiltros({})}
+          className="mt-4 inline-block px-4 py-2 rounded-md bg-blue-600 text-white text-sm font-medium hover:bg-blue-700"
+        >
+          Ver todas las propiedades
         </button>
       </div>
     )
@@ -110,6 +142,7 @@ export default function Home() {
           </p>
         )}
       </div>
+      <FiltrosPropiedades valores={filtros} onAplicar={aplicarFiltros} />
       {contenido}
     </div>
   )
