@@ -106,7 +106,7 @@ export default function Favoritos() {
       <>
         {propiedades.length > 0 && (
           <Seccion titulo="Propiedades" cantidad={propiedades.length}>
-            <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {propiedades.map((f) => (
                 <li key={f.favoritoId}>
                   <TarjetaPropiedad propiedad={aTarjeta(f)} />
@@ -117,7 +117,7 @@ export default function Favoritos() {
         )}
         {inmobiliarias.length > 0 && (
           <Seccion titulo="Inmobiliarias" cantidad={inmobiliarias.length}>
-            <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {inmobiliarias.map((f) => (
                 <TarjetaInmobiliaria key={f.favoritoId} favorito={f} />
               ))}

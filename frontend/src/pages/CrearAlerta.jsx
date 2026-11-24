@@ -131,7 +131,7 @@ export default function CrearAlerta() {
             className="space-y-4 rounded-lg border border-gray-200 bg-white p-6 shadow-sm"
           >
             <fieldset disabled={enviando} className="space-y-4">
-              <div className="grid gap-4 sm:grid-cols-3">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                 <div>
                   <label htmlFor="moneda" className="block text-sm font-medium text-gray-700">
                     Moneda
@@ -175,7 +175,7 @@ export default function CrearAlerta() {
                 />
               </div>
 
-              <div className="grid gap-4 sm:grid-cols-3">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                 <CampoFormulario
                   label="Habitaciones mínimas"
                   type="number"

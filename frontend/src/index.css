@@ -1,1 +1,9 @@
 @import "tailwindcss";
+/* Responsive (#89): las palabras muy largas sin espacios (emails, links) se cortan cuando no
+   entran en la línea, en lugar de salirse de su caja y provocar scroll horizontal en celulares.
+   (break-word y no anywhere: así los botones y etiquetas no se aplastan letra por letra) */
+@layer base {
+  body {
+    overflow-wrap: break-word;
+  }
+}

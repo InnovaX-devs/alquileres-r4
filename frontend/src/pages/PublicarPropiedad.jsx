@@ -234,7 +234,7 @@ export default function PublicarPropiedad() {
           </Seccion>
 
           <Seccion titulo="Precio">
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <CampoFormulario
                 label="Precio mensual"
                 type="number"
@@ -273,7 +273,7 @@ export default function PublicarPropiedad() {
           </Seccion>
 
           <Seccion titulo="Ubicación">
-            <div className="grid gap-4 sm:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
               <div className="sm:col-span-2">
                 <CampoFormulario label="Calle" autoComplete="address-line1" placeholder="Ej: Sobremonte" {...campo('calle')} />
               </div>
@@ -283,7 +283,7 @@ export default function PublicarPropiedad() {
           </Seccion>
 
           <Seccion titulo="Características">
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <CampoFormulario
                 label={opcional('Habitaciones')}
                 type="number"
