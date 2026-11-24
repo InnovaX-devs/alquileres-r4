@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 
-// Estados comunes de los listados de visitas: cargando, error con reintento y vacío
+// Estados comunes de los listados (visitas, mis propiedades): cargando, error con reintento y vacío
 export function Cargando({ etiqueta }) {
   return (
     <ul role="status" aria-label={etiqueta} className="space-y-3">
