@@ -17,3 +17,8 @@ export function listarPropiedades(filtros = {}) {
   const query = params.toString()
   return api.get(query ? `/propiedades?${query}` : '/propiedades')
 }
+
+/** Detalle de una propiedad: GET /propiedades/{id} (#74). Con sesión verificada incluye el contacto (#75). */
+export function obtenerPropiedad(id) {
+  return api.get(`/propiedades/${encodeURIComponent(id)}`)
+}
