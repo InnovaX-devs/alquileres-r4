@@ -88,6 +88,34 @@ public class FavoritoService {
         }
     }
 
+    @Transactional
+    public void quitarPropiedadFavorita(Long propiedadId, String emailUsuario) {
+        Usuario usuario = usuarioRepository.findByEmail(emailUsuario)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuario no encontrado"));
+
+        Propiedad propiedad = propiedadRepository.findById(propiedadId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Propiedad no encontrada"));
+
+        FavoritoPropiedad favorito = favoritoPropiedadRepository.findByUsuarioAndPropiedad(usuario, propiedad)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "La propiedad no está en tus favoritos"));
+
+        favoritoPropiedadRepository.delete(favorito);
+    }
+
+    @Transactional
+    public void quitarInmobiliariaFavorita(Long inmobiliariaId, String emailUsuario) {
+        Usuario usuario = usuarioRepository.findByEmail(emailUsuario)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuario no encontrado"));
+
+        Inmobiliaria inmobiliaria = inmobiliariaRepository.findById(inmobiliariaId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Inmobiliaria no encontrada"));
+
+        FavoritoInmobiliaria favorito = favoritoInmobiliariaRepository.findByUsuarioAndInmobiliaria(usuario, inmobiliaria)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "La inmobiliaria no está en tus favoritos"));
+
+        favoritoInmobiliariaRepository.delete(favorito);
+    }
+
     @Transactional(readOnly = true)
     public FavoritosResponse listarFavoritos(String emailUsuario) {
         Usuario usuario = usuarioRepository.findByEmail(emailUsuario)

@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
+import BotonFavorito from './BotonFavorito'
 import { datosFaltantesParaVerificar, unirConY } from '../utils/perfil'
 
 function Caja({ children }) {
@@ -47,7 +48,9 @@ const ICONO_TELEFONO =
  * Sección de contacto del detalle (#75). El backend solo manda `contacto` a usuarios
  * con sesión y perfil verificado; si llega null, se explica qué le falta al usuario.
  *
- * @param {object|null} props.contacto  { nombre, email, telefono, tipo: 'USUARIO' | 'INMOBILIARIA' }
+ * Si publica una inmobiliaria, se la puede guardar en favoritos (#83).
+ *
+ * @param {object|null} props.contacto  { nombre, email, telefono, tipo: 'USUARIO' | 'INMOBILIARIA', inmobiliariaId }
  */
 export default function ContactoPublicador({ contacto }) {
   const { estaAutenticado, usuario, cargando } = useAuth()
@@ -56,10 +59,17 @@ export default function ContactoPublicador({ contacto }) {
   if (contacto) {
     return (
       <Caja>
-        <p className="font-medium text-gray-900">{contacto.nombre}</p>
-        <p className="text-xs text-gray-500">
-          {contacto.tipo === 'INMOBILIARIA' ? 'Inmobiliaria' : 'Particular'}
-        </p>
+        <div className="flex items-start justify-between gap-2">
+          <div>
+            <p className="font-medium text-gray-900">{contacto.nombre}</p>
+            <p className="text-xs text-gray-500">
+              {contacto.tipo === 'INMOBILIARIA' ? 'Inmobiliaria' : 'Particular'}
+            </p>
+          </div>
+          {contacto.tipo === 'INMOBILIARIA' && contacto.inmobiliariaId && (
+            <BotonFavorito tipo="inmobiliaria" id={contacto.inmobiliariaId} className="border border-gray-200" />
+          )}
+        </div>
         <ul className="mt-3 space-y-2">
           {contacto.email && (
             <Dato icono={ICONO_EMAIL}>

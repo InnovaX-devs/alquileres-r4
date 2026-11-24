@@ -5,6 +5,7 @@ import { obtenerPropiedad } from '../services/propiedades'
 import GaleriaImagenes from '../components/GaleriaImagenes'
 import ContactoPublicador from '../components/ContactoPublicador'
 import SolicitarVisita from '../components/SolicitarVisita'
+import BotonFavorito from '../components/BotonFavorito'
 import {
   formatearHabitaciones,
   formatearImpuestos,
@@ -150,7 +151,10 @@ export default function PropiedadDetalle() {
           <GaleriaImagenes key={propiedad.id} imagenes={imagenes} titulo={titulo} />
 
           <header className="mt-6">
-            <p className="text-3xl font-bold text-gray-900">{formatearPrecio(precio, moneda)}</p>
+            <div className="flex items-start justify-between gap-4">
+              <p className="text-3xl font-bold text-gray-900">{formatearPrecio(precio, moneda)}</p>
+              <BotonFavorito tipo="propiedad" id={propiedad.id} className="border border-gray-200" />
+            </div>
             {expensas > 0 && (
               <p className="mt-1 text-sm text-gray-500">+ {formatearPrecio(expensas, moneda)} de expensas</p>
             )}
