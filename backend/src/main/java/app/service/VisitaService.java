@@ -151,7 +151,46 @@ public class VisitaService {
         log.info("Estado de solicitud actualizado: id={}, {} -> {}, usuarioId={}",
                 solicitudId, anterior, actualizada.getEstado(), usuario.getId());
 
+        if (anterior != actualizada.getEstado()) {
+            notificarSolicitante(actualizada);
+        }
+
         return actualizada;
+    }
+
+    /**
+     * Email al solicitante con la respuesta del publicador. Si falla el envío, el cambio de estado
+     * ya quedó guardado: solo se registra el error.
+     */
+    private void notificarSolicitante(SolicitudVisita solicitud) {
+        Usuario solicitante = solicitud.getUsuario();
+        if (solicitante == null || solicitante.getEmail() == null || solicitante.getEmail().isBlank()) {
+            log.warn("No se notificó la respuesta de la visita: el solicitante no tiene email. solicitudId={}",
+                    solicitud.getId());
+            return;
+        }
+
+        Propiedad propiedad = solicitud.getPropiedad();
+        String direccion = String.join(" ",
+                propiedad.getCalle() != null ? propiedad.getCalle() : "",
+                propiedad.getAltura() != null ? propiedad.getAltura() : "").trim();
+        if (propiedad.getPiso() != null && !propiedad.getPiso().isBlank()) {
+            direccion += ", piso " + propiedad.getPiso();
+        }
+
+        try {
+            emailService.enviarRespuestaVisita(
+                    solicitante.getEmail(),
+                    solicitante.getNombre(),
+                    propiedad.getTitulo(),
+                    direccion.isBlank() ? "No informada" : direccion,
+                    solicitud.getFechaPropuesta(),
+                    solicitud.getEstado() == EstadoSolicitud.ACEPTADA);
+            log.info("Respuesta de visita notificada al solicitante: solicitudId={}, estado={}",
+                    solicitud.getId(), solicitud.getEstado());
+        } catch (Exception e) {
+            log.error("Error al enviar el email de respuesta de visita: solicitudId={}", solicitud.getId(), e);
+        }
     }
 
 }

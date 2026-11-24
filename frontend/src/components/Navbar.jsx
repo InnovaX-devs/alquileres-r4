@@ -1,5 +1,6 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
+import { useVisitasPendientes } from '../hooks/useVisitasPendientes'
 
 const linkClass = ({ isActive }) =>
   `px-3 py-2 rounded-md text-sm font-medium ${
@@ -9,6 +10,7 @@ const linkClass = ({ isActive }) =>
 export default function Navbar() {
   const navigate = useNavigate()
   const { estaAutenticado, usuario, logout } = useAuth()
+  const pendientes = useVisitasPendientes()
 
   const cerrarSesion = () => {
     logout()
@@ -29,7 +31,23 @@ export default function Navbar() {
             <>
               <NavLink to="/publicar" className={linkClass}>Publicar</NavLink>
               <NavLink to="/mis-propiedades" className={linkClass}>Mis propiedades</NavLink>
-              <NavLink to="/visitas" className={linkClass}>Visitas</NavLink>
+              <NavLink
+                to="/visitas"
+                className={linkClass}
+                aria-label={pendientes > 0 ? `Visitas, ${pendientes} ${pendientes === 1 ? "pendiente" : "pendientes"}` : undefined}
+              >
+                <span className="inline-flex items-center gap-1.5">
+                  Visitas
+                  {pendientes > 0 && (
+                    <span
+                      aria-hidden="true"
+                      className="min-w-5 rounded-full bg-red-600 px-1.5 text-center text-xs font-semibold leading-5 text-white"
+                    >
+                      {pendientes > 9 ? '9+' : pendientes}
+                    </span>
+                  )}
+                </span>
+              </NavLink>
               <NavLink to="/perfil" className={linkClass}>
                 {usuario?.nombre || 'Mi perfil'}
               </NavLink>
