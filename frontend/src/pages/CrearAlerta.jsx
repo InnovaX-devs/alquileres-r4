@@ -37,7 +37,7 @@ function AlertaCreada({ alerta, email, onCrearOtra }) {
       </p>
       <ul className="mt-3 flex flex-wrap justify-center gap-2">
         {describirAlerta(alerta).map((criterio) => (
-          <li key={criterio} className="rounded-full bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700">
+          <li key={criterio} className="max-w-full rounded-full bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700">
             {criterio}
           </li>
         ))}
@@ -50,6 +50,12 @@ function AlertaCreada({ alerta, email, onCrearOtra }) {
         >
           Crear otra alerta
         </button>
+        <Link
+          to="/alertas"
+          className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+        >
+          Ver mis alertas
+        </Link>
         <Link to="/" className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">
           Ver propiedades
         </Link>

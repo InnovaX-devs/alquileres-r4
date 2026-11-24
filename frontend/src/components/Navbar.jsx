@@ -35,7 +35,7 @@ function Links({ claseLink, claseSalir, estaAutenticado, usuario, pendientes, on
           <NavLink to="/publicar" className={claseLink}>Publicar</NavLink>
           <NavLink to="/mis-propiedades" className={claseLink}>Mis propiedades</NavLink>
           <NavLink to="/favoritos" className={claseLink}>Favoritos</NavLink>
-          <NavLink to="/alertas/nueva" className={claseLink}>Alertas</NavLink>
+          <NavLink to="/alertas" className={claseLink}>Alertas</NavLink>
           <NavLink
             to="/visitas"
             className={claseLink}
