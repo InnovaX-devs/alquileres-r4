@@ -113,6 +113,7 @@ class PropiedadServiceContactoTest {
         assertNotNull(contacto);
         assertEquals("INMOBILIARIA", contacto.getTipo());
         assertEquals("contacto@centro.com", contacto.getEmail());
+        assertEquals(5L, contacto.getInmobiliariaId(), "el front lo usa para el botón de favorito (#83)");
     }
 
     @Test
