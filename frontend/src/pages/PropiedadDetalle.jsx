@@ -4,6 +4,7 @@ import { useAuth } from '../hooks/useAuth'
 import { obtenerPropiedad } from '../services/propiedades'
 import GaleriaImagenes from '../components/GaleriaImagenes'
 import ContactoPublicador from '../components/ContactoPublicador'
+import SolicitarVisita from '../components/SolicitarVisita'
 import {
   formatearHabitaciones,
   formatearImpuestos,
@@ -169,7 +170,8 @@ export default function PropiedadDetalle() {
           {requisitosIngreso?.trim() && <Bloque titulo="Requisitos de ingreso">{requisitosIngreso}</Bloque>}
         </div>
 
-        <aside className="lg:sticky lg:top-6 lg:self-start">
+        <aside className="space-y-4 lg:sticky lg:top-6 lg:self-start">
+          <SolicitarVisita propiedadId={propiedad.id} tituloPropiedad={titulo} />
           <ContactoPublicador contacto={contacto} />
         </aside>
       </div>
