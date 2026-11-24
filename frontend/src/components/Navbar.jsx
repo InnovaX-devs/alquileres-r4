@@ -31,6 +31,7 @@ export default function Navbar() {
             <>
               <NavLink to="/publicar" className={linkClass}>Publicar</NavLink>
               <NavLink to="/mis-propiedades" className={linkClass}>Mis propiedades</NavLink>
+              <NavLink to="/favoritos" className={linkClass}>Favoritos</NavLink>
               <NavLink
                 to="/visitas"
                 className={linkClass}
