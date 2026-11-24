@@ -35,3 +35,8 @@ release.properties
 
 # Secrets
 **/src/main/resources/application.properties
+
+# Variables de entorno locales (pueden tener datos sensibles)
+.env
+.env.*
+!.env.example
