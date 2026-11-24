@@ -18,6 +18,14 @@ export function listarPropiedades(filtros = {}) {
   return api.get(query ? `/propiedades?${query}` : '/propiedades')
 }
 
+/**
+ * Publicar una propiedad: POST /propiedades (#76). Requiere sesión.
+ * Devuelve la propiedad creada (con su `id`). Ver armarPropiedadRequest en utils/formularioPropiedad.
+ */
+export function publicarPropiedad(propiedad) {
+  return api.post('/propiedades', propiedad)
+}
+
 /** Detalle de una propiedad: GET /propiedades/{id} (#74). Con sesión verificada incluye el contacto (#75). */
 export function obtenerPropiedad(id) {
   return api.get(`/propiedades/${encodeURIComponent(id)}`)
