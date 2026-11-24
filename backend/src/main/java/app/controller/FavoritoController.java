@@ -43,4 +43,22 @@ public class FavoritoController {
         FavoritoInmobiliaria favorito = favoritoService.guardarInmobiliariaFavorita(inmobiliariaId, authentication.getName());
         return ApiResponse.created("Inmobiliaria guardada en favoritos", FavoritoInmobiliariaResponse.from(favorito));
     }
+
+    @DeleteMapping("/propiedades/{propiedadId}")
+    public ResponseEntity<ApiResponse<Void>> quitarPropiedadFavorita(
+            @PathVariable Long propiedadId,
+            Authentication authentication
+    ) {
+        favoritoService.quitarPropiedadFavorita(propiedadId, authentication.getName());
+        return ApiResponse.ok("Propiedad quitada de favoritos", null);
+    }
+
+    @DeleteMapping("/inmobiliarias/{inmobiliariaId}")
+    public ResponseEntity<ApiResponse<Void>> quitarInmobiliariaFavorita(
+            @PathVariable Long inmobiliariaId,
+            Authentication authentication
+    ) {
+        favoritoService.quitarInmobiliariaFavorita(inmobiliariaId, authentication.getName());
+        return ApiResponse.ok("Inmobiliaria quitada de favoritos", null);
+    }
 }

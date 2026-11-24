@@ -8,6 +8,7 @@ public class ContactoPublicadorResponse {
     private String email;
     private String telefono;
     private String tipo; // "USUARIO" o "INMOBILIARIA"
+    private Long inmobiliariaId; // solo si tipo es INMOBILIARIA (para el botón de favorito, #83)
 
     public static ContactoPublicadorResponse fromUsuario(Usuario usuario) {
         ContactoPublicadorResponse dto = new ContactoPublicadorResponse();
@@ -24,6 +25,7 @@ public class ContactoPublicadorResponse {
         dto.email = inmobiliaria.getEmail();
         dto.telefono = inmobiliaria.getTelefono();
         dto.tipo = "INMOBILIARIA";
+        dto.inmobiliariaId = inmobiliaria.getId();
         return dto;
     }
 
@@ -31,4 +33,5 @@ public class ContactoPublicadorResponse {
     public String getEmail() { return email; }
     public String getTelefono() { return telefono; }
     public String getTipo() { return tipo; }
+    public Long getInmobiliariaId() { return inmobiliariaId; }
 }
