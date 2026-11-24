@@ -1,7 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import CampoFormulario from '../components/CampoFormulario'
-import { publicarPropiedad } from '../services/propiedades'
+import SelectorImagenes from '../components/SelectorImagenes'
+import { publicarPropiedad, subirImagenPropiedad } from '../services/propiedades'
+import { liberarPreview } from '../utils/imagenes'
 import {
   MONEDAS,
   OPCIONES_IMPUESTOS,
@@ -15,7 +17,7 @@ import {
 const ORDEN_CAMPOS = Object.keys(PROPIEDAD_VACIA)
 
 const claseControl = (error) =>
-  `mt-1 block w-full rounded-md border bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 ${
+  `mt-1 block w-full rounded-md border bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 disabled:bg-gray-100 disabled:text-gray-500 ${
     error ? 'border-red-400 focus:ring-red-200' : 'border-gray-300 focus:border-blue-500 focus:ring-blue-200'
   }`
 
@@ -98,7 +100,17 @@ function enfocarPrimerError(errores) {
   if (campo) document.getElementById(campo)?.focus()
 }
 
-// Formulario de publicar propiedad (#76). Consume POST /propiedades y redirige al detalle.
+/**
+ * Formulario de publicar propiedad (#76) con subida de imágenes (#77).
+ *
+ * 1. POST /propiedades crea la propiedad.
+ * 2. Las fotos se suben de a una con POST /propiedades/{id}/imagenes, en el orden elegido
+ *    (el backend asigna el orden según llegan).
+ * 3. Si todo sale bien, redirige al detalle.
+ *
+ * Si falla una foto se corta ahí, para no desordenar las siguientes: la propiedad ya quedó creada,
+ * así que el formulario se bloquea y se puede reintentar desde esa foto o ir igual al detalle.
+ */
 export default function PublicarPropiedad() {
   const navigate = useNavigate()
 
@@ -106,6 +118,44 @@ export default function PublicarPropiedad() {
   const [errores, setErrores] = useState({})
   const [errorGeneral, setErrorGeneral] = useState(null)
   const [enviando, setEnviando] = useState(false)
+
+  const [imagenes, setImagenes] = useState([])
+  const [estadosImagenes, setEstadosImagenes] = useState({}) // { [id]: 'subiendo' | 'subida' | 'error' }
+  const [propiedadId, setPropiedadId] = useState(null) // ya creada: falta terminar de subir fotos
+  const [errorImagenes, setErrorImagenes] = useState(null)
+
+  // Al salir de la pantalla se liberan las vistas previas (URLs locales de los archivos)
+  const imagenesRef = useRef(imagenes)
+  useEffect(() => {
+    imagenesRef.current = imagenes
+  }, [imagenes])
+  useEffect(() => () => imagenesRef.current.forEach(liberarPreview), [])
+
+  const irAlDetalle = (id, imagenesSinSubir = 0) =>
+    navigate(`/propiedades/${id}`, { replace: true, state: { publicada: true, imagenesSinSubir } })
+
+  /** Sube en orden las fotos que faltan. Devuelve true si se subieron todas. */
+  const subirImagenes = async (id) => {
+    const estados = { ...estadosImagenes }
+    for (const imagen of imagenes) {
+      if (estados[imagen.id] === 'subida') continue
+      estados[imagen.id] = 'subiendo'
+      setEstadosImagenes({ ...estados })
+      try {
+        await subirImagenPropiedad(id, imagen.archivo)
+        estados[imagen.id] = 'subida'
+        setEstadosImagenes({ ...estados })
+      } catch (e) {
+        estados[imagen.id] = 'error'
+        setEstadosImagenes({ ...estados })
+        setErrorImagenes(`No se pudo subir ${imagen.archivo.name}: ${e.mensaje || 'error desconocido'}`)
+        return false
+      }
+    }
+    return true
+  }
+
+  const imagenesSinSubir = imagenes.filter((imagen) => estadosImagenes[imagen.id] !== 'subida').length
 
   const cambiar = (campo) => (event) => {
     setDatos((anteriores) => ({ ...anteriores, [campo]: event.target.value }))
@@ -118,6 +168,15 @@ export default function PublicarPropiedad() {
   const enviar = async (event) => {
     event.preventDefault()
     setErrorGeneral(null)
+    setErrorImagenes(null)
+
+    // La propiedad ya existe: solo se reintenta la subida de las fotos que faltan
+    if (propiedadId) {
+      setEnviando(true)
+      if (await subirImagenes(propiedadId)) irAlDetalle(propiedadId)
+      else setEnviando(false)
+      return
+    }
 
     const encontrados = validarPropiedad(datos)
     setErrores(encontrados)
@@ -127,9 +186,9 @@ export default function PublicarPropiedad() {
     }
 
     setEnviando(true)
+    let creada
     try {
-      const creada = await publicarPropiedad(armarPropiedadRequest(datos))
-      navigate(`/propiedades/${creada.id}`, { replace: true, state: { publicada: true } })
+      creada = await publicarPropiedad(armarPropiedadRequest(datos))
     } catch (e) {
       // 401: el cliente HTTP ya cierra la sesión y manda al login (SesionExpirada.jsx)
       const { porCampo, otros } = erroresDelBackend(e.detalles)
@@ -139,7 +198,19 @@ export default function PublicarPropiedad() {
         setErrorGeneral(otros.length > 0 ? otros.join('. ') : e.mensaje || 'No se pudo publicar la propiedad')
       }
       setEnviando(false)
+      return
     }
+
+    setPropiedadId(creada.id)
+    if (await subirImagenes(creada.id)) irAlDetalle(creada.id)
+    else setEnviando(false)
+  }
+
+  const textoBoton = () => {
+    if (!enviando) return propiedadId ? 'Reintentar subida' : 'Publicar propiedad'
+    if (!propiedadId) return 'Publicando...'
+    const subidas = imagenes.length - imagenesSinSubir
+    return `Subiendo fotos (${Math.min(subidas + 1, imagenes.length)}/${imagenes.length})...`
   }
 
   return (
@@ -150,93 +221,115 @@ export default function PublicarPropiedad() {
       </p>
 
       <form onSubmit={enviar} noValidate className="mt-6 space-y-6">
-        <Seccion titulo="Datos principales">
-          <CampoFormulario label="Título" placeholder="Ej: Departamento 2 ambientes con balcón" {...campo('titulo')} />
-          <CampoTexto
-            label="Descripción"
-            opcional
-            placeholder="Contá cómo es la propiedad, qué tiene cerca, estado, etc."
-            {...campo('descripcion')}
-          />
-        </Seccion>
-
-        <Seccion titulo="Precio">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <CampoFormulario
-              label="Precio mensual"
-              type="number"
-              inputMode="decimal"
-              min="0"
-              step="0.01"
-              placeholder="Ej: 350000"
-              {...campo('precio')}
-            />
-            <CampoSelect label="Moneda" opciones={MONEDAS} {...campo('moneda')} />
-            <CampoFormulario
-              label={opcional('Expensas')}
-              type="number"
-              inputMode="decimal"
-              min="0"
-              step="0.01"
-              placeholder="En la misma moneda del precio"
-              {...campo('expensas')}
-            />
-            <CampoSelect
-              label="¿El precio incluye impuestos?"
+        {/* Con la propiedad ya creada, sus datos no se pueden cambiar desde acá */}
+        <fieldset disabled={enviando || propiedadId !== null} className="space-y-6">
+          <Seccion titulo="Datos principales">
+            <CampoFormulario label="Título" placeholder="Ej: Departamento 2 ambientes con balcón" {...campo('titulo')} />
+            <CampoTexto
+              label="Descripción"
               opcional
-              opciones={OPCIONES_IMPUESTOS}
-              {...campo('incluyeImpuestos')}
+              placeholder="Contá cómo es la propiedad, qué tiene cerca, estado, etc."
+              {...campo('descripcion')}
             />
-            <CampoFormulario
-              label={opcional('Actualización del precio (meses)')}
-              type="number"
-              inputMode="numeric"
-              min="1"
-              step="1"
-              placeholder="Ej: 3"
-              {...campo('plazoActualizacionMeses')}
-            />
-          </div>
-        </Seccion>
+          </Seccion>
 
-        <Seccion titulo="Ubicación">
-          <div className="grid gap-4 sm:grid-cols-3">
-            <div className="sm:col-span-2">
-              <CampoFormulario label="Calle" autoComplete="address-line1" placeholder="Ej: Sobremonte" {...campo('calle')} />
+          <Seccion titulo="Precio">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <CampoFormulario
+                label="Precio mensual"
+                type="number"
+                inputMode="decimal"
+                min="0"
+                step="0.01"
+                placeholder="Ej: 350000"
+                {...campo('precio')}
+              />
+              <CampoSelect label="Moneda" opciones={MONEDAS} {...campo('moneda')} />
+              <CampoFormulario
+                label={opcional('Expensas')}
+                type="number"
+                inputMode="decimal"
+                min="0"
+                step="0.01"
+                placeholder="En la misma moneda del precio"
+                {...campo('expensas')}
+              />
+              <CampoSelect
+                label="¿El precio incluye impuestos?"
+                opcional
+                opciones={OPCIONES_IMPUESTOS}
+                {...campo('incluyeImpuestos')}
+              />
+              <CampoFormulario
+                label={opcional('Actualización del precio (meses)')}
+                type="number"
+                inputMode="numeric"
+                min="1"
+                step="1"
+                placeholder="Ej: 3"
+                {...campo('plazoActualizacionMeses')}
+              />
             </div>
-            <CampoFormulario label="Altura" placeholder="Ej: 1234" {...campo('altura')} />
-            <CampoFormulario label={opcional('Piso / depto')} placeholder="Ej: 5B" {...campo('piso')} />
-          </div>
-        </Seccion>
+          </Seccion>
 
-        <Seccion titulo="Características">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <CampoFormulario
-              label={opcional('Habitaciones')}
-              type="number"
-              inputMode="numeric"
-              min="0"
-              step="1"
-              placeholder="0 = monoambiente"
-              {...campo('habitaciones')}
+          <Seccion titulo="Ubicación">
+            <div className="grid gap-4 sm:grid-cols-3">
+              <div className="sm:col-span-2">
+                <CampoFormulario label="Calle" autoComplete="address-line1" placeholder="Ej: Sobremonte" {...campo('calle')} />
+              </div>
+              <CampoFormulario label="Altura" placeholder="Ej: 1234" {...campo('altura')} />
+              <CampoFormulario label={opcional('Piso / depto')} placeholder="Ej: 5B" {...campo('piso')} />
+            </div>
+          </Seccion>
+
+          <Seccion titulo="Características">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <CampoFormulario
+                label={opcional('Habitaciones')}
+                type="number"
+                inputMode="numeric"
+                min="0"
+                step="1"
+                placeholder="0 = monoambiente"
+                {...campo('habitaciones')}
+              />
+              <CampoFormulario
+                label={opcional('Metros cuadrados')}
+                type="number"
+                inputMode="numeric"
+                min="1"
+                step="1"
+                placeholder="Ej: 45"
+                {...campo('metrosCuadrados')}
+              />
+            </div>
+            <CampoTexto
+              label="Requisitos de ingreso"
+              opcional
+              placeholder="Ej: garantía propietaria, recibo de sueldo, depósito"
+              {...campo('requisitosIngreso')}
             />
-            <CampoFormulario
-              label={opcional('Metros cuadrados')}
-              type="number"
-              inputMode="numeric"
-              min="1"
-              step="1"
-              placeholder="Ej: 45"
-              {...campo('metrosCuadrados')}
-            />
-          </div>
-          <CampoTexto
-            label="Requisitos de ingreso"
-            opcional
-            placeholder="Ej: garantía propietaria, recibo de sueldo, depósito"
-            {...campo('requisitosIngreso')}
+          </Seccion>
+        </fieldset>
+
+        <Seccion titulo="Fotos">
+          <SelectorImagenes
+            imagenes={imagenes}
+            onChange={setImagenes}
+            estados={estadosImagenes}
+            bloqueado={enviando || propiedadId !== null}
           />
         </Seccion>
+
+        {errorImagenes && (
+          <div role="alert" className="rounded-md bg-amber-50 px-4 py-3 text-sm text-amber-800">
+            <p className="font-medium">La propiedad se publicó, pero no se pudieron subir todas las fotos.</p>
+            <p className="mt-1">{errorImagenes}</p>
+            <p className="mt-1">
+              Podés reintentar desde esa foto o ir a la propiedad sin las {imagenesSinSubir} que faltan.
+            </p>
+          </div>
+        )}
 
         {errorGeneral && (
           <p role="alert" className="rounded-md bg-red-50 px-4 py-3 text-sm text-red-700">
@@ -245,18 +338,29 @@ export default function PublicarPropiedad() {
         )}
 
         <div className="flex justify-end gap-2">
-          <Link
-            to="/"
-            className="rounded-md px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
-          >
-            Cancelar
-          </Link>
+          {propiedadId ? (
+            <button
+              type="button"
+              onClick={() => irAlDetalle(propiedadId, imagenesSinSubir)}
+              disabled={enviando}
+              className="rounded-md px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 disabled:opacity-60"
+            >
+              Ir a la propiedad
+            </button>
+          ) : (
+            <Link
+              to="/"
+              className="rounded-md px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
+            >
+              Cancelar
+            </Link>
+          )}
           <button
             type="submit"
             disabled={enviando}
             className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60"
           >
-            {enviando ? 'Publicando...' : 'Publicar propiedad'}
+            {textoBoton()}
           </button>
         </div>
       </form>

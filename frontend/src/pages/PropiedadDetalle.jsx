@@ -66,7 +66,9 @@ function Bloque({ titulo, children }) {
 export default function PropiedadDetalle() {
   const { id } = useParams()
   // Viene del formulario de publicar (#76): se muestra un aviso de éxito
-  const recienPublicada = useLocation().state?.publicada === true
+  const { state } = useLocation()
+  const recienPublicada = state?.publicada === true
+  const imagenesSinSubir = state?.imagenesSinSubir ?? 0 // fotos que fallaron al publicar (#77)
   // El contacto depende de quién mira: se vuelve a pedir al iniciar o cerrar sesión
   const { token } = useAuth()
 
@@ -149,6 +151,8 @@ export default function PropiedadDetalle() {
       {recienPublicada && (
         <p role="status" className="mt-4 rounded-md bg-green-50 px-4 py-3 text-sm text-green-800">
           ¡Listo! Tu propiedad ya está publicada.
+          {imagenesSinSubir > 0 &&
+            ` Quedaron ${imagenesSinSubir} ${imagenesSinSubir === 1 ? 'foto' : 'fotos'} sin subir.`}
         </p>
       )}
 
