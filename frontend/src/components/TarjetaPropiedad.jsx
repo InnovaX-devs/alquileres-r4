@@ -19,8 +19,9 @@ function SinFoto() {
  * Toda la tarjeta es un link al detalle de la propiedad; el corazón de favorito (#82) va encima.
  *
  * @param {object} props.propiedad  un elemento de GET /propiedades
+ * @param {boolean} [props.conFavorito=true]  false en Mis propiedades (#78): no se guardan las propias
  */
-export default function TarjetaPropiedad({ propiedad }) {
+export default function TarjetaPropiedad({ propiedad, conFavorito = true }) {
   const { id, titulo, precio, moneda, expensas, habitaciones, metrosCuadrados, imagenes } = propiedad
   const foto = imagenes?.[0]
   const [fotoRota, setFotoRota] = useState(false)
@@ -71,7 +72,7 @@ export default function TarjetaPropiedad({ propiedad }) {
           )}
         </div>
       </Link>
-      <BotonFavorito tipo="propiedad" id={id} className="absolute right-3 top-3" />
+      {conFavorito && <BotonFavorito tipo="propiedad" id={id} className="absolute right-3 top-3" />}
     </div>
   )
 }

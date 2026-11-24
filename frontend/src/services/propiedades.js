@@ -22,3 +22,8 @@ export function listarPropiedades(filtros = {}) {
 export function obtenerPropiedad(id) {
   return api.get(`/propiedades/${encodeURIComponent(id)}`)
 }
+
+/** Propiedades publicadas por el usuario o su inmobiliaria: GET /propiedades/mias (#78). */
+export function listarMisPropiedades() {
+  return api.get('/propiedades/mias')
+}

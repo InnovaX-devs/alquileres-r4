@@ -28,6 +28,7 @@ export default function Navbar() {
           {estaAutenticado ? (
             <>
               <NavLink to="/publicar" className={linkClass}>Publicar</NavLink>
+              <NavLink to="/mis-propiedades" className={linkClass}>Mis propiedades</NavLink>
               <NavLink to="/visitas" className={linkClass}>Visitas</NavLink>
               <NavLink to="/perfil" className={linkClass}>
                 {usuario?.nombre || 'Mi perfil'}

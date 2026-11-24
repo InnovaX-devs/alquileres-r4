@@ -7,6 +7,7 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import Perfil from './pages/Perfil'
 import PublicarPropiedad from './pages/PublicarPropiedad'
+import MisPropiedades from './pages/MisPropiedades'
 import MisVisitas from './pages/MisVisitas'
 import VisitasRecibidas from './pages/VisitasRecibidas'
 import NotFound from './pages/NotFound'
@@ -25,6 +26,7 @@ export default function App() {
         <Route element={<ProtectedRoute />}>
           <Route path="/perfil" element={<Perfil />} />
           <Route path="/publicar" element={<PublicarPropiedad />} />
+          <Route path="/mis-propiedades" element={<MisPropiedades />} />
           <Route path="/visitas" element={<MisVisitas />} />
           <Route path="/visitas/recibidas" element={<VisitasRecibidas />} />
         </Route>
