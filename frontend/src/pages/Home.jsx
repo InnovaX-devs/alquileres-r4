@@ -143,6 +143,18 @@ export default function Home() {
         )}
       </div>
       <FiltrosPropiedades valores={filtros} onAplicar={aplicarFiltros} />
+      {conFiltros && (
+        // Crear una alerta con la búsqueda actual (#85): los filtros y los criterios de alerta son los mismos
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-blue-100 bg-blue-50 px-4 py-3">
+          <p className="text-sm text-blue-900">¿Querés que te avisemos cuando se publique algo con estos filtros?</p>
+          <Link
+            to={`/alertas/nueva?${consulta}`}
+            className="rounded-md bg-white px-3 py-1.5 text-sm font-medium text-blue-700 shadow-sm hover:bg-blue-100"
+          >
+            Crear alerta
+          </Link>
+        </div>
+      )}
       {contenido}
     </div>
   )
