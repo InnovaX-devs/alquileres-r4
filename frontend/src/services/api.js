@@ -35,12 +35,49 @@ export function setOnUnauthorized(handler) {
   onUnauthorized = handler
 }
 
+// Mensajes claros para cada error (#88). Se usan cuando el backend no manda uno propio
+// o cuando el suyo es genérico o técnico (ver MENSAJES_GENERICOS_DEL_BACKEND).
 const MENSAJES_POR_DEFECTO = {
-  0: 'No se pudo conectar con el servidor',
+  0: 'No se pudo conectar con el servidor. Revisá tu conexión a internet',
+  400: 'Revisá los datos ingresados',
   401: 'Tu sesión expiró. Volvé a iniciar sesión',
   403: 'No tenés permisos para realizar esta acción',
   404: 'No se encontró lo que buscabas',
+  408: 'El servidor tardó demasiado en responder. Intentá de nuevo',
+  409: 'No se pudo completar la operación porque entra en conflicto con datos existentes',
+  413: 'El archivo es demasiado grande',
+  429: 'Hiciste demasiados intentos. Esperá un momento y volvé a probar',
   500: 'Ocurrió un error inesperado. Intentá de nuevo más tarde',
+  502: 'El servicio no está disponible en este momento. Intentá de nuevo en unos minutos',
+  503: 'El servicio no está disponible en este momento. Intentá de nuevo en unos minutos',
+  504: 'El servidor tardó demasiado en responder. Intentá de nuevo',
+}
+
+const MENSAJE_4XX = 'No se pudo completar la operación'
+
+// Mensajes del GlobalExceptionHandler del backend que no le dicen nada al usuario
+const MENSAJES_GENERICOS_DEL_BACKEND = new Set([
+  'Solicitud inválida',
+  'Datos inválidos', // el detalle por campo viene en `detalles`
+  'Recurso no encontrado',
+  'Método HTTP no permitido',
+  'Formato de respuesta no aceptable',
+  'Tipo de contenido no soportado',
+  'Error en la solicitud',
+  'Error interno del servidor',
+  'El cuerpo de la solicitud es inválido o está mal formado',
+  'La operación viola una restricción de integridad de datos',
+])
+
+/**
+ * Mensaje para mostrar al usuario según el status y lo que respondió el backend.
+ * En los 5xx nunca se muestra el mensaje del backend (puede ser técnico o venir de un proxy).
+ */
+export function mensajeParaStatus(status, mensajeBackend) {
+  const porDefecto = MENSAJES_POR_DEFECTO[status] ?? (status >= 500 ? MENSAJES_POR_DEFECTO[500] : MENSAJE_4XX)
+  if (status >= 500) return porDefecto
+  if (mensajeBackend && !MENSAJES_GENERICOS_DEL_BACKEND.has(mensajeBackend)) return mensajeBackend
+  return porDefecto
 }
 
 async function leerCuerpo(response) {
@@ -99,10 +136,7 @@ export async function request(path, { method = 'GET', body, auth = true, token: 
   }
 
   const status = response.status
-  const mensaje =
-    cuerpo?.mensaje ||
-    MENSAJES_POR_DEFECTO[status] ||
-    (status >= 500 ? MENSAJES_POR_DEFECTO[500] : 'No se pudo completar la operación')
+  const mensaje = mensajeParaStatus(status, typeof cuerpo?.mensaje === 'string' ? cuerpo.mensaje.trim() : null)
   const detalles = Array.isArray(cuerpo?.data) ? cuerpo.data : null
 
   throw new ApiError(status, mensaje, detalles)
