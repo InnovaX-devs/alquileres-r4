@@ -5,15 +5,18 @@ import './index.css'
 import App from './App.jsx'
 import { AuthProvider } from './context/AuthContext'
 import { FavoritosProvider } from './context/FavoritosContext'
+import { ToastProvider } from './context/ToastContext'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
-      <AuthProvider>
-        <FavoritosProvider>
-          <App />
-        </FavoritosProvider>
-      </AuthProvider>
+      <ToastProvider>
+        <AuthProvider>
+          <FavoritosProvider>
+            <App />
+          </FavoritosProvider>
+        </AuthProvider>
+      </ToastProvider>
     </BrowserRouter>
   </StrictMode>,
 )

@@ -7,19 +7,20 @@ import { cambiarEstadoVisita, listarVisitasRecibidas } from '../services/visitas
 import { formatearFechaHora } from '../utils/visitas'
 import { formatearUbicacion } from '../utils/propiedad'
 import { Button, Card } from '../components/ui'
+import { useToast } from '../hooks/useToast'
 
 function TarjetaRecibida({ solicitud, onCambiarEstado }) {
   const { id, estado, fechaPropuesta, fechaSolicitud, observaciones, solicitante, propiedad } = solicitud
   const [guardando, setGuardando] = useState(null) // 'ACEPTADA' | 'RECHAZADA' mientras se guarda
-  const [error, setError] = useState(null)
+  const toast = useToast()
 
   const cambiar = async (nuevo) => {
-    setError(null)
     setGuardando(nuevo)
     try {
       await onCambiarEstado(id, nuevo)
+      toast.exito(nuevo === 'ACEPTADA' ? 'Aceptaste la visita' : 'Rechazaste la visita')
     } catch (e) {
-      setError(e.mensaje || 'No se pudo actualizar la solicitud')
+      toast.error(e, 'No se pudo actualizar la solicitud')
     } finally {
       setGuardando(null)
     }
@@ -60,12 +61,6 @@ function TarjetaRecibida({ solicitud, onCambiarEstado }) {
       </div>
 
       {observaciones && <p className="mt-3 whitespace-pre-line text-sm text-gray-600">“{observaciones}”</p>}
-
-      {error && (
-        <p role="alert" className="mt-3 text-sm text-red-600">
-          {error}
-        </p>
-      )}
 
       {/* Solo las pendientes se pueden responder: las procesadas no vuelven a PENDIENTE */}
       {estado === 'PENDIENTE' && (

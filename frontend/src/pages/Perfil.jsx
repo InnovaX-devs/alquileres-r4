@@ -4,6 +4,7 @@ import FormularioPerfil from '../components/FormularioPerfil'
 import { ErrorConReintento } from '../components/EstadoCarga'
 import { Aviso, Button, Card, CargandoPagina } from '../components/ui'
 import { datosFaltantesParaVerificar, unirConY } from '../utils/perfil'
+import { useToast } from '../hooks/useToast'
 
 /** Datos personales que se muestran, en orden. `clave` es el campo de GET /usuarios/me. */
 const CAMPOS = [
@@ -68,7 +69,7 @@ export default function Perfil() {
   const [error, setError] = useState(null)
   const [actualizando, setActualizando] = useState(true)
   const [editando, setEditando] = useState(false)
-  const [exito, setExito] = useState(null)
+  const toast = useToast()
 
   // Pide de nuevo GET /usuarios/me (lo guarda el AuthContext, que es de donde se lee `usuario`)
   const pedirUsuario = useCallback(
@@ -100,10 +101,7 @@ export default function Perfil() {
     pedirUsuario()
   }
 
-  const abrirFormulario = () => {
-    setExito(null)
-    setEditando(true)
-  }
+  const abrirFormulario = () => setEditando(true)
 
   const guardar = async (cambios) => {
     const estabaVerificado = usuario.verificado
@@ -111,7 +109,7 @@ export default function Perfil() {
     const actualizado = await actualizarPerfil(cambios)
     setEditando(false)
     setError(null)
-    setExito(
+    toast.exito(
       !estabaVerificado && actualizado.verificado
         ? 'Perfil actualizado. ¡Tu perfil quedó verificado!'
         : 'Perfil actualizado.',
@@ -135,12 +133,6 @@ export default function Perfil() {
       <div className="mt-6">
         <EstadoVerificacion usuario={usuario} editando={editando} onCompletar={abrirFormulario} />
       </div>
-
-      {exito && (
-        <Aviso tipo="exito" className="mt-4">
-          {exito}
-        </Aviso>
-      )}
 
       {/* Si falla la actualización se siguen mostrando los datos que ya había */}
       {error && (

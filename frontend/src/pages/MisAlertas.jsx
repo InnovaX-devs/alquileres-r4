@@ -4,6 +4,7 @@ import { cambiarEstadoAlerta, eliminarAlerta, listarAlertas } from '../services/
 import { describirAlerta } from '../utils/alertas'
 import { formatearFechaHora } from '../utils/visitas'
 import { Button, Card } from '../components/ui'
+import { useToast } from '../hooks/useToast'
 
 function Interruptor({ activa, deshabilitado, onCambiar }) {
   return (
@@ -32,33 +33,39 @@ function TarjetaAlerta({ alerta, onActualizada, onEliminada }) {
   const { id, activa, creadaEn } = alerta
   const [guardando, setGuardando] = useState(false)
   const [confirmando, setConfirmando] = useState(false)
-  const [error, setError] = useState(null)
+  const toast = useToast()
 
   const alternar = async () => {
-    setError(null)
     setGuardando(true)
     try {
       const actualizada = await cambiarEstadoAlerta(id, !activa)
-      onActualizada({ ...alerta, ...actualizada, activa: actualizada?.activa ?? !activa })
+      const quedoActiva = actualizada?.activa ?? !activa
+      onActualizada({ ...alerta, ...actualizada, activa: quedoActiva })
+      toast.exito(quedoActiva ? 'Alerta activada' : 'Alerta pausada')
     } catch (e) {
-      if (e.status === 404) onEliminada(id) // ya no existe (por ejemplo, se borró desde otra pestaña)
-      else setError(e.mensaje || 'No se pudo actualizar la alerta')
+      if (e.status === 404) {
+        onEliminada(id) // ya no existe (por ejemplo, se borró desde otra pestaña)
+        toast.info('Esa alerta ya no existe')
+      } else {
+        toast.error(e, 'No se pudo actualizar la alerta')
+      }
     } finally {
       setGuardando(false)
     }
   }
 
   const eliminar = async () => {
-    setError(null)
     setGuardando(true)
     try {
       await eliminarAlerta(id)
       onEliminada(id)
+      toast.exito('Alerta eliminada')
     } catch (e) {
       if (e.status === 404) {
         onEliminada(id)
+        toast.exito('Alerta eliminada')
       } else {
-        setError(e.mensaje || 'No se pudo eliminar la alerta')
+        toast.error(e, 'No se pudo eliminar la alerta')
         setGuardando(false)
         setConfirmando(false)
       }
@@ -90,12 +97,6 @@ function TarjetaAlerta({ alerta, onActualizada, onEliminada }) {
         </div>
         <Interruptor activa={activa} deshabilitado={guardando} onCambiar={alternar} />
       </div>
-
-      {error && (
-        <p role="alert" className="mt-3 text-sm text-red-600">
-          {error}
-        </p>
-      )}
 
       <div className="mt-3 flex flex-wrap items-center justify-end gap-2">
         {confirmando ? (
