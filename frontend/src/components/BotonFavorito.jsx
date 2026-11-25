@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { useFavoritos } from '../hooks/useFavoritos'
+import { useToast } from '../hooks/useToast'
 
 const TEXTOS = {
   propiedad: { guardar: 'Guardar propiedad en favoritos', quitar: 'Quitar propiedad de favoritos' },
@@ -22,7 +23,7 @@ export default function BotonFavorito({ tipo, id, className = '' }) {
   const navigate = useNavigate()
   const location = useLocation()
   const [enviando, setEnviando] = useState(false)
-  const [error, setError] = useState(null)
+  const toast = useToast()
 
   const marcado = estaAutenticado ? esFavorito(tipo, id) : false
   const etiqueta = marcado ? TEXTOS[tipo].quitar : TEXTOS[tipo].guardar
@@ -33,11 +34,11 @@ export default function BotonFavorito({ tipo, id, className = '' }) {
       return
     }
     setEnviando(true)
-    setError(null)
     try {
       await alternar(tipo, id)
+      toast.exito(marcado ? 'Se quitó de tus favoritos' : 'Se guardó en tus favoritos')
     } catch (e) {
-      setError(e.mensaje || 'No se pudo actualizar el favorito')
+      toast.error(e, 'No se pudo actualizar el favorito')
     } finally {
       setEnviando(false)
     }
@@ -51,7 +52,7 @@ export default function BotonFavorito({ tipo, id, className = '' }) {
       disabled={enviando || marcado === undefined}
       aria-pressed={!!marcado}
       aria-label={etiqueta}
-      title={error || (estaAutenticado ? etiqueta : 'Iniciá sesión para guardar favoritos')}
+      title={estaAutenticado ? etiqueta : 'Iniciá sesión para guardar favoritos'}
       className={`inline-flex items-center justify-center rounded-full bg-white/90 p-2 shadow-sm transition hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 disabled:opacity-60 ${className}`}
     >
       <svg
@@ -60,7 +61,7 @@ export default function BotonFavorito({ tipo, id, className = '' }) {
         strokeWidth="1.8"
         stroke="currentColor"
         fill={marcado ? 'currentColor' : 'none'}
-        className={`h-5 w-5 ${marcado ? 'text-red-500' : error ? 'text-red-400' : 'text-gray-600'}`}
+        className={`h-5 w-5 ${marcado ? 'text-red-500' : 'text-gray-600'}`}
       >
         <path
           strokeLinecap="round"
