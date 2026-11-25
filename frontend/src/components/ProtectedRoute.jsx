@@ -3,6 +3,7 @@ import { Navigate, Outlet, useLocation } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { tokenVencido } from '../services/jwt'
 import { clearToken } from '../services/session'
+import { CargandoPagina } from './ui'
 
 /**
  * Protege las rutas privadas (#69): sin token, o con el token vencido, redirige al login
@@ -29,7 +30,7 @@ export default function ProtectedRoute() {
 
   // Al recargar la página: hay token pero todavía no llegó el usuario
   if (cargando) {
-    return <p className="text-center text-gray-500 py-16">Cargando...</p>
+    return <CargandoPagina />
   }
 
   return <Outlet />

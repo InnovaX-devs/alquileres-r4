@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { ApiError } from '../services/api'
-import CampoFormulario from '../components/CampoFormulario'
+import { Aviso, Button, Card, Input } from '../components/ui'
 
 // Pantalla de login (#67)
 export default function Login() {
@@ -51,18 +51,18 @@ export default function Login() {
       <h1 className="text-2xl font-bold text-center">Ingresar</h1>
 
       {estado.registrado && (
-        <p className="mt-4 rounded-md bg-green-50 border border-green-200 px-3 py-2 text-sm text-green-700">
+        <Aviso tipo="exito" className="mt-4">
           Cuenta creada. Ya podés ingresar.
-        </p>
+        </Aviso>
       )}
       {estado.sesionExpirada && (
-        <p className="mt-4 rounded-md bg-yellow-50 border border-yellow-200 px-3 py-2 text-sm text-yellow-800">
+        <Aviso tipo="advertencia" className="mt-4">
           Tu sesión expiró. Volvé a ingresar.
-        </p>
+        </Aviso>
       )}
 
-      <form onSubmit={enviar} noValidate className="mt-6 space-y-4 bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-        <CampoFormulario
+      <Card as="form" onSubmit={enviar} noValidate className="mt-6 space-y-4">
+        <Input
           id="email"
           label="Email"
           type="email"
@@ -70,7 +70,7 @@ export default function Login() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
-        <CampoFormulario
+        <Input
           id="password"
           label="Contraseña"
           type="password"
@@ -79,20 +79,12 @@ export default function Login() {
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        {error && (
-          <p role="alert" className="text-sm text-red-600">
-            {error}
-          </p>
-        )}
+        {error && <Aviso tipo="error">{error}</Aviso>}
 
-        <button
-          type="submit"
-          disabled={enviando}
-          className="w-full py-2 rounded-md bg-blue-600 text-white font-medium hover:bg-blue-700 disabled:opacity-60"
-        >
+        <Button type="submit" cargando={enviando} anchoCompleto>
           {enviando ? 'Ingresando...' : 'Ingresar'}
-        </button>
-      </form>
+        </Button>
+      </Card>
 
       <p className="mt-4 text-center text-sm text-gray-600">
         ¿No tenés cuenta?{' '}

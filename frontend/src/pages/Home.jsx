@@ -1,17 +1,19 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import TarjetaPropiedad from '../components/TarjetaPropiedad'
 import FiltrosPropiedades from '../components/FiltrosPropiedades'
 import { CLAVES_FILTROS, hayFiltrosActivos } from '../utils/filtros'
 import { listarPropiedades } from '../services/propiedades'
 import { useAuth } from '../hooks/useAuth'
+import { ErrorConReintento, Vacio } from '../components/EstadoCarga'
+import { Button, CLASES_CARD } from '../components/ui'
 
 const TARJETAS_DE_CARGA = 6
 
 // Tarjeta gris con la misma forma que la real, mientras llegan los datos
 function TarjetaCargando() {
   return (
-    <div aria-hidden="true" className="animate-pulse overflow-hidden rounded-lg border border-gray-200 bg-white">
+    <div aria-hidden="true" className={`animate-pulse overflow-hidden ${CLASES_CARD}`}>
       <div className="aspect-[4/3] bg-gray-200" />
       <div className="space-y-2 p-4">
         <div className="h-6 w-1/2 rounded bg-gray-200" />
@@ -83,42 +85,24 @@ export default function Home() {
       </div>
     )
   } else if (error) {
-    contenido = (
-      <div className="py-16 text-center">
-        <p role="alert" className="text-red-600">{error}</p>
-        <button
-          onClick={reintentar}
-          className="mt-4 px-4 py-2 rounded-md bg-blue-600 text-white font-medium hover:bg-blue-700"
-        >
-          Reintentar
-        </button>
-      </div>
-    )
+    contenido = <ErrorConReintento mensaje={error} onReintentar={reintentar} />
   } else if (propiedades.length === 0 && conFiltros) {
     contenido = (
-      <div className="rounded-lg border border-dashed border-gray-300 bg-white py-16 text-center">
-        <p className="text-lg font-medium text-gray-900">No hay propiedades que coincidan con tu búsqueda</p>
-        <p className="mt-1 text-sm text-gray-500">Probá con otros filtros o limpialos para ver todas.</p>
-        <button
-          onClick={() => aplicarFiltros({})}
-          className="mt-4 inline-block px-4 py-2 rounded-md bg-blue-600 text-white text-sm font-medium hover:bg-blue-700"
-        >
-          Ver todas las propiedades
-        </button>
-      </div>
+      <Vacio
+        titulo="No hay propiedades que coincidan con tu búsqueda"
+        texto="Probá con otros filtros o limpialos para ver todas."
+        accion="Ver todas las propiedades"
+        onAccion={() => aplicarFiltros({})}
+      />
     )
   } else if (propiedades.length === 0) {
     contenido = (
-      <div className="rounded-lg border border-dashed border-gray-300 bg-white py-16 text-center">
-        <p className="text-lg font-medium text-gray-900">Todavía no hay propiedades publicadas</p>
-        <p className="mt-1 text-sm text-gray-500">Volvé a pasar en un rato o publicá la tuya.</p>
-        <Link
-          to={estaAutenticado ? '/publicar' : '/login'}
-          className="mt-4 inline-block px-4 py-2 rounded-md bg-blue-600 text-white text-sm font-medium hover:bg-blue-700"
-        >
-          Publicar una propiedad
-        </Link>
-      </div>
+      <Vacio
+        titulo="Todavía no hay propiedades publicadas"
+        texto="Volvé a pasar en un rato o publicá la tuya."
+        accion="Publicar una propiedad"
+        to={estaAutenticado ? '/publicar' : '/login'}
+      />
     )
   } else {
     contenido = (
@@ -147,12 +131,9 @@ export default function Home() {
         // Crear una alerta con la búsqueda actual (#85): los filtros y los criterios de alerta son los mismos
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-blue-100 bg-blue-50 px-4 py-3">
           <p className="text-sm text-blue-900">¿Querés que te avisemos cuando se publique algo con estos filtros?</p>
-          <Link
-            to={`/alertas/nueva?${consulta}`}
-            className="rounded-md bg-white px-3 py-1.5 text-sm font-medium text-blue-700 shadow-sm hover:bg-blue-100"
-          >
+          <Button variante="secundario" tamanio="sm" to={`/alertas/nueva?${consulta}`}>
             Crear alerta
-          </Link>
+          </Button>
         </div>
       )}
       {contenido}

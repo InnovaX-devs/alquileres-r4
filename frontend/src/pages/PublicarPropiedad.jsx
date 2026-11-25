@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import CampoFormulario from '../components/CampoFormulario'
+import { useNavigate } from 'react-router-dom'
 import SelectorImagenes from '../components/SelectorImagenes'
+import { Aviso, Button, Card, Input, Select, Textarea } from '../components/ui'
 import { publicarPropiedad, subirImagenPropiedad } from '../services/propiedades'
 import { liberarPreview } from '../utils/imagenes'
 import {
@@ -16,84 +16,14 @@ import {
 // PROPIEDAD_VACIA tiene los campos en el orden de la pantalla: al haber errores se enfoca el primero
 const ORDEN_CAMPOS = Object.keys(PROPIEDAD_VACIA)
 
-const claseControl = (error) =>
-  `mt-1 block w-full rounded-md border bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 disabled:bg-gray-100 disabled:text-gray-500 ${
-    error ? 'border-red-400 focus:ring-red-200' : 'border-gray-300 focus:border-blue-500 focus:ring-blue-200'
-  }`
-
-function Etiqueta({ id, label, opcional }) {
-  return (
-    <label htmlFor={id} className="block text-sm font-medium text-gray-700">
-      {label} {opcional && <span className="font-normal text-gray-400">(opcional)</span>}
-    </label>
-  )
-}
-
-function MensajeError({ id, error }) {
-  if (!error) return null
-  return (
-    <p id={`${id}-error`} className="mt-1 text-sm text-red-600">
-      {error}
-    </p>
-  )
-}
-
-function CampoSelect({ id, label, opcional, error, opciones, ...props }) {
-  return (
-    <div>
-      <Etiqueta id={id} label={label} opcional={opcional} />
-      <select
-        id={id}
-        name={id}
-        aria-invalid={!!error}
-        aria-describedby={error ? `${id}-error` : undefined}
-        className={claseControl(error)}
-        {...props}
-      >
-        {opciones.map(({ valor, label: texto }) => (
-          <option key={valor} value={valor}>
-            {texto}
-          </option>
-        ))}
-      </select>
-      <MensajeError id={id} error={error} />
-    </div>
-  )
-}
-
-function CampoTexto({ id, label, opcional, error, ...props }) {
-  return (
-    <div>
-      <Etiqueta id={id} label={label} opcional={opcional} />
-      <textarea
-        id={id}
-        name={id}
-        rows={4}
-        aria-invalid={!!error}
-        aria-describedby={error ? `${id}-error` : undefined}
-        className={claseControl(error)}
-        {...props}
-      />
-      <MensajeError id={id} error={error} />
-    </div>
-  )
-}
-
 function Seccion({ titulo, children }) {
   return (
-    <fieldset className="space-y-4 rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+    <Card as="fieldset" className="space-y-4">
       <legend className="px-1 text-base font-semibold text-gray-900">{titulo}</legend>
       {children}
-    </fieldset>
+    </Card>
   )
 }
-
-// Agrega "(opcional)" al label de los inputs comunes sin tocar CampoFormulario
-const opcional = (texto) => (
-  <>
-    {texto} <span className="font-normal text-gray-400">(opcional)</span>
-  </>
-)
 
 function enfocarPrimerError(errores) {
   const campo = ORDEN_CAMPOS.find((clave) => errores[clave])
@@ -224,8 +154,8 @@ export default function PublicarPropiedad() {
         {/* Con la propiedad ya creada, sus datos no se pueden cambiar desde acá */}
         <fieldset disabled={enviando || propiedadId !== null} className="space-y-6">
           <Seccion titulo="Datos principales">
-            <CampoFormulario label="Título" placeholder="Ej: Departamento 2 ambientes con balcón" {...campo('titulo')} />
-            <CampoTexto
+            <Input label="Título" placeholder="Ej: Departamento 2 ambientes con balcón" {...campo('titulo')} />
+            <Textarea
               label="Descripción"
               opcional
               placeholder="Contá cómo es la propiedad, qué tiene cerca, estado, etc."
@@ -235,7 +165,7 @@ export default function PublicarPropiedad() {
 
           <Seccion titulo="Precio">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <CampoFormulario
+              <Input
                 label="Precio mensual"
                 type="number"
                 inputMode="decimal"
@@ -244,9 +174,10 @@ export default function PublicarPropiedad() {
                 placeholder="Ej: 350000"
                 {...campo('precio')}
               />
-              <CampoSelect label="Moneda" opciones={MONEDAS} {...campo('moneda')} />
-              <CampoFormulario
-                label={opcional('Expensas')}
+              <Select label="Moneda" opciones={MONEDAS} {...campo('moneda')} />
+              <Input
+                label="Expensas"
+                opcional
                 type="number"
                 inputMode="decimal"
                 min="0"
@@ -254,14 +185,15 @@ export default function PublicarPropiedad() {
                 placeholder="En la misma moneda del precio"
                 {...campo('expensas')}
               />
-              <CampoSelect
+              <Select
                 label="¿El precio incluye impuestos?"
                 opcional
                 opciones={OPCIONES_IMPUESTOS}
                 {...campo('incluyeImpuestos')}
               />
-              <CampoFormulario
-                label={opcional('Actualización del precio (meses)')}
+              <Input
+                label="Actualización del precio (meses)"
+                opcional
                 type="number"
                 inputMode="numeric"
                 min="1"
@@ -275,17 +207,18 @@ export default function PublicarPropiedad() {
           <Seccion titulo="Ubicación">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
               <div className="sm:col-span-2">
-                <CampoFormulario label="Calle" autoComplete="address-line1" placeholder="Ej: Sobremonte" {...campo('calle')} />
+                <Input label="Calle" autoComplete="address-line1" placeholder="Ej: Sobremonte" {...campo('calle')} />
               </div>
-              <CampoFormulario label="Altura" placeholder="Ej: 1234" {...campo('altura')} />
-              <CampoFormulario label={opcional('Piso / depto')} placeholder="Ej: 5B" {...campo('piso')} />
+              <Input label="Altura" placeholder="Ej: 1234" {...campo('altura')} />
+              <Input label="Piso / depto" opcional placeholder="Ej: 5B" {...campo('piso')} />
             </div>
           </Seccion>
 
           <Seccion titulo="Características">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <CampoFormulario
-                label={opcional('Habitaciones')}
+              <Input
+                label="Habitaciones"
+                opcional
                 type="number"
                 inputMode="numeric"
                 min="0"
@@ -293,8 +226,9 @@ export default function PublicarPropiedad() {
                 placeholder="0 = monoambiente"
                 {...campo('habitaciones')}
               />
-              <CampoFormulario
-                label={opcional('Metros cuadrados')}
+              <Input
+                label="Metros cuadrados"
+                opcional
                 type="number"
                 inputMode="numeric"
                 min="1"
@@ -303,7 +237,7 @@ export default function PublicarPropiedad() {
                 {...campo('metrosCuadrados')}
               />
             </div>
-            <CampoTexto
+            <Textarea
               label="Requisitos de ingreso"
               opcional
               placeholder="Ej: garantía propietaria, recibo de sueldo, depósito"
@@ -322,46 +256,29 @@ export default function PublicarPropiedad() {
         </Seccion>
 
         {errorImagenes && (
-          <div role="alert" className="rounded-md bg-amber-50 px-4 py-3 text-sm text-amber-800">
-            <p className="font-medium">La propiedad se publicó, pero no se pudieron subir todas las fotos.</p>
-            <p className="mt-1">{errorImagenes}</p>
+          <Aviso tipo="advertencia" titulo="La propiedad se publicó, pero no se pudieron subir todas las fotos.">
+            <p>{errorImagenes}</p>
             <p className="mt-1">
               Podés reintentar desde esa foto o ir a la propiedad sin las {imagenesSinSubir} que faltan.
             </p>
-          </div>
+          </Aviso>
         )}
 
-        {errorGeneral && (
-          <p role="alert" className="rounded-md bg-red-50 px-4 py-3 text-sm text-red-700">
-            {errorGeneral}
-          </p>
-        )}
+        {errorGeneral && <Aviso tipo="error">{errorGeneral}</Aviso>}
 
         <div className="flex justify-end gap-2">
           {propiedadId ? (
-            <button
-              type="button"
-              onClick={() => irAlDetalle(propiedadId, imagenesSinSubir)}
-              disabled={enviando}
-              className="rounded-md px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 disabled:opacity-60"
-            >
+            <Button variante="fantasma" onClick={() => irAlDetalle(propiedadId, imagenesSinSubir)} disabled={enviando}>
               Ir a la propiedad
-            </button>
+            </Button>
           ) : (
-            <Link
-              to="/"
-              className="rounded-md px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
-            >
+            <Button variante="fantasma" to="/">
               Cancelar
-            </Link>
+            </Button>
           )}
-          <button
-            type="submit"
-            disabled={enviando}
-            className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60"
-          >
+          <Button type="submit" cargando={enviando}>
             {textoBoton()}
-          </button>
+          </Button>
         </div>
       </form>
     </div>

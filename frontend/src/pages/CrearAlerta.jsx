@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
-import CampoFormulario from '../components/CampoFormulario'
+import { useSearchParams } from 'react-router-dom'
+import { Aviso, Button, Card, Input, Select } from '../components/ui'
 import { useAuth } from '../hooks/useAuth'
 import { crearAlerta } from '../services/alertas'
 import {
@@ -13,11 +13,6 @@ import {
   validarAlerta,
 } from '../utils/alertas'
 
-const claseSelect = (error) =>
-  `mt-1 block w-full rounded-md border bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 ${
-    error ? 'border-red-400 focus:ring-red-200' : 'border-gray-300 focus:border-blue-500 focus:ring-blue-200'
-  }`
-
 function enfocarPrimerError(errores) {
   const campo = CLAVES_ALERTA.find((clave) => errores[clave])
   if (campo) document.getElementById(campo)?.focus()
@@ -25,7 +20,7 @@ function enfocarPrimerError(errores) {
 
 function AlertaCreada({ alerta, email, onCrearOtra }) {
   return (
-    <div role="status" className="rounded-lg border border-green-200 bg-white p-6 text-center shadow-sm">
+    <Card role="status" className="text-center">
       <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100 text-green-600">
         <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-6 w-6">
           <path strokeLinecap="round" strokeLinejoin="round" d="m5 13 4 4L19 7" />
@@ -43,24 +38,15 @@ function AlertaCreada({ alerta, email, onCrearOtra }) {
         ))}
       </ul>
       <div className="mt-6 flex flex-wrap justify-center gap-2">
-        <button
-          type="button"
-          onClick={onCrearOtra}
-          className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-        >
+        <Button variante="secundario" onClick={onCrearOtra}>
           Crear otra alerta
-        </button>
-        <Link
-          to="/alertas"
-          className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-        >
+        </Button>
+        <Button variante="secundario" to="/alertas">
           Ver mis alertas
-        </Link>
-        <Link to="/" className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">
-          Ver propiedades
-        </Link>
+        </Button>
+        <Button to="/">Ver propiedades</Button>
       </div>
-    </div>
+    </Card>
   )
 }
 
@@ -131,37 +117,15 @@ export default function CrearAlerta() {
         {creada ? (
           <AlertaCreada alerta={creada} email={usuario?.email} onCrearOtra={crearOtra} />
         ) : (
-          <form
-            onSubmit={enviar}
-            noValidate
-            className="space-y-4 rounded-lg border border-gray-200 bg-white p-6 shadow-sm"
-          >
+          <Card as="form" onSubmit={enviar} noValidate className="space-y-4">
             <fieldset disabled={enviando} className="space-y-4">
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                <div>
-                  <label htmlFor="moneda" className="block text-sm font-medium text-gray-700">
-                    Moneda
-                  </label>
-                  <select
-                    id="moneda"
-                    name="moneda"
-                    aria-invalid={!!errores.moneda}
-                    aria-describedby={errores.moneda ? 'moneda-error' : undefined}
-                    className={claseSelect(errores.moneda)}
-                    value={datos.moneda}
-                    onChange={cambiar('moneda')}
-                  >
-                    <option value="">Cualquiera</option>
-                    <option value="ARS">Pesos ($)</option>
-                    <option value="USD">Dólares (US$)</option>
-                  </select>
-                  {errores.moneda && (
-                    <p id="moneda-error" className="mt-1 text-sm text-red-600">
-                      {errores.moneda}
-                    </p>
-                  )}
-                </div>
-                <CampoFormulario
+                <Select label="Moneda" {...campo('moneda')}>
+                  <option value="">Cualquiera</option>
+                  <option value="ARS">Pesos ($)</option>
+                  <option value="USD">Dólares (US$)</option>
+                </Select>
+                <Input
                   label="Precio mínimo"
                   type="number"
                   inputMode="decimal"
@@ -170,7 +134,7 @@ export default function CrearAlerta() {
                   placeholder="Desde"
                   {...campo('precioMin')}
                 />
-                <CampoFormulario
+                <Input
                   label="Precio máximo"
                   type="number"
                   inputMode="decimal"
@@ -182,7 +146,7 @@ export default function CrearAlerta() {
               </div>
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                <CampoFormulario
+                <Input
                   label="Habitaciones mínimas"
                   type="number"
                   inputMode="numeric"
@@ -192,30 +156,22 @@ export default function CrearAlerta() {
                   {...campo('habitacionesMin')}
                 />
                 <div className="sm:col-span-2">
-                  <CampoFormulario label="Calle" placeholder="Ej: Sobremonte" {...campo('calle')} />
+                  <Input label="Calle" placeholder="Ej: Sobremonte" {...campo('calle')} />
                 </div>
               </div>
             </fieldset>
 
-            {errorGeneral && (
-              <p role="alert" className="rounded-md bg-red-50 px-4 py-3 text-sm text-red-700">
-                {errorGeneral}
-              </p>
-            )}
+            {errorGeneral && <Aviso tipo="error">{errorGeneral}</Aviso>}
 
             <div className="flex justify-end gap-2">
-              <Link to="/" className="rounded-md px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">
+              <Button variante="fantasma" to="/">
                 Cancelar
-              </Link>
-              <button
-                type="submit"
-                disabled={enviando}
-                className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60"
-              >
+              </Button>
+              <Button type="submit" cargando={enviando}>
                 {enviando ? 'Creando...' : 'Crear alerta'}
-              </button>
+              </Button>
             </div>
-          </form>
+          </Card>
         )}
       </div>
     </div>

@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
 import { Cargando, ErrorConReintento, Vacio } from '../components/EstadoCarga'
 import { cambiarEstadoAlerta, eliminarAlerta, listarAlertas } from '../services/alertas'
 import { describirAlerta } from '../utils/alertas'
 import { formatearFechaHora } from '../utils/visitas'
+import { Button, Card } from '../components/ui'
 
 function Interruptor({ activa, deshabilitado, onCambiar }) {
   return (
@@ -68,7 +68,8 @@ function TarjetaAlerta({ alerta, onActualizada, onEliminada }) {
   const criterios = describirAlerta(alerta)
 
   return (
-    <li className={`rounded-lg border bg-white p-4 shadow-sm ${activa ? 'border-gray-200' : 'border-gray-200 bg-gray-50'}`}>
+    // Pausada: fondo gris (con ! para ganarle al bg-white de Card)
+    <Card as="li" padding="sm" className={activa ? '' : 'bg-gray-50!'}>
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
           <ul className="flex flex-wrap gap-2" aria-label="Criterios de la alerta">
@@ -100,35 +101,20 @@ function TarjetaAlerta({ alerta, onActualizada, onEliminada }) {
         {confirmando ? (
           <>
             <span className="text-sm text-gray-700">¿Eliminar esta alerta?</span>
-            <button
-              type="button"
-              onClick={() => setConfirmando(false)}
-              disabled={guardando}
-              className="rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-60"
-            >
+            <Button variante="secundario" tamanio="sm" onClick={() => setConfirmando(false)} disabled={guardando}>
               Cancelar
-            </button>
-            <button
-              type="button"
-              onClick={eliminar}
-              disabled={guardando}
-              className="rounded-md bg-red-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-60"
-            >
+            </Button>
+            <Button variante="peligro" tamanio="sm" onClick={eliminar} cargando={guardando}>
               {guardando ? 'Eliminando...' : 'Sí, eliminar'}
-            </button>
+            </Button>
           </>
         ) : (
-          <button
-            type="button"
-            onClick={() => setConfirmando(true)}
-            disabled={guardando}
-            className="rounded-md px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 disabled:opacity-60"
-          >
+          <Button variante="peligroSuave" tamanio="sm" onClick={() => setConfirmando(true)} disabled={guardando}>
             Eliminar
-          </button>
+          </Button>
         )}
       </div>
-    </li>
+    </Card>
   )
 }
 
@@ -198,12 +184,7 @@ export default function MisAlertas() {
     <div>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <h1 className="text-2xl font-bold">Mis alertas</h1>
-        <Link
-          to="/alertas/nueva"
-          className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
-        >
-          Nueva alerta
-        </Link>
+        <Button to="/alertas/nueva">Nueva alerta</Button>
       </div>
       {contenido}
     </div>

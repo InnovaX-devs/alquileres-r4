@@ -8,6 +8,7 @@ import {
   liberarPreview,
   mover,
 } from '../utils/imagenes'
+import { Button } from './ui'
 
 const ETIQUETA_ESTADO = {
   subiendo: { texto: 'Subiendo...', clase: 'bg-blue-600' },
@@ -104,14 +105,9 @@ export default function SelectorImagenes({ imagenes, onChange, estados = {}, blo
           }`}
         >
           <p className="text-sm text-gray-600">Arrastrá las fotos acá o</p>
-          <button
-            type="button"
-            onClick={() => inputRef.current?.click()}
-            disabled={lleno}
-            className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-60"
-          >
+          <Button variante="secundario" tamanio="sm" onClick={() => inputRef.current?.click()} disabled={lleno}>
             Elegir fotos
-          </button>
+          </Button>
           <p className="text-xs text-gray-400">
             JPG, PNG o WEBP · hasta {TAMANIO_MAXIMO_MB} MB cada una · máximo {MAXIMO_IMAGENES} ({imagenes.length}/
             {MAXIMO_IMAGENES})

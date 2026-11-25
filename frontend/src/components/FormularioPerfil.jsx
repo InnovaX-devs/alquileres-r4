@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import CampoFormulario from './CampoFormulario'
+import { Aviso, Button, Input, Textarea } from './ui'
 import { CAMPOS_PARA_VERIFICAR, unirConY } from '../utils/perfil'
 
 // Las columnas nombre, telefono y documento son VARCHAR(255): más largo, el backend falla con un 500
@@ -98,7 +98,7 @@ export default function FormularioPerfil({ usuario, onGuardar, onCancelar }) {
 
   return (
     <form onSubmit={enviar} noValidate className="mt-4 space-y-4">
-      <CampoFormulario
+      <Input
         id="nombre"
         label="Nombre"
         autoComplete="name"
@@ -106,7 +106,7 @@ export default function FormularioPerfil({ usuario, onGuardar, onCancelar }) {
         onChange={cambiar('nombre')}
         error={errores.nombre}
       />
-      <CampoFormulario
+      <Input
         id="telefono"
         label="Teléfono"
         type="tel"
@@ -116,69 +116,36 @@ export default function FormularioPerfil({ usuario, onGuardar, onCancelar }) {
         onChange={cambiar('telefono')}
         error={errores.telefono}
       />
-      <CampoFormulario
+      <Input
         id="documento"
         label="Documento"
         placeholder="DNI o pasaporte"
         value={datos.documento}
         onChange={cambiar('documento')}
         error={errores.documento}
+        ayuda={`Completá ${DATOS_PARA_VERIFICAR} para que tu perfil quede verificado.`}
       />
-      <p className="-mt-2 text-xs text-gray-500">
-        Completá {DATOS_PARA_VERIFICAR} para que tu perfil quede verificado.
-      </p>
 
-      <div>
-        <label htmlFor="descripcionPerfil" className="block text-sm font-medium text-gray-700">
-          Descripción <span className="font-normal text-gray-400">(opcional)</span>
-        </label>
-        <textarea
-          id="descripcionPerfil"
-          name="descripcionPerfil"
-          rows={4}
-          placeholder="Contá algo sobre vos"
-          value={datos.descripcionPerfil}
-          onChange={cambiar('descripcionPerfil')}
-          aria-invalid={!!errores.descripcionPerfil}
-          aria-describedby={errores.descripcionPerfil ? 'descripcionPerfil-error' : undefined}
-          className={`mt-1 block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 ${
-            errores.descripcionPerfil
-              ? 'border-red-400 focus:ring-red-200'
-              : 'border-gray-300 focus:border-blue-500 focus:ring-blue-200'
-          }`}
-        />
-        <div className="mt-1 flex justify-between text-xs">
-          <span id="descripcionPerfil-error" className="text-red-600">
-            {errores.descripcionPerfil}
-          </span>
-          <span className="text-gray-400">
-            {datos.descripcionPerfil.trim().length}/{DESCRIPCION_MAXIMA}
-          </span>
-        </div>
-      </div>
+      <Textarea
+        id="descripcionPerfil"
+        label="Descripción"
+        opcional
+        placeholder="Contá algo sobre vos"
+        value={datos.descripcionPerfil}
+        onChange={cambiar('descripcionPerfil')}
+        error={errores.descripcionPerfil}
+        contador={{ actual: datos.descripcionPerfil.trim().length, maximo: DESCRIPCION_MAXIMA }}
+      />
 
-      {errorGeneral && (
-        <p role="alert" className="text-sm text-red-600">
-          {errorGeneral}
-        </p>
-      )}
+      {errorGeneral && <Aviso tipo="error">{errorGeneral}</Aviso>}
 
       <div className="flex justify-end gap-2">
-        <button
-          type="button"
-          onClick={onCancelar}
-          disabled={enviando}
-          className="px-4 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 disabled:opacity-60"
-        >
+        <Button variante="fantasma" onClick={onCancelar} disabled={enviando}>
           Cancelar
-        </button>
-        <button
-          type="submit"
-          disabled={enviando}
-          className="px-4 py-2 rounded-md bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 disabled:opacity-60"
-        >
+        </Button>
+        <Button type="submit" cargando={enviando}>
           {enviando ? 'Guardando...' : 'Guardar cambios'}
-        </button>
+        </Button>
       </div>
     </form>
   )
