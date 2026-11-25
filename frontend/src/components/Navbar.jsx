@@ -3,22 +3,42 @@ import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { useVisitasPendientes } from '../hooks/useVisitasPendientes'
 
+// Barra verde pino: links claros, el activo con fondo y el de Publicar en amarillo (acción principal)
+const foco = 'focus:outline-none focus-visible:ring-3 focus-visible:ring-sol-400'
+
 const linkEscritorio = ({ isActive }) =>
-  `px-3 py-2 rounded-md text-sm font-medium whitespace-nowrap ${
-    isActive ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
+  `px-3 py-2 rounded-lg text-[15px] whitespace-nowrap transition-colors ${foco} ${
+    isActive ? 'bg-white/12 text-white font-bold' : 'text-gray-300 hover:bg-white/8 hover:text-white'
   }`
 
 const linkMovil = ({ isActive }) =>
-  `block px-3 py-3 rounded-md text-base font-medium ${
-    isActive ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
+  `block px-3 py-3 rounded-lg text-base ${foco} ${
+    isActive ? 'bg-white/12 text-white font-bold' : 'text-gray-200 hover:bg-white/8'
   }`
+
+const publicarEscritorio = ({ isActive }) =>
+  `ml-1 px-4 py-2 rounded-xl text-[15px] font-bold whitespace-nowrap transition-colors ${foco} ${
+    isActive ? 'bg-sol-300 text-pino-800' : 'bg-sol-400 text-pino-800 hover:bg-sol-300'
+  }`
+
+const publicarMovil = () => `block px-3 py-3 rounded-xl text-base font-bold bg-sol-400 text-pino-800 ${foco}`
+
+/** Marca: el techo (amarillo) sobre el río (verde agua). */
+export function Logo({ className = 'h-8 w-8' }) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 32 32" fill="none" className={className}>
+      <path d="M3 23c4-3 7-3 10 0s6 3 10 0 5-2 6-1" stroke="#7fc4b6" strokeWidth="2.4" strokeLinecap="round" />
+      <path d="M6 16 16 7l10 9" stroke="#f2b33d" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
 
 function Contador({ cantidad }) {
   if (cantidad <= 0) return null
   return (
     <span
       aria-hidden="true"
-      className="min-w-5 rounded-full bg-red-600 px-1.5 text-center text-xs font-semibold leading-5 text-white"
+      className="min-w-5 rounded-full bg-sol-400 px-1.5 text-center text-xs font-bold leading-5 text-pino-800"
     >
       {cantidad > 9 ? '9+' : cantidad}
     </span>
@@ -26,13 +46,12 @@ function Contador({ cantidad }) {
 }
 
 /** Links de la barra. Se usan dos veces: en fila (escritorio) y en columna (menú del celular). */
-function Links({ claseLink, claseSalir, estaAutenticado, usuario, pendientes, onSalir }) {
+function Links({ claseLink, clasePublicar, claseSalir, estaAutenticado, usuario, pendientes, onSalir }) {
   return (
     <>
       <NavLink to="/" end className={claseLink}>Propiedades</NavLink>
       {estaAutenticado ? (
         <>
-          <NavLink to="/publicar" className={claseLink}>Publicar</NavLink>
           <NavLink to="/mis-propiedades" className={claseLink}>Mis propiedades</NavLink>
           <NavLink to="/favoritos" className={claseLink}>Favoritos</NavLink>
           <NavLink to="/alertas" className={claseLink}>Alertas</NavLink>
@@ -58,6 +77,7 @@ function Links({ claseLink, claseSalir, estaAutenticado, usuario, pendientes, on
           >
             Salir
           </button>
+          <NavLink to="/publicar" className={clasePublicar}>Publicar</NavLink>
         </>
       ) : (
         <>
@@ -104,17 +124,19 @@ export default function Navbar() {
   const propsLinks = { estaAutenticado, usuario, pendientes, onSalir: cerrarSesion }
 
   return (
-    <header className="border-b border-gray-200 bg-white">
+    <header className="bg-pino-800">
       <nav aria-label="Principal" className="mx-auto max-w-6xl px-4">
         <div className="flex h-16 items-center justify-between gap-4">
-          <Link to="/" className="shrink-0 text-xl font-bold text-blue-600">
-            Alquileres R4
+          <Link to="/" className={`flex shrink-0 items-center gap-2.5 rounded-lg text-white ${foco}`}>
+            <Logo />
+            <span className="font-display text-[21px] font-extrabold tracking-tight">Alquileres R4</span>
           </Link>
 
           <div className="hidden items-center gap-1 xl:flex">
             <Links
               claseLink={linkEscritorio}
-              claseSalir="px-3 py-2 rounded-md text-sm font-medium whitespace-nowrap text-gray-700 hover:bg-gray-100"
+              clasePublicar={publicarEscritorio}
+              claseSalir={`px-3 py-2 rounded-lg text-[15px] whitespace-nowrap text-gray-300 hover:bg-white/8 hover:text-white ${foco}`}
               {...propsLinks}
             />
           </div>
@@ -125,7 +147,7 @@ export default function Navbar() {
             aria-expanded={abierto}
             aria-controls="menu-movil"
             aria-label={abierto ? 'Cerrar menú' : 'Abrir menú'}
-            className="relative rounded-md p-2 text-gray-700 hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 xl:hidden"
+            className={`relative flex h-11 w-11 items-center justify-center rounded-lg text-white hover:bg-white/10 xl:hidden ${foco}`}
           >
             <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-6 w-6">
               {abierto ? (
@@ -136,16 +158,17 @@ export default function Navbar() {
             </svg>
             {/* Aviso de visitas pendientes también con el menú cerrado */}
             {!abierto && pendientes > 0 && (
-              <span aria-hidden="true" className="absolute right-1 top-1 h-2.5 w-2.5 rounded-full bg-red-600 ring-2 ring-white" />
+              <span aria-hidden="true" className="absolute right-1.5 top-1.5 h-2.5 w-2.5 rounded-full bg-sol-400 ring-2 ring-pino-800" />
             )}
           </button>
         </div>
 
         {abierto && (
-          <div id="menu-movil" className="flex flex-col gap-1 border-t border-gray-100 py-3 xl:hidden">
+          <div id="menu-movil" className="flex animate-aparecer flex-col gap-1 border-t border-white/10 py-3 xl:hidden">
             <Links
               claseLink={linkMovil}
-              claseSalir="block w-full px-3 py-3 rounded-md text-left text-base font-medium text-gray-700 hover:bg-gray-100"
+              clasePublicar={publicarMovil}
+              claseSalir={`block w-full px-3 py-3 rounded-lg text-left text-base text-gray-200 hover:bg-white/8 ${foco}`}
               {...propsLinks}
             />
           </div>

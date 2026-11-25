@@ -76,7 +76,7 @@ export default function Modal({ titulo, subtitulo, onCerrar, ancho = 'md', child
 
   return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-pino-900/50 p-4 backdrop-blur-[2px]"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) onCerrar()
       }}
@@ -86,11 +86,11 @@ export default function Modal({ titulo, subtitulo, onCerrar, ancho = 'md', child
         role="dialog"
         aria-modal="true"
         aria-labelledby={idTitulo}
-        className={`max-h-full w-full overflow-y-auto rounded-lg bg-white p-6 shadow-xl ${ANCHOS[ancho]}`}
+        className={`max-h-full w-full animate-aparecer overflow-y-auto rounded-2xl bg-white p-6 shadow-2xl shadow-pino-900/30 ${ANCHOS[ancho]}`}
       >
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h2 id={idTitulo} className="text-lg font-semibold text-gray-900">
+            <h2 id={idTitulo} className="text-2xl font-bold text-gray-900">
               {titulo}
             </h2>
             {subtitulo && <p className="mt-0.5 text-sm text-gray-500">{subtitulo}</p>}
@@ -99,7 +99,7 @@ export default function Modal({ titulo, subtitulo, onCerrar, ancho = 'md', child
             type="button"
             onClick={onCerrar}
             aria-label="Cerrar ventana"
-            className="rounded-md p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+            className="-mr-2 -mt-1 flex h-11 w-11 items-center justify-center rounded-xl text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus-visible:ring-3 focus-visible:ring-rio-600"
           >
             <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5">
               <path strokeLinecap="round" d="M6 6l12 12M18 6 6 18" />

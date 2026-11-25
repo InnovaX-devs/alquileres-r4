@@ -128,7 +128,7 @@ export default function Perfil() {
 
   return (
     <div className="max-w-xl mx-auto">
-      <h1 className="text-2xl font-bold">Mi perfil</h1>
+      <h1 className="text-[2.25rem] leading-tight font-extrabold tracking-[-0.03em]">Mi perfil</h1>
 
       <div className="mt-6">
         <EstadoVerificacion usuario={usuario} editando={editando} onCompletar={abrirFormulario} />
@@ -143,7 +143,7 @@ export default function Perfil() {
 
       <Card as="section" className="mt-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold">{editando ? 'Editar datos personales' : 'Datos personales'}</h2>
+          <h2 className="text-xl font-bold">{editando ? 'Editar datos personales' : 'Datos personales'}</h2>
           {!editando && (
             <Button variante="suave" tamanio="sm" onClick={abrirFormulario}>
               Editar
@@ -163,7 +163,7 @@ export default function Perfil() {
               const valor = usuario[clave]?.toString().trim()
               return (
                 <div key={clave} className="py-3 sm:grid sm:grid-cols-3 sm:gap-4">
-                  <dt className="text-sm font-medium text-gray-500">{label}</dt>
+                  <dt className="text-sm font-bold text-gray-500">{label}</dt>
                   <dd
                     className={`mt-1 sm:mt-0 sm:col-span-2 text-sm break-words whitespace-pre-line ${
                       valor ? 'text-gray-900' : 'text-gray-400 italic'

@@ -6,7 +6,7 @@ import { formatearHabitaciones, formatearPrecio, formatearUbicacion } from '../u
 
 function SinFoto() {
   return (
-    <div className="h-full w-full flex flex-col items-center justify-center gap-1 bg-gray-100 text-gray-400">
+    <div className="flex h-full w-full flex-col items-center justify-center gap-1 bg-gray-200/70 text-gray-500">
       <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-10 w-10">
         <path strokeLinecap="round" strokeLinejoin="round" d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1v-9.5Z" />
       </svg>
@@ -36,7 +36,7 @@ export default function TarjetaPropiedad({ propiedad, conFavorito = true }) {
         as={Link}
         to={`/propiedades/${id}`}
         padding="ninguno"
-        className="group flex h-full flex-col overflow-hidden transition hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+        className="group flex h-full flex-col overflow-hidden transition duration-200 hover:-translate-y-0.5 hover:border-gray-300 hover:shadow-xl hover:shadow-pino-900/10 focus:outline-none focus-visible:ring-3 focus-visible:ring-rio-600"
       >
         <div className="aspect-[4/3] overflow-hidden bg-gray-100">
           {foto && !fotoRota ? (
@@ -45,22 +45,25 @@ export default function TarjetaPropiedad({ propiedad, conFavorito = true }) {
               alt={titulo ? `Foto de ${titulo}` : `Foto de la propiedad en ${ubicacion}`}
               loading="lazy"
               onError={() => setFotoRota(true)}
-              className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+              className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]"
             />
           ) : (
             <SinFoto />
           )}
         </div>
 
-        <div className="flex flex-1 flex-col gap-1 p-4">
-          <p className="text-xl font-bold text-gray-900">{formatearPrecio(precio, moneda)}</p>
+        <div className="flex flex-1 flex-col p-5">
+          <p className="font-display text-[1.6rem] leading-tight font-extrabold tracking-tight text-gray-900 tabular-nums">
+            {formatearPrecio(precio, moneda)}
+          </p>
           {expensas > 0 && (
-            <p className="text-xs text-gray-500">+ {formatearPrecio(expensas, moneda)} de expensas</p>
+            <p className="mt-0.5 font-display text-sm text-gray-500 tabular-nums">+ {formatearPrecio(expensas, moneda)} de expensas</p>
           )}
+          {expensas === 0 && <p className="mt-0.5 text-sm text-gray-500">Sin expensas</p>}
 
-          {titulo && <h2 className="mt-1 font-medium text-gray-900 line-clamp-1">{titulo}</h2>}
+          {titulo && <h2 className="mt-3 font-sans text-base font-bold tracking-normal text-gray-900 line-clamp-2">{titulo}</h2>}
 
-          <p className="flex items-start gap-1 text-sm text-gray-600">
+          <p className="mt-1 flex items-start gap-1 text-[15px] text-gray-600">
             <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="mt-0.5 h-4 w-4 shrink-0">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 21s-7-6.2-7-11.5a7 7 0 1 1 14 0C19 14.8 12 21 12 21Z" />
               <circle cx="12" cy="9.5" r="2.5" />
@@ -69,9 +72,12 @@ export default function TarjetaPropiedad({ propiedad, conFavorito = true }) {
           </p>
 
           {(ambientes || metrosCuadrados) && (
-            <p className="mt-auto pt-2 text-sm text-gray-700">
-              {[ambientes, metrosCuadrados ? `${metrosCuadrados} m²` : null].filter(Boolean).join(' · ')}
-            </p>
+            <ul aria-label="Características" className="mt-auto flex flex-wrap gap-1.5 pt-4">
+              {ambientes && <li className="rounded-lg bg-gray-100 px-2.5 py-1 text-sm text-gray-800">{ambientes}</li>}
+              {metrosCuadrados && (
+                <li className="rounded-lg bg-gray-100 px-2.5 py-1 text-sm text-gray-800">{metrosCuadrados} m²</li>
+              )}
+            </ul>
           )}
         </div>
       </Card>

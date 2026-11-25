@@ -25,8 +25,8 @@ export function ErrorConReintento({ mensaje, onReintentar }) {
 // La acción es un link (`to`) o un botón (`onAccion`)
 export function Vacio({ titulo, texto, accion, to, onAccion }) {
   return (
-    <div className="rounded-lg border border-dashed border-gray-300 bg-white py-12 text-center">
-      <p className="text-lg font-medium text-gray-900">{titulo}</p>
+    <div className="rounded-2xl border-2 border-dashed border-gray-300 bg-white/60 px-4 py-14 text-center">
+      <p className="font-display text-2xl font-bold tracking-tight text-gray-900">{titulo}</p>
       {texto && <p className="mt-1 text-sm text-gray-500">{texto}</p>}
       {accion && (
         <Button to={to} onClick={onAccion} className="mt-4">

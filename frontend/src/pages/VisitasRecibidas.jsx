@@ -30,7 +30,7 @@ function TarjetaRecibida({ solicitud, onCambiarEstado }) {
     <Card as="li" padding="sm">
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
-          <Link to={`/propiedades/${propiedad?.id}`} className="font-medium text-blue-700 hover:underline">
+          <Link to={`/propiedades/${propiedad?.id}`} className="font-bold text-rio-700 hover:underline">
             {propiedad?.titulo || `Propiedad #${propiedad?.id}`}
           </Link>
           {propiedad && <p className="text-sm text-gray-500">{formatearUbicacion(propiedad)}</p>}
@@ -41,21 +41,21 @@ function TarjetaRecibida({ solicitud, onCambiarEstado }) {
       <div className="mt-3 grid gap-4 sm:grid-cols-2">
         <div className="text-sm">
           <p className="text-gray-500">Solicitante</p>
-          <p className="font-medium text-gray-900">{solicitante?.nombre || 'Sin nombre'}</p>
+          <p className="font-bold text-gray-900">{solicitante?.nombre || 'Sin nombre'}</p>
           {solicitante?.email && (
-            <a href={`mailto:${solicitante.email}`} className="block text-blue-600 hover:underline break-all">
+            <a href={`mailto:${solicitante.email}`} className="block text-rio-600 hover:underline break-all">
               {solicitante.email}
             </a>
           )}
           {solicitante?.telefono && (
-            <a href={`tel:${solicitante.telefono.replace(/[^\d+]/g, '')}`} className="block text-blue-600 hover:underline">
+            <a href={`tel:${solicitante.telefono.replace(/[^\d+]/g, '')}`} className="block text-rio-600 hover:underline">
               {solicitante.telefono}
             </a>
           )}
         </div>
         <div className="text-sm">
           <p className="text-gray-500">Fecha propuesta</p>
-          <p className="font-medium text-gray-900">{formatearFechaHora(fechaPropuesta)}</p>
+          <p className="font-bold text-gray-900">{formatearFechaHora(fechaPropuesta)}</p>
           <p className="mt-1 text-xs text-gray-500">Solicitada el {formatearFechaHora(fechaSolicitud)}</p>
         </div>
       </div>
@@ -151,14 +151,14 @@ export default function VisitasRecibidas() {
         : resultado.solicitudes
     contenido = (
       <>
-        <div role="group" aria-label="Filtrar solicitudes" className="mb-4 inline-flex rounded-md border border-gray-200 bg-white p-1">
+        <div role="group" aria-label="Filtrar solicitudes" className="mb-4 inline-flex gap-1 rounded-xl border-2 border-gray-200 bg-white p-1">
           {FILTROS.map(({ valor, label }) => (
             <button
               key={valor}
               onClick={() => elegirFiltro(valor)}
               aria-pressed={filtro === valor}
-              className={`rounded px-3 py-1 text-sm font-medium ${
-                filtro === valor ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:text-gray-900'
+              className={`min-h-10 rounded-lg px-3.5 text-[15px] font-bold transition-colors focus:outline-none focus-visible:ring-3 focus-visible:ring-rio-600 ${
+                filtro === valor ? 'bg-pino-800 text-white' : 'text-gray-600 hover:text-gray-900'
               }`}
             >
               {label} ({valor === 'PENDIENTE' ? pendientes.length : resultado.solicitudes.length})

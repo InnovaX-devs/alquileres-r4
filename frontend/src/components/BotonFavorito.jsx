@@ -24,6 +24,8 @@ export default function BotonFavorito({ tipo, id, className = '' }) {
   const location = useLocation()
   const [enviando, setEnviando] = useState(false)
   const toast = useToast()
+  // Latido del corazón al guardar (solo como respuesta al click, no al cargar la página)
+  const [latiendo, setLatiendo] = useState(false)
 
   const marcado = estaAutenticado ? esFavorito(tipo, id) : false
   const etiqueta = marcado ? TEXTOS[tipo].quitar : TEXTOS[tipo].guardar
@@ -37,6 +39,7 @@ export default function BotonFavorito({ tipo, id, className = '' }) {
     try {
       await alternar(tipo, id)
       toast.exito(marcado ? 'Se quitó de tus favoritos' : 'Se guardó en tus favoritos')
+      if (!marcado) setLatiendo(true)
     } catch (e) {
       toast.error(e, 'No se pudo actualizar el favorito')
     } finally {
@@ -52,8 +55,8 @@ export default function BotonFavorito({ tipo, id, className = '' }) {
       disabled={enviando || marcado === undefined}
       aria-pressed={!!marcado}
       aria-label={etiqueta}
-      title={estaAutenticado ? etiqueta : 'Iniciá sesión para guardar favoritos'}
-      className={`inline-flex items-center justify-center rounded-full bg-white/90 p-2 shadow-sm transition hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 disabled:opacity-60 ${className}`}
+      title={estaAutenticado ? etiqueta : 'Iniciá sesión para guardar favoritos'}  
+      className={`inline-flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-md shadow-pino-900/15 transition hover:scale-105 focus:outline-none focus-visible:ring-3 focus-visible:ring-rio-600 active:scale-95 disabled:opacity-60 ${className}`}
     >
       <svg
         aria-hidden="true"
@@ -61,7 +64,8 @@ export default function BotonFavorito({ tipo, id, className = '' }) {
         strokeWidth="1.8"
         stroke="currentColor"
         fill={marcado ? 'currentColor' : 'none'}
-        className={`h-5 w-5 ${marcado ? 'text-red-500' : 'text-gray-600'}`}
+        onAnimationEnd={() => setLatiendo(false)}
+        className={`h-[22px] w-[22px] ${latiendo ? 'animate-latido' : ''} ${marcado ? 'text-red-600' : 'text-gray-800'}`}
       >
         <path
           strokeLinecap="round"

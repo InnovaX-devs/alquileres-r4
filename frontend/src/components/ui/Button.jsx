@@ -5,8 +5,9 @@ import { clasesBoton } from './clases'
 /**
  * Botón común (#87). Con `to` se renderiza como Link de react-router (mismo aspecto).
  *
- * @param {'primario'|'secundario'|'fantasma'|'suave'|'exito'|'advertencia'|'peligro'|'peligroSuave'} [props.variante='primario']
- * @param {'sm'|'md'} [props.tamanio='md']
+ * @param {'primario'|'oscuro'|'secundario'|'fantasma'|'suave'|'exito'|'advertencia'|'peligro'|'peligroSuave'} [props.variante='primario']
+ *        primario (amarillo) es la acción principal de la pantalla: usar uno por pantalla.
+ * @param {'sm'|'md'|'lg'} [props.tamanio='md']
  * @param {boolean} [props.anchoCompleto]  ocupa todo el ancho
  * @param {boolean} [props.cargando]       deshabilita el botón y muestra un spinner antes del texto
  * @param {string}  [props.to]             ruta interna: se renderiza un <Link>

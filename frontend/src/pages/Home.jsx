@@ -15,16 +15,16 @@ function TarjetaCargando() {
   return (
     <div aria-hidden="true" className={`animate-pulse overflow-hidden ${CLASES_CARD}`}>
       <div className="aspect-[4/3] bg-gray-200" />
-      <div className="space-y-2 p-4">
-        <div className="h-6 w-1/2 rounded bg-gray-200" />
-        <div className="h-4 w-3/4 rounded bg-gray-200" />
-        <div className="h-4 w-1/3 rounded bg-gray-200" />
+      <div className="space-y-2.5 p-5">
+        <div className="h-7 w-1/2 rounded-lg bg-gray-200" />
+        <div className="h-4 w-3/4 rounded-lg bg-gray-200" />
+        <div className="h-4 w-1/3 rounded-lg bg-gray-200" />
       </div>
     </div>
   )
 }
 
-const grilla = 'grid gap-6 sm:grid-cols-2 lg:grid-cols-3'
+const grilla = 'grid gap-5 sm:grid-cols-2 lg:grid-cols-3'
 
 // Listado público de propiedades (#72) con filtros (#73).
 // Los filtros viven en la URL (?moneda=ARS&habitacionesMin=2): se mantienen al recargar,
@@ -116,26 +116,43 @@ export default function Home() {
     )
   }
 
+  const cantidad = !cargando && !error ? propiedades.length : null
+
   return (
     <div>
-      <div className="mb-6 flex items-baseline justify-between gap-4">
-        <h1 className="text-2xl font-bold">Propiedades en alquiler</h1>
-        {!cargando && !error && propiedades.length > 0 && (
-          <p className="text-sm text-gray-500">
-            {propiedades.length} {propiedades.length === 1 ? 'propiedad' : 'propiedades'}
+      {/* Hero de ancho completo: se sale del contenedor del Layout */}
+      <section className="relative left-1/2 -mt-8 w-screen -translate-x-1/2 bg-pino-800 pb-28 pt-12 text-white sm:pt-16">
+        <div className="mx-auto max-w-6xl px-4">
+          <h1 className="max-w-[13ch] text-[clamp(2.4rem,6vw,4.25rem)] font-extrabold leading-[1.02] tracking-[-0.035em]">
+            Tu próximo lugar en Río Cuarto
+          </h1>
+          <p className="mt-4 max-w-[52ch] text-lg leading-relaxed text-gray-300">
+            Departamentos y casas de inmobiliarias y dueños directos, con el precio y las expensas a la vista.
           </p>
+        </div>
+      </section>
+
+      <div className="relative -mt-20">
+        <FiltrosPropiedades valores={filtros} onAplicar={aplicarFiltros} />
+      </div>
+
+      <div className="mb-5 mt-10 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
+        <h2 className="text-[1.75rem] font-bold">
+          {cantidad === null
+            ? 'Propiedades en alquiler'
+            : `${cantidad} ${cantidad === 1 ? 'propiedad disponible' : 'propiedades disponibles'}`}
+        </h2>
+        {conFiltros && (
+          // Crear una alerta con la búsqueda actual (#85): los filtros y los criterios de alerta son los mismos
+          <Button variante="suave" tamanio="sm" to={`/alertas/nueva?${consulta}`}>
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-[18px] w-[18px]">
+              <path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+              <path d="M10 21a2 2 0 0 0 4 0" />
+            </svg>
+            Avisarme cuando aparezca algo así
+          </Button>
         )}
       </div>
-      <FiltrosPropiedades valores={filtros} onAplicar={aplicarFiltros} />
-      {conFiltros && (
-        // Crear una alerta con la búsqueda actual (#85): los filtros y los criterios de alerta son los mismos
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-blue-100 bg-blue-50 px-4 py-3">
-          <p className="text-sm text-blue-900">¿Querés que te avisemos cuando se publique algo con estos filtros?</p>
-          <Button variante="secundario" tamanio="sm" to={`/alertas/nueva?${consulta}`}>
-            Crear alerta
-          </Button>
-        </div>
-      )}
       {contenido}
     </div>
   )

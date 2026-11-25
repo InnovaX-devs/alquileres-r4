@@ -7,7 +7,7 @@ import { datosFaltantesParaVerificar, unirConY } from '../utils/perfil'
 function Caja({ children }) {
   return (
     <Card as="section" aria-labelledby="titulo-contacto">
-      <h2 id="titulo-contacto" className="text-lg font-semibold text-gray-900">
+      <h2 id="titulo-contacto" className="text-xl font-bold text-gray-900">
         Contacto del publicador
       </h2>
       <div className="mt-3">{children}</div>
@@ -18,8 +18,8 @@ function Caja({ children }) {
 function Aviso({ texto, accion, to, state }) {
   return (
     <>
-      <p className="text-sm text-gray-600">{texto}</p>
-      <Button to={to} state={state} anchoCompleto className="mt-4">
+      <p className="text-[15px] text-gray-600">{texto}</p>
+      <Button variante="secundario" to={to} state={state} anchoCompleto className="mt-4">
         {accion}
       </Button>
     </>
@@ -58,26 +58,26 @@ export default function ContactoPublicador({ contacto }) {
       <Caja>
         <div className="flex items-start justify-between gap-2">
           <div>
-            <p className="font-medium text-gray-900">{contacto.nombre}</p>
+            <p className="font-bold text-gray-900">{contacto.nombre}</p>
             <p className="text-xs text-gray-500">
               {contacto.tipo === 'INMOBILIARIA' ? 'Inmobiliaria' : 'Particular'}
             </p>
           </div>
           {contacto.tipo === 'INMOBILIARIA' && contacto.inmobiliariaId && (
-            <BotonFavorito tipo="inmobiliaria" id={contacto.inmobiliariaId} className="border border-gray-200" />
+            <BotonFavorito tipo="inmobiliaria" id={contacto.inmobiliariaId} className="border-2 border-gray-200 shadow-none" />
           )}
         </div>
         <ul className="mt-3 space-y-2">
           {contacto.email && (
             <Dato icono={ICONO_EMAIL}>
-              <a href={`mailto:${contacto.email}`} className="text-blue-600 hover:underline break-all">
+              <a href={`mailto:${contacto.email}`} className="font-bold text-rio-700 hover:underline break-all">
                 {contacto.email}
               </a>
             </Dato>
           )}
           {contacto.telefono && (
             <Dato icono={ICONO_TELEFONO}>
-              <a href={`tel:${contacto.telefono.replace(/[^\d+]/g, '')}`} className="text-blue-600 hover:underline">
+              <a href={`tel:${contacto.telefono.replace(/[^\d+]/g, '')}`} className="font-bold text-rio-700 hover:underline">
                 {contacto.telefono}
               </a>
             </Dato>
@@ -104,7 +104,7 @@ export default function ContactoPublicador({ contacto }) {
   if (cargando || !usuario) {
     return (
       <Caja>
-        <Spinner etiqueta="Cargando" className="text-blue-600" />
+        <Spinner etiqueta="Cargando" className="text-rio-600" />
       </Caja>
     )
   }

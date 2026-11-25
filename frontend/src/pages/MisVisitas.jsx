@@ -12,7 +12,7 @@ function TarjetaSolicitud({ solicitud }) {
   return (
     <Card as="li" padding="sm">
       <div className="flex flex-wrap items-start justify-between gap-2">
-        <Link to={`/propiedades/${propiedadId}`} className="font-medium text-blue-700 hover:underline">
+        <Link to={`/propiedades/${propiedadId}`} className="font-bold text-rio-700 hover:underline">
           {tituloPropiedad || `Propiedad #${propiedadId}`}
         </Link>
         <EstadoVisita estado={estado} />
@@ -20,7 +20,7 @@ function TarjetaSolicitud({ solicitud }) {
       <dl className="mt-2 grid gap-x-6 gap-y-1 text-sm sm:grid-cols-2">
         <div>
           <dt className="inline text-gray-500">Fecha propuesta: </dt>
-          <dd className="inline font-medium text-gray-900">{formatearFechaHora(fechaPropuesta)}</dd>
+          <dd className="inline font-bold text-gray-900">{formatearFechaHora(fechaPropuesta)}</dd>
         </div>
         <div>
           <dt className="inline text-gray-500">Solicitada el: </dt>

@@ -36,7 +36,7 @@ export default function Spinner({ tamanio = 'md', etiqueta, className = '' }) {
 /** Spinner centrado para cuando carga una pantalla entera. */
 export function CargandoPagina({ etiqueta = 'Cargando...' }) {
   return (
-    <div className="flex justify-center py-16 text-blue-600">
+    <div className="flex justify-center py-16 text-rio-600">
       <Spinner tamanio="lg" etiqueta={etiqueta} />
     </div>
   )

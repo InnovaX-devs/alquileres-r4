@@ -24,7 +24,7 @@ export function Campo({ id, label, opcional, error, ayuda, contador, className =
   return (
     <div className={className}>
       {label && (
-        <label htmlFor={id} className="block text-sm font-medium text-gray-700">
+        <label htmlFor={id} className="block text-sm font-bold text-gray-700">
           {label} {opcional && <span className="font-normal text-gray-400">(opcional)</span>}
         </label>
       )}
