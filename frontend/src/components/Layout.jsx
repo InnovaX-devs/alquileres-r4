@@ -5,7 +5,8 @@ import SesionExpirada from './SesionExpirada'
 
 export default function Layout() {
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    // overflow-x-clip: las secciones de ancho completo (el hero del inicio) usan w-screen
+    <div className="flex min-h-screen flex-col overflow-x-clip">
       <SesionExpirada />
       <Navbar />
       <main className="flex-1 max-w-6xl w-full mx-auto px-4 py-8">

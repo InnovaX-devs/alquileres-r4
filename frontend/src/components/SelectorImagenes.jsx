@@ -11,7 +11,7 @@ import {
 import { Button } from './ui'
 
 const ETIQUETA_ESTADO = {
-  subiendo: { texto: 'Subiendo...', clase: 'bg-blue-600' },
+  subiendo: { texto: 'Subiendo...', clase: 'bg-rio-600' },
   subida: { texto: 'Subida', clase: 'bg-green-600' },
   error: { texto: 'Falló', clase: 'bg-red-600' },
 }
@@ -24,7 +24,7 @@ function BotonIcono({ label, onClick, disabled, children }) {
       disabled={disabled}
       aria-label={label}
       title={label}
-      className="flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-gray-700 shadow hover:bg-white disabled:opacity-40 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+      className="flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-gray-700 shadow hover:bg-white disabled:opacity-40 focus:outline-none focus-visible:ring-2 focus-visible:ring-rio-500"
     >
       {children}
     </button>
@@ -100,8 +100,8 @@ export default function SelectorImagenes({ imagenes, onChange, estados = {}, blo
           }}
           onDragLeave={() => setSobreZona(false)}
           onDrop={soltarEnZona}
-          className={`flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed px-4 py-6 text-center ${
-            sobreZona ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
+          className={`flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed px-4 py-8 text-center ${
+            sobreZona ? 'border-rio-500 bg-rio-50' : 'border-gray-300'
           }`}
         >
           <p className="text-sm text-gray-600">Arrastrá las fotos acá o</p>
@@ -151,18 +151,18 @@ export default function SelectorImagenes({ imagenes, onChange, estados = {}, blo
                   onDragEnd={() => setArrastrando(null)}
                   onDragOver={(event) => event.preventDefault()}
                   onDrop={soltarEnMiniatura(indice)}
-                  className={`group relative aspect-[4/3] overflow-hidden rounded-md border bg-gray-100 ${
+                  className={`group relative aspect-[4/3] overflow-hidden rounded-xl border bg-gray-100 ${
                     arrastrando === indice ? 'opacity-40' : ''
-                  } ${bloqueado ? '' : 'cursor-move'} ${indice === 0 ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200'}`}
+                  } ${bloqueado ? '' : 'cursor-move'} ${indice === 0 ? 'border-rio-500 ring-2 ring-rio-200' : 'border-gray-200'}`}
                 >
                   <img src={imagen.preview} alt={`Foto ${indice + 1}: ${imagen.archivo.name}`} className="h-full w-full object-cover" />
 
-                  <span className="absolute left-2 top-2 rounded bg-black/60 px-1.5 py-0.5 text-xs font-medium text-white">
+                  <span className="absolute left-2 top-2 rounded bg-black/60 px-1.5 py-0.5 text-xs font-bold text-white">
                     {indice === 0 ? 'Portada' : indice + 1}
                   </span>
 
                   {estado && (
-                    <span className={`absolute right-2 top-2 rounded px-1.5 py-0.5 text-xs font-medium text-white ${estado.clase}`}>
+                    <span className={`absolute right-2 top-2 rounded px-1.5 py-0.5 text-xs font-bold text-white ${estado.clase}`}>
                       {estado.texto}
                     </span>
                   )}

@@ -59,7 +59,7 @@ export default function ModalSolicitarVisita({ propiedadId, tituloPropiedad, onC
     <Modal titulo="Solicitar visita" subtitulo={tituloPropiedad} onCerrar={onCerrar}>
       {enviada ? (
         <div className="mt-6 text-center">
-          <p className="font-medium text-green-700">¡Solicitud enviada!</p>
+          <p className="font-bold text-green-700">¡Solicitud enviada!</p>
           <p className="mt-1 text-sm text-gray-600">
             Le avisamos al publicador. Vas a ver la respuesta en tus solicitudes.
           </p>

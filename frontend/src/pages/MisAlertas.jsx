@@ -15,8 +15,8 @@ function Interruptor({ activa, deshabilitado, onCambiar }) {
       aria-label={activa ? 'Alerta activa. Tocá para pausarla' : 'Alerta pausada. Tocá para activarla'}
       onClick={onCambiar}
       disabled={deshabilitado}
-      className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:opacity-60 ${
-        activa ? 'bg-blue-600' : 'bg-gray-300'
+      className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-rio-500 focus-visible:ring-offset-2 disabled:opacity-60 ${
+        activa ? 'bg-rio-600' : 'bg-gray-300'
       }`}
     >
       <span
@@ -83,8 +83,8 @@ function TarjetaAlerta({ alerta, onActualizada, onEliminada }) {
             {criterios.map((criterio) => (
               <li
                 key={criterio}
-                className={`max-w-full rounded-full px-3 py-1 text-sm font-medium ${
-                  activa ? 'bg-blue-50 text-blue-700' : 'bg-gray-100 text-gray-500'
+                className={`max-w-full rounded-full px-3 py-1 text-sm font-bold ${
+                  activa ? 'bg-rio-50 text-rio-700' : 'bg-gray-100 text-gray-500'
                 }`}
               >
                 {criterio}
@@ -184,7 +184,7 @@ export default function MisAlertas() {
   return (
     <div>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-        <h1 className="text-2xl font-bold">Mis alertas</h1>
+        <h1 className="text-[2.25rem] leading-tight font-extrabold tracking-[-0.03em]">Mis alertas</h1>
         <Button to="/alertas/nueva">Nueva alerta</Button>
       </div>
       {contenido}

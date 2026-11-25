@@ -47,7 +47,7 @@ export default function SolicitarVisita({ propiedadId, tituloPropiedad }) {
 
   if (!estaAutenticado) {
     return (
-      <Button to="/login" state={{ from: location }} anchoCompleto>
+      <Button to="/login" state={{ from: location }} anchoCompleto tamanio="lg">
         Iniciá sesión para solicitar una visita
       </Button>
     )
@@ -58,18 +58,18 @@ export default function SolicitarVisita({ propiedadId, tituloPropiedad }) {
   return (
     <>
       {solicitud ? (
-        <div className="rounded-md border border-gray-200 bg-gray-50 p-3 text-sm">
+        <div className="rounded-xl bg-gray-100 p-4 text-[15px]">
           <div className="flex items-center justify-between gap-2">
-            <span className="font-medium text-gray-900">Ya solicitaste una visita</span>
+            <span className="font-bold text-gray-900">Ya solicitaste una visita</span>
             <EstadoVisita estado={solicitud.estado} />
           </div>
           <p className="mt-1 text-gray-600">Para el {formatearFechaHora(solicitud.fechaPropuesta)}</p>
-          <Link to="/visitas" className="mt-2 inline-block text-blue-600 hover:underline">
+          <Link to="/visitas" className="mt-2 inline-block font-bold text-rio-700 hover:underline">
             Ver mis solicitudes
           </Link>
         </div>
       ) : (
-        <Button onClick={() => setAbierto(true)} disabled={solicitud === undefined} anchoCompleto>
+        <Button onClick={() => setAbierto(true)} disabled={solicitud === undefined} anchoCompleto tamanio="lg">
           Solicitar visita
         </Button>
       )}

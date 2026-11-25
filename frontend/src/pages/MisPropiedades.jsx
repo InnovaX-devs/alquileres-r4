@@ -67,7 +67,7 @@ export default function MisPropiedades() {
   return (
     <div>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-        <h1 className="text-2xl font-bold">Mis propiedades</h1>
+        <h1 className="text-[2.25rem] leading-tight font-extrabold tracking-[-0.03em]">Mis propiedades</h1>
         {!cargando && !resultado.error && propiedades.length > 0 && (
           <Button to="/publicar">Publicar otra</Button>
         )}

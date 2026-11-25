@@ -26,13 +26,13 @@ function AlertaCreada({ alerta, email, onCrearOtra }) {
           <path strokeLinecap="round" strokeLinejoin="round" d="m5 13 4 4L19 7" />
         </svg>
       </div>
-      <h2 className="mt-4 text-xl font-semibold text-gray-900">¡Alerta creada!</h2>
+      <h2 className="mt-4 text-2xl font-bold text-gray-900">¡Alerta creada!</h2>
       <p className="mt-2 text-sm text-gray-600">
         Te vamos a avisar por email{email ? ` a ${email}` : ''} cuando se publique una propiedad con:
       </p>
       <ul className="mt-3 flex flex-wrap justify-center gap-2">
         {describirAlerta(alerta).map((criterio) => (
-          <li key={criterio} className="max-w-full rounded-full bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700">
+          <li key={criterio} className="max-w-full rounded-full bg-rio-50 px-3 py-1 text-sm font-bold text-rio-700">
             {criterio}
           </li>
         ))}
@@ -107,7 +107,7 @@ export default function CrearAlerta() {
 
   return (
     <div className="mx-auto max-w-xl">
-      <h1 className="text-2xl font-bold">Crear alerta</h1>
+      <h1 className="text-[2.25rem] leading-tight font-extrabold tracking-[-0.03em]">Crear alerta</h1>
       <p className="mt-1 text-sm text-gray-600">
         Elegí qué buscás y te avisamos cuando se publique una propiedad que coincida. Todos los criterios son
         opcionales: completá solo los que te importan.

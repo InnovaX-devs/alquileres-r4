@@ -1,9 +1,88 @@
 @import "tailwindcss";
-/* Responsive (#89): las palabras muy largas sin espacios (emails, links) se cortan cuando no
-   entran en la línea, en lugar de salirse de su caja y provocar scroll horizontal en celulares.
-   (break-word y no anywhere: así los botones y etiquetas no se aplastan letra por letra) */
+
+/* ── Identidad visual: el río y las sierras de Río Cuarto ─────────────────────────────────────
+   - Neutros: gris verdoso tipo piedra (reemplaza la escala gray de Tailwind, así todo lo que
+     usa gray-* toma el tono sin tocar cada archivo). gray-900 es el verde pino del texto.
+   - rio:  verde agua. Links, selección, foco y detalles.
+   - sol:  amarillo. SOLO para la acción principal de cada pantalla (Buscar, Publicar, Enviar...),
+           siempre con texto pino encima (contraste 7:1).
+   - pino: el verde oscuro de la barra y el hero.
+   Tipografías: Bricolage Grotesque para títulos y precios (con carácter), Atkinson Hyperlegible
+   para el texto (diseñada para leerse fácil). Se sirven desde la app, no desde Google. */
+@theme {
+  --font-sans: 'Atkinson Hyperlegible', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Bricolage Grotesque Variable', 'Atkinson Hyperlegible', ui-sans-serif, sans-serif;
+
+  --color-gray-50: #f5f7f3;
+  --color-gray-100: #eaeee8;
+  --color-gray-200: #dbe1d9;
+  --color-gray-300: #c5cdc3;
+  --color-gray-400: #8f9c95;
+  --color-gray-500: #627069;
+  --color-gray-600: #4e5f59;
+  --color-gray-700: #3a4a44;
+  --color-gray-800: #26372f;
+  --color-gray-900: #17322b;
+  --color-gray-950: #0f231d;
+
+  --color-rio-50: #ebf5f2;
+  --color-rio-100: #d3ebe4;
+  --color-rio-200: #a8d6ca;
+  --color-rio-300: #7fc4b6;
+  --color-rio-400: #55a898;
+  --color-rio-500: #3c9282;
+  --color-rio-600: #2e7f72;
+  --color-rio-700: #23665b;
+  --color-rio-800: #1c5149;
+  --color-rio-900: #163f38;
+
+  --color-sol-100: #fcefd2;
+  --color-sol-200: #f9dfa5;
+  --color-sol-300: #f6cb72;
+  --color-sol-400: #f2b33d;
+  --color-sol-500: #e3a12a;
+  --color-sol-600: #c7881b;
+
+  --color-pino-700: #1f4038;
+  --color-pino-800: #17322b;
+  --color-pino-900: #10251f;
+
+  --animate-aparecer: aparecer 0.2s ease-out;
+  --animate-latido: latido 0.35s ease-out;
+
+  @keyframes aparecer {
+    from { opacity: 0; transform: translateY(8px) scale(0.98); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes latido {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.25); }
+    100% { transform: scale(1); }
+  }
+}
+
 @layer base {
   body {
+    /* Responsive (#89): las palabras muy largas sin espacios (emails, links) se cortan cuando no
+       entran en la línea, en lugar de salirse de su caja y provocar scroll horizontal en celulares.
+       (break-word y no anywhere: así los botones y etiquetas no se aplastan letra por letra) */
     overflow-wrap: break-word;
+    background-color: var(--color-gray-100);
+    color: var(--color-gray-900);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
+}
+
+/* Quien pidió menos movimiento en su sistema no ve animaciones */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
   }
 }

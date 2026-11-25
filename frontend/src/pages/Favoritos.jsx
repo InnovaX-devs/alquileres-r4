@@ -18,7 +18,7 @@ function aTarjeta(favorito) {
 function Seccion({ titulo, cantidad, children }) {
   return (
     <section className="mt-8 first:mt-0">
-      <h2 className="mb-4 text-lg font-semibold text-gray-900">
+      <h2 className="mb-4 text-2xl font-bold text-gray-900">
         {titulo} <span className="text-sm font-normal text-gray-500">({cantidad})</span>
       </h2>
       {children}
@@ -40,12 +40,12 @@ function TarjetaInmobiliaria({ favorito }) {
           className="h-12 w-12 shrink-0 rounded-full border border-gray-200 object-cover"
         />
       ) : (
-        <div aria-hidden="true" className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-100 text-lg font-semibold text-blue-700">
+        <div aria-hidden="true" className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-rio-100 text-lg font-bold text-rio-700">
           {nombre?.trim()?.[0]?.toUpperCase() || '?'}
         </div>
       )}
       <div className="min-w-0 flex-1">
-        <p className="truncate font-medium text-gray-900">{nombre}</p>
+        <p className="truncate font-bold text-gray-900">{nombre}</p>
         {verificada && <p className="text-xs text-green-700">Inmobiliaria verificada</p>}
       </div>
       <BotonFavorito tipo="inmobiliaria" id={inmobiliariaId} className="border border-gray-200" />
@@ -131,7 +131,7 @@ export default function Favoritos() {
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-bold">Favoritos</h1>
+      <h1 className="mb-6 text-[2.25rem] leading-tight font-extrabold tracking-[-0.03em]">Favoritos</h1>
       {contenido}
     </div>
   )

@@ -48,7 +48,7 @@ export default function Login() {
 
   return (
     <div className="max-w-sm mx-auto">
-      <h1 className="text-2xl font-bold text-center">Ingresar</h1>
+      <h1 className="text-[2.25rem] leading-tight font-extrabold tracking-[-0.03em] text-center">Ingresar</h1>
 
       {estado.registrado && (
         <Aviso tipo="exito" className="mt-4">
@@ -88,7 +88,7 @@ export default function Login() {
 
       <p className="mt-4 text-center text-sm text-gray-600">
         ¿No tenés cuenta?{' '}
-        <Link to="/registro" className="text-blue-600 hover:underline">
+        <Link to="/registro" className="text-rio-600 hover:underline">
           Registrate
         </Link>
       </p>

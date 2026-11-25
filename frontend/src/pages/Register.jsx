@@ -68,7 +68,7 @@ export default function Register() {
 
   return (
     <div className="max-w-sm mx-auto">
-      <h1 className="text-2xl font-bold text-center">Crear cuenta</h1>
+      <h1 className="text-[2.25rem] leading-tight font-extrabold tracking-[-0.03em] text-center">Crear cuenta</h1>
 
       <Card as="form" onSubmit={enviar} noValidate className="mt-6 space-y-4">
         <Input
@@ -116,7 +116,7 @@ export default function Register() {
 
       <p className="mt-4 text-center text-sm text-gray-600">
         ¿Ya tenés cuenta?{' '}
-        <Link to="/login" className="text-blue-600 hover:underline">
+        <Link to="/login" className="text-rio-600 hover:underline">
           Ingresá
         </Link>
       </p>

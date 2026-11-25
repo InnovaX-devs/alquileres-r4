@@ -18,8 +18,14 @@ import {
 
 function VolverAlListado() {
   return (
-    <Link to="/" className="inline-flex items-center gap-1 text-sm text-blue-600 hover:underline">
-      <span aria-hidden="true">←</span> Volver a las propiedades
+    <Link
+      to="/"
+      className="-ml-1 inline-flex min-h-11 items-center gap-1.5 rounded-lg px-1 text-[15px] font-bold text-rio-700 hover:text-pino-800 focus:outline-none focus-visible:ring-3 focus-visible:ring-rio-600"
+    >
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="h-[18px] w-[18px]">
+        <path d="m15 18-6-6 6-6" />
+      </svg>
+      Volver a las propiedades
     </Link>
   )
 }
@@ -27,8 +33,8 @@ function VolverAlListado() {
 function NoEncontrada() {
   return (
     <div className="py-16 text-center">
-      <p className="text-6xl font-bold text-blue-600">404</p>
-      <h1 className="mt-4 text-2xl font-semibold">Propiedad no encontrada</h1>
+      <p className="font-display text-7xl font-extrabold text-rio-600">404</p>
+      <h1 className="mt-4 text-[2.25rem] leading-tight font-extrabold tracking-[-0.03em]">Propiedad no encontrada</h1>
       <p className="mt-2 text-gray-500">La propiedad que buscás no existe o ya no está publicada.</p>
       <Button to="/" className="mt-6">
         Ver todas las propiedades
@@ -40,26 +46,35 @@ function NoEncontrada() {
 function Cargando() {
   return (
     <div role="status" aria-label="Cargando propiedad" className="animate-pulse">
-      <div className="aspect-[16/10] w-full rounded-lg bg-gray-200" />
-      <div className="mt-6 h-8 w-1/3 rounded bg-gray-200" />
-      <div className="mt-3 h-5 w-1/2 rounded bg-gray-200" />
-      <div className="mt-6 h-24 w-full rounded bg-gray-200" />
+      <div className="mt-2 h-10 w-2/3 rounded-xl bg-gray-200" />
+      <div className="mt-3 h-5 w-1/3 rounded-lg bg-gray-200" />
+      <div className="mt-6 aspect-[16/9] w-full rounded-3xl bg-gray-200" />
     </div>
   )
 }
 
 function Caracteristica({ children }) {
-  return (
-    <li className="rounded-full border border-gray-200 bg-white px-3 py-1 text-sm text-gray-700">{children}</li>
-  )
+  return <li className="rounded-xl bg-white px-4 py-3 text-[15px] font-bold text-gray-800">{children}</li>
 }
 
 function Bloque({ titulo, children }) {
   return (
-    <section className="mt-8">
-      <h2 className="text-lg font-semibold text-gray-900">{titulo}</h2>
-      <div className="mt-2 whitespace-pre-line text-gray-700">{children}</div>
+    <section className="mt-10">
+      <h2 className="text-2xl font-bold text-gray-900">{titulo}</h2>
+      <div className="mt-3 max-w-[66ch] whitespace-pre-line text-[17px] leading-relaxed text-gray-700">{children}</div>
     </section>
+  )
+}
+
+function Ubicacion({ children }) {
+  return (
+    <p className="mt-2 flex items-center gap-1.5 text-lg text-gray-600">
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5 shrink-0">
+        <path d="M12 21s-7-6.2-7-11.5a7 7 0 1 1 14 0C19 14.8 12 21 12 21Z" />
+        <circle cx="12" cy="9.5" r="2.5" />
+      </svg>
+      {children}
+    </p>
   )
 }
 
@@ -147,24 +162,44 @@ export default function PropiedadDetalle() {
         </Aviso>
       )}
 
-      <div className="mt-4 grid gap-8 lg:grid-cols-3">
-        <div className="min-w-0 lg:col-span-2">
-          <GaleriaImagenes key={propiedad.id} imagenes={imagenes} titulo={titulo} />
+      <header className="mt-4">
+        <h1 className="max-w-[24ch] text-[clamp(1.9rem,4vw,2.75rem)] font-extrabold leading-[1.08] tracking-[-0.03em] text-gray-900">
+          {titulo || ubicacion}
+        </h1>
+        {titulo && <Ubicacion>{ubicacion}</Ubicacion>}
+      </header>
 
-          <header className="mt-6">
-            <div className="flex items-start justify-between gap-4">
-              <p className="text-3xl font-bold text-gray-900">{formatearPrecio(precio, moneda)}</p>
-              <BotonFavorito tipo="propiedad" id={propiedad.id} className="border border-gray-200" />
+      <div className="mt-6">
+        <GaleriaImagenes key={propiedad.id} imagenes={imagenes} titulo={titulo} />
+      </div>
+
+      <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px] lg:gap-12">
+        {/* En el celular el precio y la acción van primero, justo después de las fotos */}
+        <aside className="min-w-0 space-y-4 lg:sticky lg:top-6 lg:order-last lg:self-start">
+          <div className="rounded-3xl bg-white p-6 shadow-xl shadow-pino-900/10">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="font-display text-[2.5rem] leading-none font-extrabold tracking-[-0.03em] text-gray-900 tabular-nums">
+                  {formatearPrecio(precio, moneda)}
+                </p>
+                <p className="mt-2 font-display text-[15px] text-gray-600 tabular-nums">
+                  por mes
+                  {expensas > 0 && `, + ${formatearPrecio(expensas, moneda)} de expensas`}
+                  {expensas === 0 && ', sin expensas'}
+                </p>
+              </div>
+              <BotonFavorito tipo="propiedad" id={propiedad.id} className="shrink-0 border-2 border-gray-200 shadow-none" />
             </div>
-            {expensas > 0 && (
-              <p className="mt-1 text-sm text-gray-500">+ {formatearPrecio(expensas, moneda)} de expensas</p>
-            )}
-            <h1 className="mt-3 text-2xl font-semibold text-gray-900">{titulo || ubicacion}</h1>
-            {titulo && <p className="mt-1 text-gray-600">{ubicacion}</p>}
-          </header>
+            <div className="mt-5">
+              <SolicitarVisita propiedadId={propiedad.id} tituloPropiedad={titulo} />
+            </div>
+          </div>
+          <ContactoPublicador contacto={contacto} />
+        </aside>
 
+        <div className="min-w-0">
           {caracteristicas.length > 0 && (
-            <ul className="mt-4 flex flex-wrap gap-2" aria-label="Características">
+            <ul className="flex flex-wrap gap-2" aria-label="Características">
               {caracteristicas.map((c) => (
                 <Caracteristica key={c}>{c}</Caracteristica>
               ))}
@@ -172,13 +207,8 @@ export default function PropiedadDetalle() {
           )}
 
           {descripcion?.trim() && <Bloque titulo="Descripción">{descripcion}</Bloque>}
-          {requisitosIngreso?.trim() && <Bloque titulo="Requisitos de ingreso">{requisitosIngreso}</Bloque>}
+          {requisitosIngreso?.trim() && <Bloque titulo="Requisitos para entrar">{requisitosIngreso}</Bloque>}
         </div>
-
-        <aside className="min-w-0 space-y-4 lg:sticky lg:top-6 lg:self-start">
-          <SolicitarVisita propiedadId={propiedad.id} tituloPropiedad={titulo} />
-          <ContactoPublicador contacto={contacto} />
-        </aside>
       </div>
     </article>
   )

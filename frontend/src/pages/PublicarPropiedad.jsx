@@ -18,9 +18,10 @@ const ORDEN_CAMPOS = Object.keys(PROPIEDAD_VACIA)
 
 function Seccion({ titulo, children }) {
   return (
-    <Card as="fieldset" className="space-y-4">
-      <legend className="px-1 text-base font-semibold text-gray-900">{titulo}</legend>
-      {children}
+    <Card as="fieldset">
+      {/* float + clear: así el legend queda adentro de la tarjeta y no cortando el borde */}
+      <legend className="float-left w-full font-display text-xl font-bold tracking-tight text-gray-900">{titulo}</legend>
+      <div className="clear-both space-y-4 pt-4">{children}</div>
     </Card>
   )
 }
@@ -145,7 +146,7 @@ export default function PublicarPropiedad() {
 
   return (
     <div className="mx-auto max-w-2xl">
-      <h1 className="text-2xl font-bold">Publicar propiedad</h1>
+      <h1 className="text-[2.25rem] leading-tight font-extrabold tracking-[-0.03em]">Publicar propiedad</h1>
       <p className="mt-1 text-sm text-gray-600">
         Los campos marcados como opcionales se pueden dejar vacíos.
       </p>
