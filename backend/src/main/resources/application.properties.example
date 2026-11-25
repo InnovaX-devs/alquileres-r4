@@ -56,3 +56,10 @@ Tamaño máximo de imagen (el default de Spring es 1MB)
 spring.servlet.multipart.max-file-size=5MB
 spring.servlet.multipart.max-request-size=5MB
 
+
+# ==========================================
+# GEOREF (sugerencia de ubicación al publicar, issue #140)
+# ==========================================
+# Opcional: si no se configura, se usan estos valores
+# georef.url=https://apis.datos.gob.ar/georef/api/v2.0
+# georef.timeout-ms=3000

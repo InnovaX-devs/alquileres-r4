@@ -8,6 +8,8 @@ import SolicitarVisita from '../components/SolicitarVisita'
 import BotonFavorito from '../components/BotonFavorito'
 import { ErrorConReintento } from '../components/EstadoCarga'
 import { Aviso, Button } from '../components/ui'
+import { MapaZona } from '../components/mapa'
+import { tieneUbicacion } from '../utils/mapa'
 import {
   formatearHabitaciones,
   formatearImpuestos,
@@ -208,6 +210,17 @@ export default function PropiedadDetalle() {
 
           {descripcion?.trim() && <Bloque titulo="Descripción">{descripcion}</Bloque>}
           {requisitosIngreso?.trim() && <Bloque titulo="Requisitos para entrar">{requisitosIngreso}</Bloque>}
+          {tieneUbicacion(propiedad) && (
+            <section className="mt-10">
+              <h2 className="text-2xl font-bold text-gray-900">Zona</h2>
+              <p className="mt-2 text-sm text-gray-600">
+                El círculo marca la zona aproximada. La dirección exacta te la da quien publica.
+              </p>
+              <div className="mt-3 overflow-hidden rounded-xl border border-gray-200">
+                <MapaZona latitud={propiedad.latitud} longitud={propiedad.longitud} radioMetros={propiedad.radioMetros ?? 150} />
+              </div>
+            </section>
+          )}
         </div>
       </div>
     </article>

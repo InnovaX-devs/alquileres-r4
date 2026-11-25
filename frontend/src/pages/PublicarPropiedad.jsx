@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import SelectorImagenes from '../components/SelectorImagenes'
 import { Aviso, Button, Card, Input, Select, Textarea } from '../components/ui'
 import { publicarPropiedad, subirImagenPropiedad } from '../services/propiedades'
+import SelectorUbicacion from '../components/SelectorUbicacion'
 import { liberarPreview } from '../utils/imagenes'
 import {
   MONEDAS,
@@ -46,6 +47,8 @@ export default function PublicarPropiedad() {
   const navigate = useNavigate()
 
   const [datos, setDatos] = useState(PROPIEDAD_VACIA)
+  // Ubicación confirmada con el pin del mapa (#141): { latitud, longitud } o null
+  const [ubicacion, setUbicacion] = useState(null)
   const [errores, setErrores] = useState({})
   const [errorGeneral, setErrorGeneral] = useState(null)
   const [enviando, setEnviando] = useState(false)
@@ -119,7 +122,7 @@ export default function PublicarPropiedad() {
     setEnviando(true)
     let creada
     try {
-      creada = await publicarPropiedad(armarPropiedadRequest(datos))
+      creada = await publicarPropiedad(armarPropiedadRequest(datos, ubicacion))
     } catch (e) {
       // 401: el cliente HTTP ya cierra la sesión y manda al login (SesionExpirada.jsx)
       const { porCampo, otros } = erroresDelBackend(e.detalles)
@@ -213,6 +216,12 @@ export default function PublicarPropiedad() {
               <Input label="Altura" placeholder="Ej: 1234" {...campo('altura')} />
               <Input label="Piso / depto" opcional placeholder="Ej: 5B" {...campo('piso')} />
             </div>
+            <SelectorUbicacion
+              calle={datos.calle}
+              altura={datos.altura}
+              ubicacion={ubicacion}
+              onCambiar={setUbicacion}
+            />
           </Seccion>
 
           <Seccion titulo="Características">

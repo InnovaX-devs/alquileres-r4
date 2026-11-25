@@ -58,6 +58,8 @@ public class PropiedadService {
         propiedad.setIncluyeImpuestos(request.getIncluyeImpuestos());
         propiedad.setPlazoActualizacionMeses(request.getPlazoActualizacionMeses());
         propiedad.setRequisitosIngreso(request.getRequisitosIngreso());
+        propiedad.setLatitud(request.getLatitud());
+        propiedad.setLongitud(request.getLongitud());
         propiedad.setFuente(Fuente.MANUAL);
         propiedad.setUsuario(usuario);
         // Si el usuario pertenece a una inmobiliaria, la propiedad se publica a su nombre (issue #61).
@@ -127,7 +129,7 @@ public class PropiedadService {
 
         // El contacto es el propio publicador: no hace falta mostrarlo.
         return propiedades.stream()
-                .map(propiedad -> PropiedadDetalleResponse.from(propiedad, null))
+                .map(PropiedadDetalleResponse::paraPublicador)
                 .toList();
     }
 

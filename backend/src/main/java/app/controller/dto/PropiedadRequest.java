@@ -1,6 +1,9 @@
 package app.controller.dto;
 
+import app.geo.RioCuarto;
 import app.model.Moneda;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -36,6 +39,20 @@ public class PropiedadRequest {
     @Min(value = 1, message = "El plazo de actualización debe ser de al menos 1 mes")
     private Integer plazoActualizacionMeses;
     private String requisitosIngreso;
+
+    // Ubicación confirmada con el pin del mapa (issue #140). Opcional.
+    private Double latitud;
+    private Double longitud;
+
+    /** La ubicación es opcional, pero si viene tienen que estar las dos coordenadas y caer en Río Cuarto. */
+    @JsonIgnore
+    @AssertTrue(message = "La ubicación debe tener latitud y longitud, dentro de Río Cuarto")
+    public boolean isUbicacionValida() {
+        if (latitud == null && longitud == null) {
+            return true;
+        }
+        return RioCuarto.contiene(latitud, longitud);
+    }
 
     public String getTitulo() { return titulo; }
     public void setTitulo(String titulo) { this.titulo = titulo; }
@@ -75,4 +92,10 @@ public class PropiedadRequest {
 
     public String getRequisitosIngreso() { return requisitosIngreso; }
     public void setRequisitosIngreso(String requisitosIngreso) { this.requisitosIngreso = requisitosIngreso; }
+
+    public Double getLatitud() { return latitud; }
+    public void setLatitud(Double latitud) { this.latitud = latitud; }
+
+    public Double getLongitud() { return longitud; }
+    public void setLongitud(Double longitud) { this.longitud = longitud; }
 }

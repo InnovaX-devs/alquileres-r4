@@ -86,3 +86,51 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Mapas (#141): marcadores propios de Leaflet */
+.mapa-precio {
+  display: inline-block;
+  transform: translate(-50%, -100%);
+  padding: 2px 8px;
+  border-radius: 9999px;
+  border: 1px solid var(--color-gray-300);
+  background: white;
+  color: var(--color-gray-900);
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.2);
+  cursor: pointer;
+  transition: transform 120ms, background 120ms;
+}
+.mapa-precio--resaltado {
+  background: var(--color-rio-700);
+  border-color: var(--color-rio-800);
+  color: white;
+  transform: translate(-50%, -100%) scale(1.15);
+}
+.mapa-pin {
+  display: block;
+  width: 32px;
+  height: 42px;
+  background: var(--color-rio-700);
+  clip-path: path('M16 42C16 42 0 25.5 0 15.5a16 16 0 1 1 32 0C32 25.5 16 42 16 42Z');
+  position: relative;
+  cursor: grab;
+}
+.mapa-pin::after {
+  content: '';
+  position: absolute;
+  top: 9px;
+  left: 9px;
+  width: 14px;
+  height: 14px;
+  border-radius: 9999px;
+  background: white;
+}
+/* El mapa no tapa la barra de navegación ni los modales */
+.leaflet-container {
+  z-index: 0;
+  font-family: var(--font-sans);
+}

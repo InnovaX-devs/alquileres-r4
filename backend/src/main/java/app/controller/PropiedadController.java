@@ -28,7 +28,7 @@ public class PropiedadController {
     public ResponseEntity<ApiResponse<PropiedadDetalleResponse>> publicar(@Valid @RequestBody PropiedadRequest request,
                                                Principal principal) {
         Propiedad propiedad = propiedadService.publicar(request, principal.getName());
-        return ApiResponse.created("Propiedad publicada", PropiedadDetalleResponse.from(propiedad, null));
+        return ApiResponse.created("Propiedad publicada", PropiedadDetalleResponse.paraPublicador(propiedad));
     }
 
     /** Propiedades publicadas por el usuario autenticado o su inmobiliaria (issue #55). */

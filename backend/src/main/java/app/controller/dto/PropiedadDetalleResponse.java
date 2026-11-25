@@ -2,6 +2,7 @@ package app.controller.dto;
 
 import java.math.BigDecimal;
 
+import app.geo.RioCuarto;
 import app.model.ImagenPropiedad;
 import app.model.Propiedad;
 import java.util.Comparator;
@@ -29,8 +30,32 @@ public class PropiedadDetalleResponse {
     private String requisitosIngreso;
     private ContactoPublicadorResponse contacto; // null si no está verificado
     private List<String> imagenes;
+    // Ubicación (issue #140). En público es aproximada: el centro de una celda de ~170 m, con
+    // radioMetros para dibujar el círculo. Para el publicador es la exacta y radioMetros es null.
+    private Double latitud;
+    private Double longitud;
+    private Integer radioMetros;
 
+    /** Versión pública (listado y detalle): la ubicación va aproximada para no revelar la casa. */
     public static PropiedadDetalleResponse from(Propiedad propiedad, ContactoPublicadorResponse contacto) {
+        PropiedadDetalleResponse dto = base(propiedad, contacto);
+        if (propiedad.getLatitud() != null && propiedad.getLongitud() != null) {
+            dto.latitud = RioCuarto.aproximarLatitud(propiedad.getLatitud());
+            dto.longitud = RioCuarto.aproximarLongitud(propiedad.getLongitud());
+            dto.radioMetros = RioCuarto.RADIO_APROXIMADO_METROS;
+        }
+        return dto;
+    }
+
+    /** Versión para quien publicó (al publicar y en /propiedades/mias): ubicación exacta. */
+    public static PropiedadDetalleResponse paraPublicador(Propiedad propiedad) {
+        PropiedadDetalleResponse dto = base(propiedad, null);
+        dto.latitud = propiedad.getLatitud();
+        dto.longitud = propiedad.getLongitud();
+        return dto;
+    }
+
+    private static PropiedadDetalleResponse base(Propiedad propiedad, ContactoPublicadorResponse contacto) {
         PropiedadDetalleResponse dto = new PropiedadDetalleResponse();
         dto.id = propiedad.getId();
         dto.titulo = propiedad.getTitulo();
@@ -72,4 +97,7 @@ public class PropiedadDetalleResponse {
     public String getRequisitosIngreso() { return requisitosIngreso; }
     public ContactoPublicadorResponse getContacto() { return contacto; }
     public List<String> getImagenes() { return imagenes; }
+    public Double getLatitud() { return latitud; }
+    public Double getLongitud() { return longitud; }
+    public Integer getRadioMetros() { return radioMetros; }
 }

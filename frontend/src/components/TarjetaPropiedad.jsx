@@ -21,8 +21,10 @@ function SinFoto() {
  *
  * @param {object} props.propiedad  un elemento de GET /propiedades
  * @param {boolean} [props.conFavorito=true]  false en Mis propiedades (#78): no se guardan las propias
+ * @param {boolean} [props.resaltada]  su pin está resaltado en el mapa del listado (#141)
+ * @param {Function} [props.onResaltar]  recibe el id al pasar el mouse o enfocar la tarjeta, y null al salir
  */
-export default function TarjetaPropiedad({ propiedad, conFavorito = true }) {
+export default function TarjetaPropiedad({ propiedad, conFavorito = true, resaltada = false, onResaltar }) {
   const { id, titulo, precio, moneda, expensas, habitaciones, metrosCuadrados, imagenes } = propiedad
   const foto = imagenes?.[0]
   const [fotoRota, setFotoRota] = useState(false)
@@ -31,12 +33,20 @@ export default function TarjetaPropiedad({ propiedad, conFavorito = true }) {
   const ambientes = formatearHabitaciones(habitaciones)
 
   return (
-    <div className="relative h-full">
+    <div
+      className="relative h-full"
+      onMouseEnter={onResaltar ? () => onResaltar(id) : undefined}
+      onMouseLeave={onResaltar ? () => onResaltar(null) : undefined}
+      onFocus={onResaltar ? () => onResaltar(id) : undefined}
+      onBlur={onResaltar ? () => onResaltar(null) : undefined}
+    >
       <Card
         as={Link}
         to={`/propiedades/${id}`}
         padding="ninguno"
-        className="group flex h-full flex-col overflow-hidden transition duration-200 hover:-translate-y-0.5 hover:border-gray-300 hover:shadow-xl hover:shadow-pino-900/10 focus:outline-none focus-visible:ring-3 focus-visible:ring-rio-600"
+        className={`group flex h-full flex-col overflow-hidden transition duration-200 hover:-translate-y-0.5 hover:border-gray-300 hover:shadow-xl hover:shadow-pino-900/10 focus:outline-none focus-visible:ring-3 focus-visible:ring-rio-600 ${
+          resaltada ? '-translate-y-0.5 border-rio-600 shadow-xl shadow-pino-900/10 ring-2 ring-rio-600' : ''
+        }`}
       >
         <div className="aspect-[4/3] overflow-hidden bg-gray-100">
           {foto && !fotoRota ? (
