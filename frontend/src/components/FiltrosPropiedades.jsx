@@ -63,7 +63,7 @@ export default function FiltrosPropiedades({ valores, onAplicar }) {
       aria-label="Filtrar propiedades"
       className="mb-6 rounded-lg border border-gray-200 bg-white p-4 shadow-sm"
     >
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <Campo id="filtro-calle" label="Calle">
           <input
             id="filtro-calle"

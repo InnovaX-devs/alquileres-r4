@@ -159,7 +159,7 @@ export default function PropiedadDetalle() {
       )}
 
       <div className="mt-4 grid gap-8 lg:grid-cols-3">
-        <div className="lg:col-span-2">
+        <div className="min-w-0 lg:col-span-2">
           <GaleriaImagenes key={propiedad.id} imagenes={imagenes} titulo={titulo} />
 
           <header className="mt-6">
@@ -186,7 +186,7 @@ export default function PropiedadDetalle() {
           {requisitosIngreso?.trim() && <Bloque titulo="Requisitos de ingreso">{requisitosIngreso}</Bloque>}
         </div>
 
-        <aside className="space-y-4 lg:sticky lg:top-6 lg:self-start">
+        <aside className="min-w-0 space-y-4 lg:sticky lg:top-6 lg:self-start">
           <SolicitarVisita propiedadId={propiedad.id} tituloPropiedad={titulo} />
           <ContactoPublicador contacto={contacto} />
         </aside>

@@ -12,6 +12,7 @@ import Favoritos from './pages/Favoritos'
 import MisVisitas from './pages/MisVisitas'
 import VisitasRecibidas from './pages/VisitasRecibidas'
 import CrearAlerta from './pages/CrearAlerta'
+import MisAlertas from './pages/MisAlertas'
 import NotFound from './pages/NotFound'
 
 export default function App() {
@@ -32,6 +33,7 @@ export default function App() {
           <Route path="/favoritos" element={<Favoritos />} />
           <Route path="/visitas" element={<MisVisitas />} />
           <Route path="/visitas/recibidas" element={<VisitasRecibidas />} />
+          <Route path="/alertas" element={<MisAlertas />} />
           <Route path="/alertas/nueva" element={<CrearAlerta />} />
         </Route>
 
