@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import TarjetaPropiedad from '../components/TarjetaPropiedad'
+import { MapaPropiedades } from '../components/mapa'
+import { usePantallaGrande } from '../hooks/usePantallaGrande'
 import FiltrosPropiedades from '../components/FiltrosPropiedades'
 import { CLAVES_FILTROS, hayFiltrosActivos } from '../utils/filtros'
 import { listarPropiedades } from '../services/propiedades'
@@ -25,6 +27,25 @@ function TarjetaCargando() {
 }
 
 const grilla = 'grid gap-5 sm:grid-cols-2 lg:grid-cols-3'
+// Con el mapa al lado, las tarjetas van en dos columnas como máximo
+const grillaConMapa = 'grid grid-cols-1 gap-5 sm:grid-cols-2'
+
+function SelectorVista({ vista, onCambiar }) {
+  const clase = (activa) =>
+    `flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium ${
+      activa ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600 hover:text-gray-900'
+    }`
+  return (
+    <div role="group" aria-label="Ver como" className="inline-flex rounded-lg bg-gray-100 p-1 lg:hidden">
+      <button type="button" aria-pressed={vista === 'lista'} onClick={() => onCambiar('lista')} className={clase(vista === 'lista')}>
+        Lista
+      </button>
+      <button type="button" aria-pressed={vista === 'mapa'} onClick={() => onCambiar('mapa')} className={clase(vista === 'mapa')}>
+        Mapa
+      </button>
+    </div>
+  )
+}
 
 // Listado público de propiedades (#72) con filtros (#73).
 // Los filtros viven en la URL (?moneda=ARS&habitacionesMin=2): se mantienen al recargar,
@@ -32,6 +53,10 @@ const grilla = 'grid gap-5 sm:grid-cols-2 lg:grid-cols-3'
 export default function Home() {
   const { estaAutenticado } = useAuth()
   const [searchParams, setSearchParams] = useSearchParams()
+  // Mapa (#141): en pantallas grandes va al lado de la lista; en celulares se alterna
+  const pantallaGrande = usePantallaGrande()
+  const [vista, setVista] = useState('lista')
+  const [resaltadaId, setResaltadaId] = useState(null)
   const consulta = searchParams.toString()
 
   const filtros = useMemo(() => {
@@ -105,14 +130,34 @@ export default function Home() {
       />
     )
   } else {
+    const verLista = pantallaGrande || vista === 'lista'
+    const verMapa = pantallaGrande || vista === 'mapa'
     contenido = (
-      <ul className={grilla}>
-        {propiedades.map((propiedad) => (
-          <li key={propiedad.id}>
-            <TarjetaPropiedad propiedad={propiedad} />
-          </li>
-        ))}
-      </ul>
+      <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,0.8fr)] lg:gap-6">
+        {verLista && (
+          <ul className={grillaConMapa}>
+            {propiedades.map((propiedad) => (
+              <li key={propiedad.id}>
+                <TarjetaPropiedad
+                  propiedad={propiedad}
+                  resaltada={propiedad.id === resaltadaId}
+                  onResaltar={setResaltadaId}
+                />
+              </li>
+            ))}
+          </ul>
+        )}
+        {verMapa && (
+          <div className="lg:sticky lg:top-4 lg:self-start">
+            <MapaPropiedades
+              propiedades={propiedades}
+              resaltadaId={resaltadaId}
+              onResaltar={setResaltadaId}
+              className="h-[70vh] lg:h-[calc(100vh-2rem)]"
+            />
+          </div>
+        )}
+      </div>
     )
   }
 
@@ -142,6 +187,7 @@ export default function Home() {
             ? 'Propiedades en alquiler'
             : `${cantidad} ${cantidad === 1 ? 'propiedad disponible' : 'propiedades disponibles'}`}
         </h2>
+        {cantidad > 0 && <SelectorVista vista={vista} onCambiar={setVista} />}
         {conFiltros && (
           // Crear una alerta con la búsqueda actual (#85): los filtros y los criterios de alerta son los mismos
           <Button variante="suave" tamanio="sm" to={`/alertas/nueva?${consulta}`}>

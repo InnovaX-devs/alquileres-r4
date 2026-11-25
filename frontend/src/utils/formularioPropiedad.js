@@ -90,8 +90,11 @@ export function validarPropiedad(datos) {
 const textoONull = (valor) => (vacio(valor) ? null : valor.trim())
 const numeroONull = (valor) => (vacio(valor) ? null : Number(valor))
 
-/** Cuerpo de POST /propiedades: textos recortados y los campos opcionales vacíos como null. */
-export function armarPropiedadRequest(datos) {
+/**
+ * Cuerpo de POST /propiedades: textos recortados y los campos opcionales vacíos como null.
+ * La ubicación (#141) es la que dejó el usuario con el pin; sin pin va null.
+ */
+export function armarPropiedadRequest(datos, ubicacion = null) {
   return {
     titulo: datos.titulo.trim(),
     descripcion: textoONull(datos.descripcion),
@@ -106,6 +109,8 @@ export function armarPropiedadRequest(datos) {
     habitaciones: numeroONull(datos.habitaciones),
     metrosCuadrados: numeroONull(datos.metrosCuadrados),
     requisitosIngreso: textoONull(datos.requisitosIngreso),
+    latitud: ubicacion?.latitud ?? null,
+    longitud: ubicacion?.longitud ?? null,
   }
 }
 
