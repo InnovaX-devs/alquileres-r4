@@ -6,6 +6,8 @@ import GaleriaImagenes from '../components/GaleriaImagenes'
 import ContactoPublicador from '../components/ContactoPublicador'
 import SolicitarVisita from '../components/SolicitarVisita'
 import BotonFavorito from '../components/BotonFavorito'
+import { ErrorConReintento } from '../components/EstadoCarga'
+import { Aviso, Button } from '../components/ui'
 import {
   formatearHabitaciones,
   formatearImpuestos,
@@ -28,12 +30,9 @@ function NoEncontrada() {
       <p className="text-6xl font-bold text-blue-600">404</p>
       <h1 className="mt-4 text-2xl font-semibold">Propiedad no encontrada</h1>
       <p className="mt-2 text-gray-500">La propiedad que buscás no existe o ya no está publicada.</p>
-      <Link
-        to="/"
-        className="mt-6 inline-block rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
-      >
+      <Button to="/" className="mt-6">
         Ver todas las propiedades
-      </Link>
+      </Button>
     </div>
   )
 }
@@ -109,17 +108,7 @@ export default function PropiedadDetalle() {
   if (!resultado || resultado.id !== id) return <Cargando />
   if (resultado.estado === 'no-encontrada') return <NoEncontrada />
   if (resultado.estado === 'error') {
-    return (
-      <div className="py-16 text-center">
-        <p role="alert" className="text-red-600">{resultado.error}</p>
-        <button
-          onClick={reintentar}
-          className="mt-4 rounded-md bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700"
-        >
-          Reintentar
-        </button>
-      </div>
-    )
+    return <ErrorConReintento mensaje={resultado.error} onReintentar={reintentar} />
   }
 
   const { propiedad } = resultado
@@ -151,11 +140,11 @@ export default function PropiedadDetalle() {
       <VolverAlListado />
 
       {recienPublicada && (
-        <p role="status" className="mt-4 rounded-md bg-green-50 px-4 py-3 text-sm text-green-800">
+        <Aviso tipo="exito" className="mt-4">
           ¡Listo! Tu propiedad ya está publicada.
           {imagenesSinSubir > 0 &&
             ` Quedaron ${imagenesSinSubir} ${imagenesSinSubir === 1 ? 'foto' : 'fotos'} sin subir.`}
-        </p>
+        </Aviso>
       )}
 
       <div className="mt-4 grid gap-8 lg:grid-cols-3">

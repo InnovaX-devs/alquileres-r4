@@ -4,12 +4,13 @@ import PestanasVisitas from '../components/PestanasVisitas'
 import EstadoVisita from '../components/EstadoVisita'
 import { Cargando, ErrorConReintento, Vacio } from '../components/EstadoCarga'
 import { listarMisVisitas } from '../services/visitas'
+import { Card } from '../components/ui'
 import { formatearFechaHora } from '../utils/visitas'
 
 function TarjetaSolicitud({ solicitud }) {
   const { propiedadId, tituloPropiedad, fechaPropuesta, fechaSolicitud, estado, observaciones } = solicitud
   return (
-    <li className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+    <Card as="li" padding="sm">
       <div className="flex flex-wrap items-start justify-between gap-2">
         <Link to={`/propiedades/${propiedadId}`} className="font-medium text-blue-700 hover:underline">
           {tituloPropiedad || `Propiedad #${propiedadId}`}
@@ -27,7 +28,7 @@ function TarjetaSolicitud({ solicitud }) {
         </div>
       </dl>
       {observaciones && <p className="mt-2 whitespace-pre-line text-sm text-gray-600">“{observaciones}”</p>}
-    </li>
+    </Card>
   )
 }
 

@@ -1,16 +1,17 @@
-import { Link, useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import BotonFavorito from './BotonFavorito'
+import { Button, Card, Spinner } from './ui'
 import { datosFaltantesParaVerificar, unirConY } from '../utils/perfil'
 
 function Caja({ children }) {
   return (
-    <section aria-labelledby="titulo-contacto" className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
+    <Card as="section" aria-labelledby="titulo-contacto">
       <h2 id="titulo-contacto" className="text-lg font-semibold text-gray-900">
         Contacto del publicador
       </h2>
       <div className="mt-3">{children}</div>
-    </section>
+    </Card>
   )
 }
 
@@ -18,13 +19,9 @@ function Aviso({ texto, accion, to, state }) {
   return (
     <>
       <p className="text-sm text-gray-600">{texto}</p>
-      <Link
-        to={to}
-        state={state}
-        className="mt-4 block w-full rounded-md bg-blue-600 py-2 text-center text-sm font-medium text-white hover:bg-blue-700"
-      >
+      <Button to={to} state={state} anchoCompleto className="mt-4">
         {accion}
-      </Link>
+      </Button>
     </>
   )
 }
@@ -107,7 +104,7 @@ export default function ContactoPublicador({ contacto }) {
   if (cargando || !usuario) {
     return (
       <Caja>
-        <p className="text-sm text-gray-500">Cargando...</p>
+        <Spinner etiqueta="Cargando" className="text-blue-600" />
       </Caja>
     )
   }

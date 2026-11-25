@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { api } from '../services/api'
-import CampoFormulario from '../components/CampoFormulario'
+import { Aviso, Button, Card, Input } from '../components/ui'
 
 const PASSWORD_MIN = 8
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -70,8 +70,8 @@ export default function Register() {
     <div className="max-w-sm mx-auto">
       <h1 className="text-2xl font-bold text-center">Crear cuenta</h1>
 
-      <form onSubmit={enviar} noValidate className="mt-6 space-y-4 bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-        <CampoFormulario
+      <Card as="form" onSubmit={enviar} noValidate className="mt-6 space-y-4">
+        <Input
           id="nombre"
           label="Nombre"
           autoComplete="name"
@@ -79,7 +79,7 @@ export default function Register() {
           onChange={cambiar('nombre')}
           error={errores.nombre}
         />
-        <CampoFormulario
+        <Input
           id="email"
           label="Email"
           type="email"
@@ -88,7 +88,7 @@ export default function Register() {
           onChange={cambiar('email')}
           error={errores.email}
         />
-        <CampoFormulario
+        <Input
           id="password"
           label="Contraseña"
           type="password"
@@ -97,7 +97,7 @@ export default function Register() {
           onChange={cambiar('password')}
           error={errores.password}
         />
-        <CampoFormulario
+        <Input
           id="confirmacion"
           label="Repetir contraseña"
           type="password"
@@ -107,20 +107,12 @@ export default function Register() {
           error={errores.confirmacion}
         />
 
-        {errorGeneral && (
-          <p role="alert" className="text-sm text-red-600">
-            {errorGeneral}
-          </p>
-        )}
+        {errorGeneral && <Aviso tipo="error">{errorGeneral}</Aviso>}
 
-        <button
-          type="submit"
-          disabled={enviando}
-          className="w-full py-2 rounded-md bg-blue-600 text-white font-medium hover:bg-blue-700 disabled:opacity-60"
-        >
+        <Button type="submit" cargando={enviando} anchoCompleto>
           {enviando ? 'Creando cuenta...' : 'Crear cuenta'}
-        </button>
-      </form>
+        </Button>
+      </Card>
 
       <p className="mt-4 text-center text-sm text-gray-600">
         ¿Ya tenés cuenta?{' '}

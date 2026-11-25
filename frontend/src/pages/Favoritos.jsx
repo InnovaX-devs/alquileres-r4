@@ -4,6 +4,7 @@ import BotonFavorito from '../components/BotonFavorito'
 import { Cargando, ErrorConReintento, Vacio } from '../components/EstadoCarga'
 import { useFavoritos } from '../hooks/useFavoritos'
 import { listarFavoritos } from '../services/favoritos'
+import { Card } from '../components/ui'
 
 // GET /favoritos trae un resumen de la propiedad: se adapta a lo que espera la tarjeta del listado
 function aTarjeta(favorito) {
@@ -30,7 +31,7 @@ function TarjetaInmobiliaria({ favorito }) {
   const [logoRoto, setLogoRoto] = useState(false)
 
   return (
-    <li className="flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+    <Card as="li" padding="sm" className="flex items-center gap-3">
       {logoUrl && !logoRoto ? (
         <img
           src={logoUrl}
@@ -48,7 +49,7 @@ function TarjetaInmobiliaria({ favorito }) {
         {verificada && <p className="text-xs text-green-700">Inmobiliaria verificada</p>}
       </div>
       <BotonFavorito tipo="inmobiliaria" id={inmobiliariaId} className="border border-gray-200" />
-    </li>
+    </Card>
   )
 }
 

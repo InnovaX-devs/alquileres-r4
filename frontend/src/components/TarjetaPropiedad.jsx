@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import BotonFavorito from './BotonFavorito'
+import { Card } from './ui'
 import { formatearHabitaciones, formatearPrecio, formatearUbicacion } from '../utils/propiedad'
 
 function SinFoto() {
@@ -31,9 +32,11 @@ export default function TarjetaPropiedad({ propiedad, conFavorito = true }) {
 
   return (
     <div className="relative h-full">
-      <Link
+      <Card
+        as={Link}
         to={`/propiedades/${id}`}
-        className="group flex h-full flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+        padding="ninguno"
+        className="group flex h-full flex-col overflow-hidden transition hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
       >
         <div className="aspect-[4/3] overflow-hidden bg-gray-100">
           {foto && !fotoRota ? (
@@ -71,7 +74,7 @@ export default function TarjetaPropiedad({ propiedad, conFavorito = true }) {
             </p>
           )}
         </div>
-      </Link>
+      </Card>
       {conFavorito && <BotonFavorito tipo="propiedad" id={id} className="absolute right-3 top-3" />}
     </div>
   )

@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
 import TarjetaPropiedad from '../components/TarjetaPropiedad'
 import { ErrorConReintento, Vacio } from '../components/EstadoCarga'
 import { listarMisPropiedades } from '../services/propiedades'
+import { Button, CLASES_CARD } from '../components/ui'
 
 const grilla = 'grid gap-6 sm:grid-cols-2 lg:grid-cols-3'
 
@@ -10,7 +10,7 @@ function Cargando() {
   return (
     <ul role="status" aria-label="Cargando tus propiedades" className={grilla}>
       {[0, 1, 2].map((i) => (
-        <li key={i} className="h-72 animate-pulse rounded-lg border border-gray-200 bg-white" />
+        <li key={i} className={`h-72 animate-pulse ${CLASES_CARD}`} />
       ))}
     </ul>
   )
@@ -69,12 +69,7 @@ export default function MisPropiedades() {
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <h1 className="text-2xl font-bold">Mis propiedades</h1>
         {!cargando && !resultado.error && propiedades.length > 0 && (
-          <Link
-            to="/publicar"
-            className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
-          >
-            Publicar otra
-          </Link>
+          <Button to="/publicar">Publicar otra</Button>
         )}
       </div>
       {contenido}

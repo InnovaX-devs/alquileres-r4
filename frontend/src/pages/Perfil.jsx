@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useAuth } from '../hooks/useAuth'
 import FormularioPerfil from '../components/FormularioPerfil'
+import { ErrorConReintento } from '../components/EstadoCarga'
+import { Aviso, Button, Card, CargandoPagina } from '../components/ui'
 import { datosFaltantesParaVerificar, unirConY } from '../utils/perfil'
 
 /** Datos personales que se muestran, en orden. `clave` es el campo de GET /usuarios/me. */
@@ -16,25 +18,31 @@ const CAMPOS = [
 function EstadoVerificacion({ usuario, editando, onCompletar }) {
   if (usuario.verificado) {
     return (
-      <div className="rounded-md bg-green-50 border border-green-200 px-4 py-3">
-        <p className="flex items-center gap-2 font-medium text-green-800">
-          <span aria-hidden="true">✓</span> Perfil verificado
-        </p>
-        <p className="mt-1 text-sm text-green-700">
-          Tu perfil tiene todos los datos necesarios. Ya podés ver el contacto de quienes publican.
-        </p>
-      </div>
+      <Aviso
+        tipo="exito"
+        titulo={
+          <>
+            <span aria-hidden="true">✓</span> Perfil verificado
+          </>
+        }
+      >
+        Tu perfil tiene todos los datos necesarios. Ya podés ver el contacto de quienes publican.
+      </Aviso>
     )
   }
 
   const faltantes = datosFaltantesParaVerificar(usuario)
 
   return (
-    <div className="rounded-md bg-yellow-50 border border-yellow-200 px-4 py-3">
-      <p className="flex items-center gap-2 font-medium text-yellow-800">
-        <span aria-hidden="true">!</span> Perfil sin verificar
-      </p>
-      <p className="mt-1 text-sm text-yellow-700">
+    <Aviso
+      tipo="advertencia"
+      titulo={
+        <>
+          <span aria-hidden="true">!</span> Perfil sin verificar
+        </>
+      }
+    >
+      <p>
         {faltantes.length > 0 ? (
           <>
             Para verificar tu perfil te falta completar: <strong>{unirConY(faltantes)}</strong>.
@@ -46,14 +54,11 @@ function EstadoVerificacion({ usuario, editando, onCompletar }) {
         Mientras tanto no vas a poder ver el contacto de quienes publican.
       </p>
       {!editando && (
-        <button
-          onClick={onCompletar}
-          className="mt-3 px-3 py-1.5 rounded-md bg-yellow-600 text-white text-sm font-medium hover:bg-yellow-700"
-        >
+        <Button variante="advertencia" tamanio="sm" onClick={onCompletar} className="mt-3">
           Completar perfil
-        </button>
+        </Button>
       )}
-    </div>
+    </Aviso>
   )
 }
 
@@ -115,18 +120,10 @@ export default function Perfil() {
 
   // Sin datos todavía (por ejemplo, el backend no respondió al cargar la sesión)
   if (!usuario) {
-    if (actualizando) {
-      return <p className="text-center text-gray-500 py-16">Cargando...</p>
-    }
+    if (actualizando) return <CargandoPagina etiqueta="Cargando tu perfil" />
     return (
-      <div className="max-w-xl mx-auto text-center py-16">
-        <p role="alert" className="text-red-600">{error || 'No se pudieron cargar tus datos'}</p>
-        <button
-          onClick={reintentar}
-          className="mt-4 px-4 py-2 rounded-md bg-blue-600 text-white font-medium hover:bg-blue-700"
-        >
-          Reintentar
-        </button>
+      <div className="mx-auto max-w-xl">
+        <ErrorConReintento mensaje={error || 'No se pudieron cargar tus datos'} onReintentar={reintentar} />
       </div>
     )
   }
@@ -140,28 +137,25 @@ export default function Perfil() {
       </div>
 
       {exito && (
-        <p role="status" className="mt-4 rounded-md bg-green-50 border border-green-200 px-3 py-2 text-sm text-green-700">
+        <Aviso tipo="exito" className="mt-4">
           {exito}
-        </p>
+        </Aviso>
       )}
 
       {/* Si falla la actualización se siguen mostrando los datos que ya había */}
       {error && (
-        <p role="alert" className="mt-4 text-sm text-red-600">
+        <Aviso tipo="error" className="mt-4">
           No se pudieron actualizar tus datos: {error}
-        </p>
+        </Aviso>
       )}
 
-      <section className="mt-6 bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+      <Card as="section" className="mt-6">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">{editando ? 'Editar datos personales' : 'Datos personales'}</h2>
           {!editando && (
-            <button
-              onClick={abrirFormulario}
-              className="px-3 py-1.5 rounded-md text-sm font-medium text-blue-600 hover:bg-blue-50"
-            >
+            <Button variante="suave" tamanio="sm" onClick={abrirFormulario}>
               Editar
-            </button>
+            </Button>
           )}
         </div>
 
@@ -190,7 +184,7 @@ export default function Perfil() {
             })}
           </dl>
         )}
-      </section>
+      </Card>
     </div>
   )
 }

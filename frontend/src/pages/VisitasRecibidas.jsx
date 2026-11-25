@@ -6,6 +6,7 @@ import { Cargando, ErrorConReintento, Vacio } from '../components/EstadoCarga'
 import { cambiarEstadoVisita, listarVisitasRecibidas } from '../services/visitas'
 import { formatearFechaHora } from '../utils/visitas'
 import { formatearUbicacion } from '../utils/propiedad'
+import { Button, Card } from '../components/ui'
 
 function TarjetaRecibida({ solicitud, onCambiarEstado }) {
   const { id, estado, fechaPropuesta, fechaSolicitud, observaciones, solicitante, propiedad } = solicitud
@@ -25,7 +26,7 @@ function TarjetaRecibida({ solicitud, onCambiarEstado }) {
   }
 
   return (
-    <li className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+    <Card as="li" padding="sm">
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
           <Link to={`/propiedades/${propiedad?.id}`} className="font-medium text-blue-700 hover:underline">
@@ -69,23 +70,25 @@ function TarjetaRecibida({ solicitud, onCambiarEstado }) {
       {/* Solo las pendientes se pueden responder: las procesadas no vuelven a PENDIENTE */}
       {estado === 'PENDIENTE' && (
         <div className="mt-4 flex justify-end gap-2">
-          <button
+          <Button
+            variante="secundario"
             onClick={() => cambiar('RECHAZADA')}
             disabled={guardando !== null}
-            className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-60"
+            cargando={guardando === 'RECHAZADA'}
           >
             {guardando === 'RECHAZADA' ? 'Rechazando...' : 'Rechazar'}
-          </button>
-          <button
+          </Button>
+          <Button
+            variante="exito"
             onClick={() => cambiar('ACEPTADA')}
             disabled={guardando !== null}
-            className="rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 disabled:opacity-60"
+            cargando={guardando === 'ACEPTADA'}
           >
             {guardando === 'ACEPTADA' ? 'Aceptando...' : 'Aceptar'}
-          </button>
+          </Button>
         </div>
       )}
-    </li>
+    </Card>
   )
 }
 

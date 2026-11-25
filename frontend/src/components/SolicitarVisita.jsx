@@ -1,13 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { listarMisVisitas } from '../services/visitas'
 import { formatearFechaHora } from '../utils/visitas'
 import EstadoVisita from './EstadoVisita'
 import ModalSolicitarVisita from './ModalSolicitarVisita'
-
-const claseBoton =
-  'block w-full rounded-md bg-blue-600 py-2 text-center text-sm font-medium text-white hover:bg-blue-700'
+import { Button } from './ui'
 
 /**
  * Bloque "Solicitar visita" del detalle de propiedad (#79).
@@ -17,7 +15,6 @@ const claseBoton =
 export default function SolicitarVisita({ propiedadId, tituloPropiedad }) {
   const { estaAutenticado, token } = useAuth()
   const location = useLocation()
-  const boton = useRef(null)
 
   const [abierto, setAbierto] = useState(false)
   // Solicitud existente del usuario para esta propiedad: undefined = sin consultar, null = no tiene
@@ -42,19 +39,17 @@ export default function SolicitarVisita({ propiedadId, tituloPropiedad }) {
     }
   }, [token, propiedadId, intento])
 
-  const cerrar = useCallback(() => {
-    setAbierto(false)
-    boton.current?.focus()
-  }, [])
+  // El modal devuelve el foco al botón al cerrarse
+  const cerrar = useCallback(() => setAbierto(false), [])
 
   // Al crearse (o si el backend dice que ya existía) se vuelve a consultar para mostrar el estado
   const alSolicitar = useCallback(() => setIntento((n) => n + 1), [])
 
   if (!estaAutenticado) {
     return (
-      <Link to="/login" state={{ from: location }} className={claseBoton}>
+      <Button to="/login" state={{ from: location }} anchoCompleto>
         Iniciá sesión para solicitar una visita
-      </Link>
+      </Button>
     )
   }
 
@@ -74,15 +69,9 @@ export default function SolicitarVisita({ propiedadId, tituloPropiedad }) {
           </Link>
         </div>
       ) : (
-        <button
-          ref={boton}
-          type="button"
-          onClick={() => setAbierto(true)}
-          disabled={solicitud === undefined}
-          className={`${claseBoton} disabled:opacity-60`}
-        >
+        <Button onClick={() => setAbierto(true)} disabled={solicitud === undefined} anchoCompleto>
           Solicitar visita
-        </button>
+        </Button>
       )}
 
       {abierto && (
