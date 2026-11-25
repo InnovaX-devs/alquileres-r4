@@ -1,5 +1,6 @@
 package app.config;
 
+import app.geo.GeocodificacionService;
 import app.model.Rol;
 import app.model.Usuario;
 import app.service.AlertaService;
@@ -62,6 +63,7 @@ class AccessControlTest {
     @MockBean AlertaService alertaService;
     @MockBean AuthService authService;
     @MockBean FavoritoService favoritoService;
+    @MockBean GeocodificacionService geocodificacionService;
     @MockBean ImagenPropiedadService imagenPropiedadService;
     @MockBean InmobiliariaService inmobiliariaService;
     @MockBean PropiedadService propiedadService;
@@ -137,6 +139,7 @@ class AccessControlTest {
             "PATCH,/usuarios/perfil",
             "GET,/usuarios/me",
             "GET,/propiedades/mias",
+            "GET,/geocodificacion?calle=Sobremonte",
             "POST,/visitas",
             "GET,/visitas/mias",
             "GET,/visitas/recibidas",
@@ -211,7 +214,8 @@ class AccessControlTest {
             "GET,/alertas",
             "PATCH,/usuarios/perfil",
             "GET,/usuarios/me",
-            "GET,/propiedades/mias"
+            "GET,/propiedades/mias",
+            "GET,/geocodificacion?calle=Sobremonte"
     })
     void privadosConTokenValidoNoDan401ni403(String metodo, String path) throws Exception {
         String token = jwtUtil.generateToken("user@test.com", Rol.USER);

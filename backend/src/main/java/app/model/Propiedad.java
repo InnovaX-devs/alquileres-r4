@@ -46,6 +46,12 @@ public class Propiedad {
 
     private String urlOriginal;
 
+    // Ubicación exacta que confirmó quien publica (issue #140). Opcionales, pero van las dos juntas.
+    // En público se muestra aproximada (ver RioCuarto.aproximarLatitud).
+    private Double latitud;
+
+    private Double longitud;
+
     @ManyToOne
     @JoinColumn(name = "inmobiliaria_id")
     private Inmobiliaria inmobiliaria;
@@ -122,6 +128,12 @@ public class Propiedad {
 
     public String getUrlOriginal() { return urlOriginal; }
     public void setUrlOriginal(String urlOriginal) { this.urlOriginal = urlOriginal; }
+
+    public Double getLatitud() { return latitud; }
+    public void setLatitud(Double latitud) { this.latitud = latitud; }
+
+    public Double getLongitud() { return longitud; }
+    public void setLongitud(Double longitud) { this.longitud = longitud; }
 
     public Inmobiliaria getInmobiliaria() { return inmobiliaria; }
     public void setInmobiliaria(Inmobiliaria inmobiliaria) { this.inmobiliaria = inmobiliaria; }
