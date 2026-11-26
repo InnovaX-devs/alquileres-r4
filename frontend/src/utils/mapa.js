@@ -1,35 +1,15 @@
-// Constantes y helpers de los mapas (#141). Mapas con Leaflet y datos de OpenStreetMap.
-import { MAPA_KEY } from '../config/env'
+// Constantes y helpers de los mapas (#141). Mapas de OpenStreetMap con Leaflet.
 
 /** Centro de Río Cuarto: donde arranca el mapa cuando no hay ubicación. */
 export const CENTRO_RIO_CUARTO = [-33.1232, -64.3493]
 export const ZOOM_CIUDAD = 13
 export const ZOOM_CALLE = 17
 
-// La atribución de OpenStreetMap es obligatoria (licencia ODbL)
-const ATRIBUCION_OSM = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-
-/** Estilo estándar de OpenStreetMap: no necesita clave. */
-const CAPA_OSM = {
+export const CAPA_OSM = {
   url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-  atribucion: ATRIBUCION_OSM,
-  subdominios: 'abc',
-  zoomMaximo: 19,
+  // La atribución de OpenStreetMap es obligatoria (licencia ODbL)
+  atribucion: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
 }
-
-/** CARTO Voyager: colores más suaves y calles más claras. Necesita clave (la atribución a CARTO es obligatoria). */
-function capaVoyager(clave) {
-  return {
-    // {r} pide las baldosas en alta resolución en pantallas retina
-    url: `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=${encodeURIComponent(clave)}`,
-    atribucion: `${ATRIBUCION_OSM} &copy; <a href="https://carto.com/attributions">CARTO</a>`,
-    subdominios: 'abcd',
-    zoomMaximo: 20,
-  }
-}
-
-/** Mapa base de todos los mapas: Voyager si hay VITE_MAPA_KEY, si no OpenStreetMap. */
-export const CAPA_MAPA = MAPA_KEY ? capaVoyager(MAPA_KEY) : CAPA_OSM
 
 /** true si la propiedad tiene coordenadas para mostrar en el mapa. */
 export function tieneUbicacion(propiedad) {

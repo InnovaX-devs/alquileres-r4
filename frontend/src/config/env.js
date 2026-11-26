@@ -5,7 +5,3 @@ if (!apiUrl) {
 }
 
 export const API_URL = apiUrl
-
-// Clave de CARTO para el mapa base Voyager (opcional). Sin clave se usa OpenStreetMap estándar.
-// Se pide gratis en https://carto.com/basemaps/apikey
-export const MAPA_KEY = import.meta.env.VITE_MAPA_KEY?.trim() || null

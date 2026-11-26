@@ -64,11 +64,10 @@ como `https://<nombre>.onrender.com`. Para comprobarla, abrí
 | Root Directory | `frontend` |
 | Framework Preset | Vite (lo detecta solo) |
 | Environment Variable | `VITE_API_URL` = `https://<nombre>.onrender.com` (sin barra al final) |
-| Environment Variable (opcional) | `VITE_MAPA_KEY` = clave de CARTO para el mapa Voyager. Sin ella se usa OpenStreetMap |
 
 **Deploy.** Queda en `https://<proyecto>.vercel.app`.
 
-`VITE_API_URL` y `VITE_MAPA_KEY` se graban al compilar. Si después las cambiás, hay que hacer
+`VITE_API_URL` se graba al compilar. Si después la cambiás, hay que hacer
 **Redeploy** en Vercel.
 
 ## 4. Habilitar el front en el CORS del backend
