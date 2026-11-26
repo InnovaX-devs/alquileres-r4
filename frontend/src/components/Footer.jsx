@@ -1,20 +1,23 @@
 import { Link } from 'react-router-dom'
-import { Logo } from './Navbar'
 
 const ANIO = new Date().getFullYear()
 
+// Pie coral de una línea: todo el texto en petróleo (el gris no tiene contraste suficiente sobre coral)
 export default function Footer() {
   return (
-    <footer className="mt-8 bg-pino-800 text-gray-300">
-      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-8">
-        <Link to="/" className="flex items-center gap-2 rounded-lg text-white focus:outline-none focus-visible:ring-3 focus-visible:ring-sol-400">
-          <Logo className="h-7 w-7" />
-          <span className="font-display text-lg font-extrabold tracking-tight">Alquileres R4</span>
+    <footer className="bg-sol-400 text-[15px] text-pino-800">
+      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-6 gap-y-1.5 px-4 py-6">
+        <Link
+          to="/"
+          className="rounded-lg focus:outline-none focus-visible:ring-3 focus-visible:ring-pino-800"
+        >
+          {/* El ícono "ak" con techito (el mismo del favicon): su fondo coral se funde con el del footer */}
+          <img src="/favicon.svg" alt="Alkilea" className="h-11 w-11" />
         </Link>
-        <div className="text-sm">
-          <p>Alquileres de inmobiliarias y particulares de Río Cuarto.</p>
-          <p className="mt-1 text-gray-400">© {ANIO} Alquileres R4</p>
-        </div>
+        <p>
+          Alquileres de inmobiliarias y particulares de Río Cuarto
+          <span className="text-pino-800/75"> · © {ANIO}</span>
+        </p>
       </div>
     </footer>
   )
