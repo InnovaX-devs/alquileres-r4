@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import TarjetaPropiedad from '../components/TarjetaPropiedad'
 import { MapaPropiedades } from '../components/mapa'
 import { usePantallaGrande } from '../hooks/usePantallaGrande'
@@ -8,16 +8,18 @@ import { CLAVES_FILTROS, hayFiltrosActivos } from '../utils/filtros'
 import { listarPropiedades } from '../services/propiedades'
 import { useAuth } from '../hooks/useAuth'
 import { ErrorConReintento, Vacio } from '../components/EstadoCarga'
-import { Button, CLASES_CARD } from '../components/ui'
 
 const TARJETAS_DE_CARGA = 6
 
-// Tarjeta gris con la misma forma que la real, mientras llegan los datos
-function TarjetaCargando() {
+// Mismo tono que el fondo de la foto de la tarjeta (alterna coral, verde agua y arena)
+const TONOS_CARGA = ['bg-sol-200', 'bg-rio-100', 'bg-gray-200']
+
+// Tarjeta con la misma forma que la real, mientras llegan los datos
+function TarjetaCargando({ indice }) {
   return (
-    <div aria-hidden="true" className={`animate-pulse overflow-hidden ${CLASES_CARD}`}>
-      <div className="aspect-[4/3] bg-gray-200" />
-      <div className="space-y-2.5 p-5">
+    <div aria-hidden="true" className="animate-pulse">
+      <div className={`aspect-[5/4] rounded-[18px] ${TONOS_CARGA[indice % TONOS_CARGA.length]}`} />
+      <div className="mt-4 space-y-2.5">
         <div className="h-7 w-1/2 rounded-lg bg-gray-200" />
         <div className="h-4 w-3/4 rounded-lg bg-gray-200" />
         <div className="h-4 w-1/3 rounded-lg bg-gray-200" />
@@ -26,9 +28,9 @@ function TarjetaCargando() {
   )
 }
 
-const grilla = 'grid gap-5 sm:grid-cols-2 lg:grid-cols-3'
+const grilla = 'grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3'
 // Con el mapa al lado, las tarjetas van en dos columnas como máximo
-const grillaConMapa = 'grid grid-cols-1 gap-5 sm:grid-cols-2'
+const grillaConMapa = 'grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2'
 
 function SelectorVista({ vista, onCambiar }) {
   const clase = (activa) =>
@@ -36,7 +38,7 @@ function SelectorVista({ vista, onCambiar }) {
       activa ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600 hover:text-gray-900'
     }`
   return (
-    <div role="group" aria-label="Ver como" className="inline-flex rounded-lg bg-gray-100 p-1 lg:hidden">
+    <div role="group" aria-label="Ver como" className="inline-flex rounded-lg bg-gray-200 p-1 lg:hidden">
       <button type="button" aria-pressed={vista === 'lista'} onClick={() => onCambiar('lista')} className={clase(vista === 'lista')}>
         Lista
       </button>
@@ -105,7 +107,7 @@ export default function Home() {
     contenido = (
       <div className={grilla} role="status" aria-label="Cargando propiedades">
         {Array.from({ length: TARJETAS_DE_CARGA }, (_, i) => (
-          <TarjetaCargando key={i} />
+          <TarjetaCargando key={i} indice={i} />
         ))}
       </div>
     )
@@ -133,7 +135,7 @@ export default function Home() {
     const verLista = pantallaGrande || vista === 'lista'
     const verMapa = pantallaGrande || vista === 'mapa'
     contenido = (
-      <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,0.8fr)] lg:gap-6">
+      <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,0.8fr)] lg:gap-7">
         {verLista && (
           <ul className={grillaConMapa}>
             {propiedades.map((propiedad) => (
@@ -165,24 +167,34 @@ export default function Home() {
 
   return (
     <div>
-      {/* Hero de ancho completo: se sale del contenedor del Layout */}
-      <section className="relative left-1/2 -mt-8 w-screen -translate-x-1/2 bg-pino-800 pb-28 pt-12 text-white sm:pt-16">
-        <div className="mx-auto max-w-6xl px-4">
-          <h1 className="max-w-[13ch] text-[clamp(2.4rem,6vw,4.25rem)] font-extrabold leading-[1.02] tracking-[-0.035em]">
-            Tu próximo lugar en Río Cuarto
+      {/* Hero: panel petróleo dentro del contenedor, con el buscador superpuesto abajo */}
+      <section className="relative -mt-6 overflow-hidden rounded-[28px] bg-pino-800 px-6 pb-[116px] pt-12 sm:px-14 sm:pt-[72px]">
+        {/* Decorativo: círculo coral con una casita de línea */}
+        <div
+          aria-hidden="true"
+          className="absolute right-16 top-1/2 hidden aspect-square w-[300px] max-w-[34%] -translate-y-[58%] items-center justify-center rounded-full bg-sol-400 md:flex"
+        >
+          <svg viewBox="0 0 100 100" fill="none" className="w-[44%]">
+            <path d="M22 80V45L50 22l28 23v35" className="stroke-pino-800" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </div>
+        <div className="relative max-w-[620px]">
+          <p className="mb-[18px] text-[15px] font-bold text-sol-400">Alquileres en Río Cuarto</p>
+          <h1 className="text-[clamp(40px,5.6vw,72px)] font-bold leading-[1.02] tracking-[-0.04em] text-white">
+            Tu próximo lugar te está esperando
           </h1>
-          <p className="mt-4 max-w-[52ch] text-lg leading-relaxed text-gray-300">
+          <p className="mt-5 max-w-[42ch] text-[19px] leading-relaxed text-[#e9dfcc]">
             Departamentos y casas de inmobiliarias y dueños directos, con el precio y las expensas a la vista.
           </p>
         </div>
       </section>
 
-      <div className="relative -mt-20">
+      <div className="relative">
         <FiltrosPropiedades valores={filtros} onAplicar={aplicarFiltros} />
       </div>
 
-      <div className="mb-5 mt-10 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-        <h2 className="text-[1.75rem] font-bold">
+      <div className="mb-7 mt-16 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-3">
+        <h2 className="text-[30px] font-bold tracking-[-0.03em]">
           {cantidad === null
             ? 'Propiedades en alquiler'
             : `${cantidad} ${cantidad === 1 ? 'propiedad disponible' : 'propiedades disponibles'}`}
@@ -190,13 +202,12 @@ export default function Home() {
         {cantidad > 0 && <SelectorVista vista={vista} onCambiar={setVista} />}
         {conFiltros && (
           // Crear una alerta con la búsqueda actual (#85): los filtros y los criterios de alerta son los mismos
-          <Button variante="suave" tamanio="sm" to={`/alertas/nueva?${consulta}`}>
-            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-[18px] w-[18px]">
-              <path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
-              <path d="M10 21a2 2 0 0 0 4 0" />
-            </svg>
+          <Link
+            to={`/alertas/nueva?${consulta}`}
+            className="rounded text-[15px] text-gray-600 underline decoration-sol-400 decoration-2 underline-offset-[5px] hover:text-gray-900 focus:outline-none focus-visible:ring-3 focus-visible:ring-rio-600"
+          >
             Avisarme cuando aparezca algo así
-          </Button>
+          </Link>
         )}
       </div>
       {contenido}

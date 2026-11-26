@@ -1,51 +1,52 @@
 @import "tailwindcss";
 
-/* ── Identidad visual: el río y las sierras de Río Cuarto ─────────────────────────────────────
-   - Neutros: gris verdoso tipo piedra (reemplaza la escala gray de Tailwind, así todo lo que
-     usa gray-* toma el tono sin tocar cada archivo). gray-900 es el verde pino del texto.
-   - rio:  verde agua. Links, selección, foco y detalles.
-   - sol:  amarillo. SOLO para la acción principal de cada pantalla (Buscar, Publicar, Enviar...),
-           siempre con texto pino encima (contraste 7:1).
-   - pino: el verde oscuro de la barra y el hero.
+/* ── Identidad visual "Natural": petróleo, coral claro y arena (ver DISENO.md) ────────────────
+   - gray: neutros arena. gray-100 es el fondo, gray-300 los bordes, gray-600 el texto secundario y
+           gray-900 el texto principal (petróleo). Reemplaza la escala gray de Tailwind, así todo lo
+           que usa gray-* toma el tono sin tocar cada archivo.
+   - rio:  verdes azulados. Links y foco (rio-600) y fondos suaves.
+   - sol:  coral claro. SOLO para la acción principal de cada pantalla (Buscar, Publicar, Enviar...)
+           y acentos, siempre con texto petróleo encima.
+   - pino: el petróleo del hero y los botones oscuros. Sobre él, texto blanco, arena o coral.
    Tipografías: Bricolage Grotesque para títulos y precios (con carácter), Atkinson Hyperlegible
    para el texto (diseñada para leerse fácil). Se sirven desde la app, no desde Google. */
 @theme {
   --font-sans: 'Atkinson Hyperlegible', ui-sans-serif, system-ui, sans-serif;
   --font-display: 'Bricolage Grotesque Variable', 'Atkinson Hyperlegible', ui-sans-serif, sans-serif;
 
-  --color-gray-50: #f5f7f3;
-  --color-gray-100: #eaeee8;
-  --color-gray-200: #dbe1d9;
-  --color-gray-300: #c5cdc3;
-  --color-gray-400: #8f9c95;
-  --color-gray-500: #627069;
-  --color-gray-600: #4e5f59;
-  --color-gray-700: #3a4a44;
-  --color-gray-800: #26372f;
-  --color-gray-900: #17322b;
-  --color-gray-950: #0f231d;
+  --color-gray-50: #faf7f0;
+  --color-gray-100: #f5efe3;
+  --color-gray-200: #ece4d4;
+  --color-gray-300: #e6dcc9;
+  --color-gray-400: #949a94;
+  --color-gray-500: #6e7976;
+  --color-gray-600: #5c6966;
+  --color-gray-700: #3f5052;
+  --color-gray-800: #2a4346;
+  --color-gray-900: #1a3a3e;
+  --color-gray-950: #10272a;
 
-  --color-rio-50: #ebf5f2;
-  --color-rio-100: #d3ebe4;
-  --color-rio-200: #a8d6ca;
-  --color-rio-300: #7fc4b6;
-  --color-rio-400: #55a898;
-  --color-rio-500: #3c9282;
-  --color-rio-600: #2e7f72;
-  --color-rio-700: #23665b;
-  --color-rio-800: #1c5149;
-  --color-rio-900: #163f38;
+  --color-rio-50: #eef5f3;
+  --color-rio-100: #dce6e1;
+  --color-rio-200: #cfe0da;
+  --color-rio-300: #a9ccc2;
+  --color-rio-400: #6fa59a;
+  --color-rio-500: #3f7f7a;
+  --color-rio-600: #2c5a5e;
+  --color-rio-700: #234b4f;
+  --color-rio-800: #1f4347;
+  --color-rio-900: #1a3a3e;
 
-  --color-sol-100: #fcefd2;
-  --color-sol-200: #f9dfa5;
-  --color-sol-300: #f6cb72;
-  --color-sol-400: #f2b33d;
-  --color-sol-500: #e3a12a;
-  --color-sol-600: #c7881b;
+  --color-sol-100: #fce8e0;
+  --color-sol-200: #f8d6c7;
+  --color-sol-300: #f5bba5;
+  --color-sol-400: #f2a68c;
+  --color-sol-500: #ee9479;
+  --color-sol-600: #d9785c;
 
-  --color-pino-700: #1f4038;
-  --color-pino-800: #17322b;
-  --color-pino-900: #10251f;
+  --color-pino-700: #234b4f;
+  --color-pino-800: #1a3a3e;
+  --color-pino-900: #10272a;
 
   --animate-aparecer: aparecer 0.2s ease-out;
   --animate-latido: latido 0.35s ease-out;
@@ -95,7 +96,7 @@
   border-radius: 9999px;
   border: 1px solid var(--color-gray-300);
   background: white;
-  color: var(--color-gray-900);
+  color: var(--color-pino-800);
   font-family: var(--font-display);
   font-size: 13px;
   font-weight: 700;
@@ -105,8 +106,8 @@
   transition: transform 120ms, background 120ms;
 }
 .mapa-precio--resaltado {
-  background: var(--color-rio-700);
-  border-color: var(--color-rio-800);
+  background: var(--color-pino-800);
+  border-color: var(--color-pino-800);
   color: white;
   transform: translate(-50%, -100%) scale(1.15);
 }
@@ -114,7 +115,7 @@
   display: block;
   width: 32px;
   height: 42px;
-  background: var(--color-rio-700);
+  background: var(--color-sol-400);
   clip-path: path('M16 42C16 42 0 25.5 0 15.5a16 16 0 1 1 32 0C32 25.5 16 42 16 42Z');
   position: relative;
   cursor: grab;

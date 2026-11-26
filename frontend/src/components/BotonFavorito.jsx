@@ -56,7 +56,7 @@ export default function BotonFavorito({ tipo, id, className = '' }) {
       aria-pressed={!!marcado}
       aria-label={etiqueta}
       title={estaAutenticado ? etiqueta : 'Iniciá sesión para guardar favoritos'}  
-      className={`inline-flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-md shadow-pino-900/15 transition hover:scale-105 focus:outline-none focus-visible:ring-3 focus-visible:ring-rio-600 active:scale-95 disabled:opacity-60 ${className}`}
+      className={`inline-flex h-11 w-11 items-center justify-center rounded-full bg-white/90 transition hover:scale-105 focus:outline-none focus-visible:ring-3 focus-visible:ring-rio-600 active:scale-95 disabled:opacity-60 ${className}`}
     >
       <svg
         aria-hidden="true"
@@ -65,7 +65,7 @@ export default function BotonFavorito({ tipo, id, className = '' }) {
         stroke="currentColor"
         fill={marcado ? 'currentColor' : 'none'}
         onAnimationEnd={() => setLatiendo(false)}
-        className={`h-[22px] w-[22px] ${latiendo ? 'animate-latido' : ''} ${marcado ? 'text-red-600' : 'text-gray-800'}`}
+        className={`h-[22px] w-[22px] ${latiendo ? 'animate-latido' : ''} ${marcado ? 'text-red-600' : 'text-gray-900'}`}
       >
         <path
           strokeLinecap="round"
