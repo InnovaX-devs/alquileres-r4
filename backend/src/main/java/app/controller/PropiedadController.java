@@ -7,11 +7,13 @@ import app.model.Moneda;
 import app.model.Propiedad;
 import app.service.PropiedadService;
 import jakarta.validation.Valid;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.security.Principal;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -54,9 +56,10 @@ public class PropiedadController {
             @RequestParam(required = false) BigDecimal precioMax,
             @RequestParam(required = false) Moneda moneda,
             @RequestParam(required = false) Integer habitacionesMin,
-            @RequestParam(required = false) String calle
+            @RequestParam(required = false) String calle,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate disponibleAntesDe
     ) {
         return ApiResponse.ok("Propiedades obtenidas",
-                propiedadService.listar(precioMin, precioMax, moneda, habitacionesMin, calle));
+                propiedadService.listar(precioMin, precioMax, moneda, habitacionesMin, calle, disponibleAntesDe));
     }
 }

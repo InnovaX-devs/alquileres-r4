@@ -86,6 +86,8 @@ export default function EditarPropiedad() {
   const [intento, setIntento] = useState(0)
 
   const [datos, setDatos] = useState(null)
+  // La fecha de "disponible desde" que ya tenía: si no la cambia, se acepta aunque haya pasado (#154)
+  const disponibleOriginal = useRef('')
   const [ubicacion, setUbicacion] = useState(null)
   const [fotos, setFotos] = useState([]) // las que ya tiene: [{ id, url, orden }]
   const [aQuitar, setAQuitar] = useState(() => new Set())
@@ -118,6 +120,7 @@ export default function EditarPropiedad() {
           return
         }
         setDatos(datosDesdePropiedad(propiedad))
+        disponibleOriginal.current = propiedad.disponibleDesde ?? ''
         setUbicacion(
           propiedad.latitud != null && propiedad.longitud != null
             ? { latitud: propiedad.latitud, longitud: propiedad.longitud }
@@ -212,7 +215,7 @@ export default function EditarPropiedad() {
       return
     }
 
-    const encontrados = validarPropiedad(datos)
+    const encontrados = validarPropiedad(datos, { disponibleDesdeOriginal: disponibleOriginal.current })
     setErrores(encontrados)
     if (Object.keys(encontrados).length > 0) {
       enfocarPrimerError(encontrados)

@@ -11,6 +11,7 @@ import { ErrorConReintento } from '../components/EstadoCarga'
 import { Aviso, Button } from '../components/ui'
 import { MapaZona } from '../components/mapa'
 import { tieneUbicacion } from '../utils/mapa'
+import { formatearDisponibilidad } from '../utils/disponibilidad'
 import {
   formatearHabitaciones,
   formatearImpuestos,
@@ -145,6 +146,7 @@ export default function PropiedadDetalle() {
     imagenes,
     contacto,
     estado,
+    disponibleDesde,
   } = propiedad
   const alquilada = estado === 'ALQUILADA'
 
@@ -208,6 +210,10 @@ export default function PropiedadDetalle() {
               </div>
               <BotonFavorito tipo="propiedad" id={propiedad.id} className="shrink-0 border-2 border-gray-200 shadow-none" />
             </div>
+            {/* Desde cuándo se puede entrar (#154) */}
+            {!alquilada && (
+              <p className="mt-4 text-[15px] font-bold text-rio-700">{formatearDisponibilidad(disponibleDesde)}</p>
+            )}
             <div className="mt-5">
               {alquilada ? (
                 <p className="rounded-xl bg-gray-100 px-4 py-3 text-center text-[15px] font-bold text-gray-600">

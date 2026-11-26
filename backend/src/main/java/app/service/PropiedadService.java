@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,6 +45,9 @@ public class PropiedadService {
     public Propiedad publicar(PropiedadRequest request, String emailUsuario) {
         Usuario usuario = usuarioRepository.findByEmail(emailUsuario)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuario no encontrado"));
+
+        // Sin fecha, o desde hoy en adelante (issue #154)
+        request.validarDisponibleDesde(null, Propiedad.hoy());
 
         Propiedad propiedad = new Propiedad();
         request.aplicarA(propiedad);
@@ -125,14 +129,25 @@ public class PropiedadService {
         return listar(null, null, null, null, null);
     }
 
+    /** Listado sin el filtro de disponibilidad. */
+    public List<PropiedadDetalleResponse> listar(BigDecimal precioMin, BigDecimal precioMax, Moneda moneda,
+                                                 Integer habitacionesMin, String calle) {
+        return listar(precioMin, precioMax, moneda, habitacionesMin, calle, null);
+    }
+
     /**
      * Listado público con filtros opcionales (issue #58). Los filtros que vienen null o vacíos se ignoran
      * y los que vienen informados se combinan con AND. Solo incluye las propiedades disponibles:
      * sin ningún filtro devuelve todas las que no están alquiladas.
+     *
+     * {@code disponibleAntesDe} (issue #154) deja las que se pueden ocupar hasta esa fecha inclusive:
+     * las que no tienen fecha (disponibles ya) y las que la tienen igual o anterior. "Disponible ahora"
+     * es pasar la fecha de hoy.
      */
     @Transactional(readOnly = true)
     public List<PropiedadDetalleResponse> listar(BigDecimal precioMin, BigDecimal precioMax, Moneda moneda,
-                                                 Integer habitacionesMin, String calle) {
+                                                 Integer habitacionesMin, String calle,
+                                                 LocalDate disponibleAntesDe) {
         if (precioMin != null && precioMax != null && precioMin.compareTo(precioMax) > 0) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "El precio mínimo no puede ser mayor al precio máximo");
@@ -142,7 +157,7 @@ public class PropiedadService {
 
         // Las alquiladas no se listan (siguen accesibles en el detalle, por ejemplo desde favoritos)
         List<Propiedad> propiedades = propiedadRepository.findAll(
-                filtros(precioMin, precioMax, moneda, habitacionesMin, calleFiltro));
+                filtros(precioMin, precioMax, moneda, habitacionesMin, calleFiltro, disponibleAntesDe));
 
         return propiedades.stream()
                 .map(propiedad -> PropiedadDetalleResponse.from(propiedad, null))
@@ -150,7 +165,8 @@ public class PropiedadService {
     }
 
     private Specification<Propiedad> filtros(BigDecimal precioMin, BigDecimal precioMax, Moneda moneda,
-                                             Integer habitacionesMin, String calle) {
+                                             Integer habitacionesMin, String calle,
+                                             LocalDate disponibleAntesDe) {
         return (root, query, cb) -> {
             List<Predicate> predicados = new ArrayList<>();
 
@@ -172,6 +188,11 @@ public class PropiedadService {
             }
             if (calle != null) {
                 predicados.add(cb.like(cb.lower(root.get("calle")), "%" + calle.toLowerCase() + "%"));
+            }
+            if (disponibleAntesDe != null) {
+                // Sin fecha cuenta como disponible ya
+                predicados.add(cb.or(cb.isNull(root.get("disponibleDesde")),
+                        cb.lessThanOrEqualTo(root.get("disponibleDesde"), disponibleAntesDe)));
             }
 
             return cb.and(predicados.toArray(new Predicate[0]));

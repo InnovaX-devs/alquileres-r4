@@ -58,6 +58,8 @@ public class GestionPropiedadService {
     public PropiedadDetalleResponse editar(Long id, PropiedadRequest request, String emailUsuario) {
         Propiedad propiedad = buscarGestionable(id, emailUsuario, "editar");
 
+        // Se acepta la fecha que ya tenía aunque haya pasado (issue #154)
+        request.validarDisponibleDesde(propiedad.getDisponibleDesde(), Propiedad.hoy());
         request.aplicarA(propiedad);
         Propiedad guardada = propiedadRepository.save(propiedad);
         log.info("Propiedad editada: id={}", id);

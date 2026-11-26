@@ -2,6 +2,8 @@ package app.model;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 
 @Entity
@@ -40,6 +42,9 @@ public class Propiedad {
 
     @Column(columnDefinition = "TEXT")
     private String requisitosIngreso;
+
+    // Desde cuándo se puede entrar (issue #154). Null = disponible ya.
+    private LocalDate disponibleDesde;
 
     @Enumerated(EnumType.STRING)
     private Fuente fuente;
@@ -83,6 +88,14 @@ public class Propiedad {
         }
 
         return this.usuario != null && usuario.getId().equals(this.usuario.getId());
+    }
+
+    /** Zona horaria de los usuarios (Río Cuarto): el servidor corre en UTC y de noche ya estaría en el día siguiente. */
+    private static final ZoneId ZONA_HORARIA = ZoneId.of("America/Argentina/Cordoba");
+
+    /** La fecha de hoy para quienes usan la app. */
+    public static LocalDate hoy() {
+        return LocalDate.now(ZONA_HORARIA);
     }
 
     public boolean estaAlquilada() {
@@ -131,6 +144,9 @@ public class Propiedad {
 
     public String getRequisitosIngreso() { return requisitosIngreso; }
     public void setRequisitosIngreso(String requisitosIngreso) { this.requisitosIngreso = requisitosIngreso; }
+
+    public LocalDate getDisponibleDesde() { return disponibleDesde; }
+    public void setDisponibleDesde(LocalDate disponibleDesde) { this.disponibleDesde = disponibleDesde; }
 
     public Fuente getFuente() { return fuente; }
     public void setFuente(Fuente fuente) { this.fuente = fuente; }

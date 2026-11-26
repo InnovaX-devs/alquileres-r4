@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { FILTROS_VACIOS, hayFiltrosActivos, validarFiltros } from '../utils/filtros'
+import { hoyISO } from '../utils/disponibilidad'
 
 const MONEDAS = [
   { valor: '', label: 'Todas' },
@@ -287,6 +288,18 @@ export default function FiltrosPropiedades({ valores, onAplicar }) {
         valor={borrador.habitacionesMin}
         onElegir={(valor) => asignar('habitacionesMin', valor)}
       />
+
+      {/* "Disponible ahora" (#154): se pide con la fecha de hoy, que el backend toma como "hasta hoy" */}
+      <label htmlFor="filtro-disponible-ahora" className="flex h-[46px] cursor-pointer items-center gap-2.5 text-[17px] text-gray-900">
+        <input
+          id="filtro-disponible-ahora"
+          type="checkbox"
+          checked={borrador.disponibleAntesDe !== ''}
+          onChange={(event) => asignar('disponibleAntesDe', event.target.checked ? hoyISO() : '')}
+          className="h-5 w-5 cursor-pointer rounded accent-rio-600 focus:outline-none focus-visible:ring-3 focus-visible:ring-rio-600"
+        />
+        Disponible ahora
+      </label>
 
       <div className="flex gap-2 max-sm:w-full">
         <button

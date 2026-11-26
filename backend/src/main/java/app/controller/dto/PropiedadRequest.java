@@ -10,7 +10,10 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 public class PropiedadRequest {
 
@@ -40,6 +43,8 @@ public class PropiedadRequest {
     @Min(value = 1, message = "El plazo de actualización debe ser de al menos 1 mes")
     private Integer plazoActualizacionMeses;
     private String requisitosIngreso;
+    // Desde cuándo se puede entrar (issue #154). Opcional: sin fecha, la propiedad está disponible ya.
+    private LocalDate disponibleDesde;
 
     // Ubicación confirmada con el pin del mapa (issue #140). Opcional.
     private Double latitud;
@@ -53,6 +58,21 @@ public class PropiedadRequest {
             return true;
         }
         return RioCuarto.contiene(latitud, longitud);
+    }
+
+    /**
+     * La fecha de "disponible desde" no puede ser anterior a hoy (issue #154).
+     * Al editar se acepta la misma fecha que la propiedad ya tenía, aunque haya pasado: si no,
+     * no se podría cambiar nada más en una publicación cuya fecha ya venció.
+     *
+     * @param actual la fecha que tiene hoy la propiedad (null al publicar)
+     * @param hoy    la fecha de hoy (se pasa para poder probarlo)
+     */
+    public void validarDisponibleDesde(LocalDate actual, LocalDate hoy) {
+        if (disponibleDesde != null && disponibleDesde.isBefore(hoy) && !disponibleDesde.equals(actual)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "La fecha de disponibilidad no puede ser anterior a hoy");
+        }
     }
 
     /**
@@ -73,6 +93,7 @@ public class PropiedadRequest {
         propiedad.setIncluyeImpuestos(incluyeImpuestos);
         propiedad.setPlazoActualizacionMeses(plazoActualizacionMeses);
         propiedad.setRequisitosIngreso(requisitosIngreso);
+        propiedad.setDisponibleDesde(disponibleDesde);
         propiedad.setLatitud(latitud);
         propiedad.setLongitud(longitud);
     }
@@ -115,6 +136,9 @@ public class PropiedadRequest {
 
     public String getRequisitosIngreso() { return requisitosIngreso; }
     public void setRequisitosIngreso(String requisitosIngreso) { this.requisitosIngreso = requisitosIngreso; }
+
+    public LocalDate getDisponibleDesde() { return disponibleDesde; }
+    public void setDisponibleDesde(LocalDate disponibleDesde) { this.disponibleDesde = disponibleDesde; }
 
     public Double getLatitud() { return latitud; }
     public void setLatitud(Double latitud) { this.latitud = latitud; }

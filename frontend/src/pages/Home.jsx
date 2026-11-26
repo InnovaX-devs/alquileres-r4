@@ -5,6 +5,7 @@ import { MapaPropiedades } from '../components/mapa'
 import { usePantallaGrande } from '../hooks/usePantallaGrande'
 import FiltrosPropiedades from '../components/FiltrosPropiedades'
 import { CLAVES_FILTROS, hayFiltrosActivos } from '../utils/filtros'
+import { CLAVES_ALERTA } from '../utils/alertas'
 import { listarPropiedades } from '../services/propiedades'
 import { useAuth } from '../hooks/useAuth'
 import { ErrorConReintento, Vacio } from '../components/EstadoCarga'
@@ -66,6 +67,8 @@ export default function Home() {
     return Object.fromEntries(CLAVES_FILTROS.map((clave) => [clave, params.get(clave) ?? '']))
   }, [consulta])
   const conFiltros = hayFiltrosActivos(filtros)
+  // Las alertas no entienden "Disponible ahora" (#154): sin otro criterio no se ofrece crear una
+  const conCriteriosDeAlerta = CLAVES_ALERTA.some((clave) => String(filtros[clave] ?? '').trim() !== '')
 
   // Resultado de la última carga y la búsqueda a la que corresponde
   const [resultado, setResultado] = useState(null)
@@ -200,7 +203,7 @@ export default function Home() {
             : `${cantidad} ${cantidad === 1 ? 'propiedad disponible' : 'propiedades disponibles'}`}
         </h2>
         {cantidad > 0 && <SelectorVista vista={vista} onCambiar={setVista} />}
-        {conFiltros && (
+        {conCriteriosDeAlerta && (
           // Crear una alerta con la búsqueda actual (#85): los filtros y los criterios de alerta son los mismos
           <Link
             to={`/alertas/nueva?${consulta}`}

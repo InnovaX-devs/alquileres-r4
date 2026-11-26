@@ -1,6 +1,7 @@
 package app.controller.dto;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import app.geo.RioCuarto;
 import app.model.ImagenPropiedad;
@@ -28,6 +29,7 @@ public class PropiedadDetalleResponse {
     private Boolean incluyeImpuestos;
     private Integer plazoActualizacionMeses;
     private String requisitosIngreso;
+    private LocalDate disponibleDesde; // null = disponible ya
     private ContactoPublicadorResponse contacto; // null si no está verificado
     private List<String> imagenes;
     // Ubicación (issue #140). En público es aproximada: el centro de una celda de ~170 m, con
@@ -80,6 +82,7 @@ public class PropiedadDetalleResponse {
         dto.incluyeImpuestos = propiedad.getIncluyeImpuestos();
         dto.plazoActualizacionMeses = propiedad.getPlazoActualizacionMeses();
         dto.requisitosIngreso = propiedad.getRequisitosIngreso();
+        dto.disponibleDesde = propiedad.getDisponibleDesde();
         dto.contacto = contacto;
         dto.estado = propiedad.getEstado().name();
         dto.imagenes = propiedad.getImagenes() != null
@@ -105,6 +108,7 @@ public class PropiedadDetalleResponse {
     public Boolean getIncluyeImpuestos() { return incluyeImpuestos; }
     public Integer getPlazoActualizacionMeses() { return plazoActualizacionMeses; }
     public String getRequisitosIngreso() { return requisitosIngreso; }
+    public LocalDate getDisponibleDesde() { return disponibleDesde; }
     public ContactoPublicadorResponse getContacto() { return contacto; }
     public List<String> getImagenes() { return imagenes; }
     public Double getLatitud() { return latitud; }

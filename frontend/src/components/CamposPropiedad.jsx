@@ -1,6 +1,7 @@
 import { Card, Input, Select, Textarea } from './ui'
 import SelectorUbicacion from './SelectorUbicacion'
 import { MONEDAS, OPCIONES_IMPUESTOS } from '../utils/formularioPropiedad'
+import { hoyISO } from '../utils/disponibilidad'
 
 export function Seccion({ titulo, children }) {
   return (
@@ -123,6 +124,25 @@ export default function CamposPropiedad({ datos, errores, onCambiar, ubicacion, 
             placeholder="Ej: 45"
             {...campo('metrosCuadrados')}
           />
+          <div>
+            <Input
+              label="Disponible desde"
+              opcional
+              type="date"
+              min={hoyISO()}
+              ayuda="Si ya se puede entrar, dejalo vacío."
+              {...campo('disponibleDesde')}
+            />
+            {datos.disponibleDesde && (
+              <button
+                type="button"
+                onClick={() => onCambiar('disponibleDesde', '')}
+                className="mt-1 rounded px-1 text-sm font-bold text-gray-600 underline decoration-sol-400 decoration-2 underline-offset-4 hover:text-gray-900 focus:outline-none focus-visible:ring-3 focus-visible:ring-rio-600"
+              >
+                Ya disponible
+              </button>
+            )}
+          </div>
         </div>
         <Textarea
           label="Requisitos de ingreso"

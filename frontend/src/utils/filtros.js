@@ -1,6 +1,7 @@
 // Filtros del listado de propiedades (#73). Los acepta GET /propiedades (#58): todos opcionales y combinables.
+// disponibleAntesDe (#154) es una fecha "YYYY-MM-DD"; "Disponible ahora" manda la de hoy.
 
-export const CLAVES_FILTROS = ['precioMin', 'precioMax', 'moneda', 'habitacionesMin', 'calle']
+export const CLAVES_FILTROS = ['precioMin', 'precioMax', 'moneda', 'habitacionesMin', 'calle', 'disponibleAntesDe']
 
 export const FILTROS_VACIOS = Object.fromEntries(CLAVES_FILTROS.map((clave) => [clave, '']))
 

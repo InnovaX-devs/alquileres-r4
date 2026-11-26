@@ -4,7 +4,7 @@ import { api } from './api'
  * Listado público de propiedades: GET /propiedades (#72).
  *
  * `filtros` queda preparado para el issue #73. El backend acepta (todos opcionales):
- * precioMin, precioMax, moneda (USD | ARS), habitacionesMin, calle.
+ * precioMin, precioMax, moneda (USD | ARS), habitacionesMin, calle, disponibleAntesDe ("YYYY-MM-DD", #154).
  * Los valores vacíos no se mandan.
  */
 export function listarPropiedades(filtros = {}) {
