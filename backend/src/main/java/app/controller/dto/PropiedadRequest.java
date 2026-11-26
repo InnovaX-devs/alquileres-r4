@@ -2,6 +2,7 @@ package app.controller.dto;
 
 import app.geo.RioCuarto;
 import app.model.Moneda;
+import app.model.Propiedad;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.DecimalMin;
@@ -52,6 +53,28 @@ public class PropiedadRequest {
             return true;
         }
         return RioCuarto.contiene(latitud, longitud);
+    }
+
+    /**
+     * Copia los datos del formulario a la propiedad. Lo usan publicar y editar; no toca quién la
+     * publicó, la fuente ni el estado.
+     */
+    public void aplicarA(Propiedad propiedad) {
+        propiedad.setTitulo(titulo);
+        propiedad.setDescripcion(descripcion);
+        propiedad.setPrecio(precio);
+        propiedad.setExpensas(expensas);
+        propiedad.setMoneda(moneda);
+        propiedad.setCalle(calle);
+        propiedad.setAltura(altura);
+        propiedad.setPiso(piso);
+        propiedad.setHabitaciones(habitaciones);
+        propiedad.setMetrosCuadrados(metrosCuadrados);
+        propiedad.setIncluyeImpuestos(incluyeImpuestos);
+        propiedad.setPlazoActualizacionMeses(plazoActualizacionMeses);
+        propiedad.setRequisitosIngreso(requisitosIngreso);
+        propiedad.setLatitud(latitud);
+        propiedad.setLongitud(longitud);
     }
 
     public String getTitulo() { return titulo; }

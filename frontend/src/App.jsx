@@ -8,6 +8,7 @@ import Register from './pages/Register'
 import Perfil from './pages/Perfil'
 import PublicarPropiedad from './pages/PublicarPropiedad'
 import MisPropiedades from './pages/MisPropiedades'
+import EditarPropiedad from './pages/EditarPropiedad'
 import Favoritos from './pages/Favoritos'
 import MisVisitas from './pages/MisVisitas'
 import VisitasRecibidas from './pages/VisitasRecibidas'
@@ -30,6 +31,7 @@ export default function App() {
           <Route path="/perfil" element={<Perfil />} />
           <Route path="/publicar" element={<PublicarPropiedad />} />
           <Route path="/mis-propiedades" element={<MisPropiedades />} />
+          <Route path="/propiedades/:id/editar" element={<EditarPropiedad />} />
           <Route path="/favoritos" element={<Favoritos />} />
           <Route path="/visitas" element={<MisVisitas />} />
           <Route path="/visitas/recibidas" element={<VisitasRecibidas />} />

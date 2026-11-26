@@ -29,4 +29,13 @@ public class ImagenPropiedadController {
         ImagenPropiedad guardada = imagenPropiedadService.subir(id, imagen, authentication.getName());
         return ApiResponse.created("Imagen subida", ImagenPropiedadResponse.from(guardada));
     }
+
+    /** Quita una foto. Solo quien publicó la propiedad. */
+    @DeleteMapping("/{imagenId}")
+    public ResponseEntity<ApiResponse<Void>> eliminar(@PathVariable Long id,
+                                                      @PathVariable Long imagenId,
+                                                      Authentication authentication) {
+        imagenPropiedadService.eliminar(id, imagenId, authentication.getName());
+        return ApiResponse.ok("Imagen eliminada", null);
+    }
 }

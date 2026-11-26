@@ -47,15 +47,17 @@ function Icono({ d }) {
  * @param {Function} props.onChange    recibe la lista nueva
  * @param {object}   [props.estados]   { [id]: 'subiendo' | 'subida' | 'error' } mientras se suben
  * @param {boolean}  [props.bloqueado] true cuando ya se empezó a subir: no se puede editar la lista
+ * @param {number}   [props.yaSubidas=0] al editar: fotos que la propiedad ya tiene. Cuentan para el
+ *                   máximo y las nuevas van después de ellas (no son la portada)
  */
-export default function SelectorImagenes({ imagenes, onChange, estados = {}, bloqueado = false }) {
+export default function SelectorImagenes({ imagenes, onChange, estados = {}, bloqueado = false, yaSubidas = 0 }) {
   const inputRef = useRef(null)
   const [errores, setErrores] = useState([])
   const [arrastrando, setArrastrando] = useState(null) // índice de la miniatura que se arrastra
   const [sobreZona, setSobreZona] = useState(false) // archivos arrastrados sobre la zona
 
   const agregar = (archivos) => {
-    const { validos, errores: encontrados } = filtrarArchivos(Array.from(archivos), imagenes.length)
+    const { validos, errores: encontrados } = filtrarArchivos(Array.from(archivos), yaSubidas + imagenes.length)
     setErrores(encontrados)
     if (validos.length > 0) onChange([...imagenes, ...validos.map(crearImagenLocal)])
   }
@@ -88,7 +90,8 @@ export default function SelectorImagenes({ imagenes, onChange, estados = {}, blo
     setArrastrando(null)
   }
 
-  const lleno = imagenes.length >= MAXIMO_IMAGENES
+  const total = yaSubidas + imagenes.length
+  const lleno = total >= MAXIMO_IMAGENES
 
   return (
     <div>
@@ -109,7 +112,7 @@ export default function SelectorImagenes({ imagenes, onChange, estados = {}, blo
             Elegir fotos
           </Button>
           <p className="text-xs text-gray-400">
-            JPG, PNG o WEBP · hasta {TAMANIO_MAXIMO_MB} MB cada una · máximo {MAXIMO_IMAGENES} ({imagenes.length}/
+            JPG, PNG o WEBP · hasta {TAMANIO_MAXIMO_MB} MB cada una · máximo {MAXIMO_IMAGENES} ({total}/
             {MAXIMO_IMAGENES})
           </p>
           <input
@@ -137,7 +140,8 @@ export default function SelectorImagenes({ imagenes, onChange, estados = {}, blo
         <>
           {!bloqueado && imagenes.length > 1 && (
             <p className="mt-3 text-xs text-gray-500">
-              La primera es la portada. Arrastrá las fotos o usá las flechas para cambiar el orden.
+              {yaSubidas === 0 && 'La primera es la portada. '}
+              Arrastrá las fotos o usá las flechas para cambiar el orden.
             </p>
           )}
           <ol className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
@@ -153,12 +157,14 @@ export default function SelectorImagenes({ imagenes, onChange, estados = {}, blo
                   onDrop={soltarEnMiniatura(indice)}
                   className={`group relative aspect-[4/3] overflow-hidden rounded-xl border bg-gray-100 ${
                     arrastrando === indice ? 'opacity-40' : ''
-                  } ${bloqueado ? '' : 'cursor-move'} ${indice === 0 ? 'border-rio-500 ring-2 ring-rio-200' : 'border-gray-200'}`}
+                  } ${bloqueado ? '' : 'cursor-move'} ${
+                    yaSubidas + indice === 0 ? 'border-rio-500 ring-2 ring-rio-200' : 'border-gray-200'
+                  }`}
                 >
-                  <img src={imagen.preview} alt={`Foto ${indice + 1}: ${imagen.archivo.name}`} className="h-full w-full object-cover" />
+                  <img src={imagen.preview} alt={`Foto ${yaSubidas + indice + 1}: ${imagen.archivo.name}`} className="h-full w-full object-cover" />
 
                   <span className="absolute left-2 top-2 rounded bg-black/60 px-1.5 py-0.5 text-xs font-bold text-white">
-                    {indice === 0 ? 'Portada' : indice + 1}
+                    {yaSubidas + indice === 0 ? 'Portada' : yaSubidas + indice + 1}
                   </span>
 
                   {estado && (

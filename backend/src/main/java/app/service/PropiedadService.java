@@ -3,6 +3,7 @@ package app.service;
 import app.controller.dto.ContactoPublicadorResponse;
 import app.controller.dto.PropiedadDetalleResponse;
 import app.controller.dto.PropiedadRequest;
+import app.model.EstadoPropiedad;
 import app.model.Fuente;
 import app.model.Moneda;
 import app.model.Propiedad;
@@ -45,21 +46,7 @@ public class PropiedadService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuario no encontrado"));
 
         Propiedad propiedad = new Propiedad();
-        propiedad.setTitulo(request.getTitulo());
-        propiedad.setDescripcion(request.getDescripcion());
-        propiedad.setPrecio(request.getPrecio());
-        propiedad.setExpensas(request.getExpensas());
-        propiedad.setMoneda(request.getMoneda());
-        propiedad.setCalle(request.getCalle());
-        propiedad.setAltura(request.getAltura());
-        propiedad.setPiso(request.getPiso());
-        propiedad.setHabitaciones(request.getHabitaciones());
-        propiedad.setMetrosCuadrados(request.getMetrosCuadrados());
-        propiedad.setIncluyeImpuestos(request.getIncluyeImpuestos());
-        propiedad.setPlazoActualizacionMeses(request.getPlazoActualizacionMeses());
-        propiedad.setRequisitosIngreso(request.getRequisitosIngreso());
-        propiedad.setLatitud(request.getLatitud());
-        propiedad.setLongitud(request.getLongitud());
+        request.aplicarA(propiedad);
         propiedad.setFuente(Fuente.MANUAL);
         propiedad.setUsuario(usuario);
         // Si el usuario pertenece a una inmobiliaria, la propiedad se publica a su nombre (issue #61).
@@ -140,7 +127,8 @@ public class PropiedadService {
 
     /**
      * Listado público con filtros opcionales (issue #58). Los filtros que vienen null o vacíos se ignoran
-     * y los que vienen informados se combinan con AND. Sin ningún filtro devuelve todas las propiedades.
+     * y los que vienen informados se combinan con AND. Solo incluye las propiedades disponibles:
+     * sin ningún filtro devuelve todas las que no están alquiladas.
      */
     @Transactional(readOnly = true)
     public List<PropiedadDetalleResponse> listar(BigDecimal precioMin, BigDecimal precioMax, Moneda moneda,
@@ -151,12 +139,10 @@ public class PropiedadService {
         }
 
         String calleFiltro = calle != null && !calle.isBlank() ? calle.trim() : null;
-        boolean sinFiltros = precioMin == null && precioMax == null && moneda == null
-                && habitacionesMin == null && calleFiltro == null;
 
-        List<Propiedad> propiedades = sinFiltros
-                ? propiedadRepository.findAll()
-                : propiedadRepository.findAll(filtros(precioMin, precioMax, moneda, habitacionesMin, calleFiltro));
+        // Las alquiladas no se listan (siguen accesibles en el detalle, por ejemplo desde favoritos)
+        List<Propiedad> propiedades = propiedadRepository.findAll(
+                filtros(precioMin, precioMax, moneda, habitacionesMin, calleFiltro));
 
         return propiedades.stream()
                 .map(propiedad -> PropiedadDetalleResponse.from(propiedad, null))
@@ -167,6 +153,10 @@ public class PropiedadService {
                                              Integer habitacionesMin, String calle) {
         return (root, query, cb) -> {
             List<Predicate> predicados = new ArrayList<>();
+
+            // Disponibles: las publicadas antes de que existiera el estado tienen null
+            predicados.add(cb.or(cb.isNull(root.get("estado")),
+                    cb.equal(root.get("estado"), EstadoPropiedad.DISPONIBLE)));
 
             if (precioMin != null) {
                 predicados.add(cb.greaterThanOrEqualTo(root.get("precio"), precioMin));

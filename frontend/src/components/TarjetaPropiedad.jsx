@@ -23,9 +23,12 @@ function SinFoto() {
  * @param {boolean} [props.conFavorito=true]  false en Mis propiedades (#78): no se guardan las propias
  * @param {boolean} [props.resaltada]  su pin está resaltado en el mapa del listado (#141)
  * @param {Function} [props.onResaltar]  recibe el id al pasar el mouse o enfocar la tarjeta, y null al salir
+ *
+ * Si `propiedad.estado` es ALQUILADA lleva un cartel (se ve en Mis propiedades y en Favoritos).
  */
 export default function TarjetaPropiedad({ propiedad, conFavorito = true, resaltada = false, onResaltar }) {
-  const { id, titulo, precio, moneda, expensas, habitaciones, metrosCuadrados, imagenes } = propiedad
+  const { id, titulo, precio, moneda, expensas, habitaciones, metrosCuadrados, imagenes, estado } = propiedad
+  const alquilada = estado === 'ALQUILADA'
   const foto = imagenes?.[0]
   const [fotoRota, setFotoRota] = useState(false)
 
@@ -48,17 +51,22 @@ export default function TarjetaPropiedad({ propiedad, conFavorito = true, resalt
           resaltada ? '-translate-y-0.5 border-rio-600 shadow-xl shadow-pino-900/10 ring-2 ring-rio-600' : ''
         }`}
       >
-        <div className="aspect-[4/3] overflow-hidden bg-gray-100">
+        <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
           {foto && !fotoRota ? (
             <img
               src={foto}
               alt={titulo ? `Foto de ${titulo}` : `Foto de la propiedad en ${ubicacion}`}
               loading="lazy"
               onError={() => setFotoRota(true)}
-              className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]"
+              className={`h-full w-full object-cover transition duration-500 group-hover:scale-[1.04] ${alquilada ? 'grayscale-[60%]' : ''}`}
             />
           ) : (
             <SinFoto />
+          )}
+          {alquilada && (
+            <span className="absolute left-3 top-3 rounded-lg bg-pino-900/85 px-2.5 py-1 text-sm font-bold text-white">
+              Alquilada
+            </span>
           )}
         </div>
 

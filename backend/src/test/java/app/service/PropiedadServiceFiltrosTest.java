@@ -1,11 +1,17 @@
 package app.service;
 
+import app.model.EstadoPropiedad;
 import app.model.Moneda;
 import app.model.Propiedad;
 import app.repository.PropiedadRepository;
 import app.repository.UsuarioRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Root;
+import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.server.ResponseStatusException;
@@ -20,7 +26,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-/** Issue #58: filtros opcionales en el listado público de propiedades. */
+/** Issue #58: filtros opcionales en el listado público de propiedades (solo las disponibles). */
 class PropiedadServiceFiltrosTest {
 
     private PropiedadRepository propiedadRepository;
@@ -33,16 +39,39 @@ class PropiedadServiceFiltrosTest {
     }
 
     @Test
-    void sinParametrosDevuelveTodasLasPropiedades() {
-        when(propiedadRepository.findAll()).thenReturn(List.of(new Propiedad(), new Propiedad()));
+    void sinParametrosDevuelveTodasLasDisponibles() {
+        // Siempre se consulta con la Specification: aunque no haya filtros, deja afuera las alquiladas
+        when(propiedadRepository.findAll(ArgumentMatchers.<Specification<Propiedad>>any()))
+                .thenReturn(List.of(new Propiedad(), new Propiedad()));
 
         assertEquals(2, service.listar(null, null, null, null, null).size());
-        verify(propiedadRepository, never()).findAll(ArgumentMatchers.<Specification<Propiedad>>any());
+        verify(propiedadRepository, never()).findAll();
+    }
+
+    @Test
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    void elListadoDejaAfueraLasAlquiladas() {
+        ArgumentCaptor<Specification<Propiedad>> captor = ArgumentCaptor.forClass((Class) Specification.class);
+        when(propiedadRepository.findAll(captor.capture())).thenReturn(List.of());
+
+        service.listar(null, null, null, null, null);
+
+        Root<Propiedad> root = mock(Root.class);
+        CriteriaBuilder cb = mock(CriteriaBuilder.class);
+        Path<Object> estado = mock(Path.class);
+        when(root.get("estado")).thenReturn(estado);
+
+        captor.getValue().toPredicate(root, mock(CriteriaQuery.class), cb);
+
+        // estado = DISPONIBLE, o null en las publicadas antes de que existiera el campo
+        verify(cb).isNull(estado);
+        verify(cb).equal(estado, EstadoPropiedad.DISPONIBLE);
     }
 
     @Test
     void calleEnBlancoSeIgnora() {
-        when(propiedadRepository.findAll()).thenReturn(List.of(new Propiedad()));
+        when(propiedadRepository.findAll(ArgumentMatchers.<Specification<Propiedad>>any()))
+                .thenReturn(List.of(new Propiedad()));
 
         assertEquals(1, service.listar(null, null, null, null, "   ").size());
     }

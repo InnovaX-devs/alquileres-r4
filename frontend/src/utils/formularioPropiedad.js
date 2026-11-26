@@ -134,3 +134,40 @@ export function erroresDelBackend(detalles = []) {
   }
   return { porCampo, otros }
 }
+
+const textoDe = (valor) => (valor === null || valor === undefined ? '' : String(valor))
+
+/**
+ * Datos del formulario a partir de una propiedad del backend (para editarla).
+ * Es la inversa de armarPropiedadRequest: los null pasan a '' y los números a texto.
+ */
+export function datosDesdePropiedad(propiedad) {
+  let incluyeImpuestos = ''
+  if (propiedad.incluyeImpuestos === true) incluyeImpuestos = 'si'
+  if (propiedad.incluyeImpuestos === false) incluyeImpuestos = 'no'
+
+  return {
+    titulo: textoDe(propiedad.titulo),
+    descripcion: textoDe(propiedad.descripcion),
+    precio: textoDe(propiedad.precio),
+    moneda: MONEDAS.some(({ valor }) => valor === propiedad.moneda) ? propiedad.moneda : 'ARS',
+    expensas: textoDe(propiedad.expensas),
+    incluyeImpuestos,
+    plazoActualizacionMeses: textoDe(propiedad.plazoActualizacionMeses),
+    calle: textoDe(propiedad.calle),
+    altura: textoDe(propiedad.altura),
+    piso: textoDe(propiedad.piso),
+    habitaciones: textoDe(propiedad.habitaciones),
+    metrosCuadrados: textoDe(propiedad.metrosCuadrados),
+    requisitosIngreso: textoDe(propiedad.requisitosIngreso),
+  }
+}
+
+// PROPIEDAD_VACIA tiene los campos en el orden de la pantalla: al haber errores se enfoca el primero
+const ORDEN_CAMPOS = Object.keys(PROPIEDAD_VACIA)
+
+/** Enfoca el primer campo con error (los inputs tienen como id el nombre del campo). */
+export function enfocarPrimerError(errores) {
+  const campo = ORDEN_CAMPOS.find((clave) => errores[clave])
+  if (campo) document.getElementById(campo)?.focus()
+}

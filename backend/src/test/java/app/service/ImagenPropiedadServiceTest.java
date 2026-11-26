@@ -204,4 +204,64 @@ class ImagenPropiedadServiceTest {
         i.setUrl(url);
         return i;
     }
+
+    // ── Quitar una foto ──────────────────────────────────────────────────────
+
+    private ImagenPropiedad imagenGuardada(Long id, Propiedad de) {
+        ImagenPropiedad imagen = new ImagenPropiedad();
+        imagen.setId(id);
+        imagen.setUrl("https://img/" + id + ".jpg");
+        imagen.setIdentificadorExterno("alquileres/propiedades/15/" + id);
+        imagen.setOrden(1);
+        imagen.setPropiedad(de);
+        when(imagenRepository.findById(id)).thenReturn(Optional.of(imagen));
+        return imagen;
+    }
+
+    @Test
+    void elPublicadorPuedeQuitarUnaFoto() {
+        ImagenPropiedad imagen = imagenGuardada(200L, propiedad);
+
+        service.eliminar(15L, 200L, "pub@test.com");
+
+        verify(imagenRepository).delete(imagen);
+        verify(almacenamiento).eliminar("alquileres/propiedades/15/200");
+    }
+
+    @Test
+    void unTerceroNoPuedeQuitarFotos() {
+        Usuario otro = usuario(2L, "otro@test.com", null);
+        when(usuarioRepository.findByEmail("otro@test.com")).thenReturn(Optional.of(otro));
+        imagenGuardada(200L, propiedad);
+
+        ResponseStatusException e = assertThrows(ResponseStatusException.class,
+                () -> service.eliminar(15L, 200L, "otro@test.com"));
+
+        assertEquals(HttpStatus.FORBIDDEN, statusDe(e));
+        verify(imagenRepository, never()).delete(any());
+        verify(almacenamiento, never()).eliminar(anyString());
+    }
+
+    @Test
+    void noSePuedeQuitarUnaFotoDeOtraPropiedad() {
+        Propiedad otra = new Propiedad();
+        otra.setId(99L);
+        imagenGuardada(200L, otra);
+
+        ResponseStatusException e = assertThrows(ResponseStatusException.class,
+                () -> service.eliminar(15L, 200L, "pub@test.com"));
+
+        assertEquals(HttpStatus.NOT_FOUND, statusDe(e));
+        verify(imagenRepository, never()).delete(any());
+    }
+
+    @Test
+    void siElAlmacenamientoFallaLaFotoSeQuitaIgual() {
+        ImagenPropiedad imagen = imagenGuardada(200L, propiedad);
+        doThrow(new AlmacenamientoImagenesException("caído", new RuntimeException()))
+                .when(almacenamiento).eliminar(anyString());
+
+        assertDoesNotThrow(() -> service.eliminar(15L, 200L, "pub@test.com"));
+        verify(imagenRepository).delete(imagen);
+    }
 }

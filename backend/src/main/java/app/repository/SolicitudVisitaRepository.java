@@ -4,8 +4,10 @@ import app.model.Propiedad;
 import app.model.SolicitudVisita;
 import app.model.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -45,4 +47,10 @@ public interface SolicitudVisitaRepository extends JpaRepository<SolicitudVisita
             order by s.fechaSolicitud desc""")
     List<SolicitudVisita> findRecibidasPorUsuarioOInmobiliaria(@Param("usuarioId") Long usuarioId,
                                                                @Param("inmobiliariaId") Long inmobiliariaId);
+
+    /** Al eliminar una propiedad se borran sus pedidos de visita. */
+    @Transactional
+    @Modifying
+    @Query("delete from SolicitudVisita s where s.propiedad.id = :propiedadId")
+    int deleteByPropiedadId(@Param("propiedadId") Long propiedadId);
 }
