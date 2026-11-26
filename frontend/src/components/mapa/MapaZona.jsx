@@ -1,6 +1,6 @@
 import 'leaflet/dist/leaflet.css'
-import { Circle, MapContainer, TileLayer } from 'react-leaflet'
-import { CAPA_OSM } from '../../utils/mapa'
+import { Circle, MapContainer } from 'react-leaflet'
+import CapaBase from './CapaBase'
 
 /**
  * Mapa chico del detalle (#141): un círculo con la zona aproximada, no un pin exacto.
@@ -15,7 +15,7 @@ export default function MapaZona({ latitud, longitud, radioMetros = 150 }) {
       className="h-56 w-full"
       aria-label="Mapa con la zona aproximada de la propiedad"
     >
-      <TileLayer url={CAPA_OSM.url} attribution={CAPA_OSM.atribucion} />
+      <CapaBase />
       <Circle
         center={[latitud, longitud]}
         radius={radioMetros}

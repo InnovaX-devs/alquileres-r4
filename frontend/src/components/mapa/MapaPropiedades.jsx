@@ -1,10 +1,11 @@
 import 'leaflet/dist/leaflet.css'
 import { useEffect, useMemo } from 'react'
-import { MapContainer, Marker, TileLayer, useMap } from 'react-leaflet'
+import { MapContainer, Marker, useMap } from 'react-leaflet'
 import { useNavigate } from 'react-router-dom'
 import L from 'leaflet'
-import { CAPA_OSM, CENTRO_RIO_CUARTO, ZOOM_CIUDAD, precioCorto, tieneUbicacion } from '../../utils/mapa'
+import { CENTRO_RIO_CUARTO, ZOOM_CIUDAD, precioCorto, tieneUbicacion } from '../../utils/mapa'
 import { iconoPrecio } from './iconos'
+import CapaBase from './CapaBase'
 
 /** Encuadra el mapa para que se vean todas las propiedades (o el centro si no hay ninguna). */
 function Encuadre({ puntos }) {
@@ -44,7 +45,7 @@ export default function MapaPropiedades({ propiedades, resaltadaId, onResaltar, 
         className="h-full w-full"
         aria-label="Mapa de propiedades"
       >
-        <TileLayer url={CAPA_OSM.url} attribution={CAPA_OSM.atribucion} />
+        <CapaBase />
         <Encuadre puntos={puntos} />
         {conUbicacion.map((propiedad) => {
           const resaltada = propiedad.id === resaltadaId
