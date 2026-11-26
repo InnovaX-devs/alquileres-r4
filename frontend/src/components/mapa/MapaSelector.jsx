@@ -1,8 +1,9 @@
 import 'leaflet/dist/leaflet.css'
 import { useEffect, useMemo } from 'react'
-import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from 'react-leaflet'
-import { CAPA_OSM, CENTRO_RIO_CUARTO, ZOOM_CALLE, ZOOM_CIUDAD } from '../../utils/mapa'
+import { MapContainer, Marker, useMap, useMapEvents } from 'react-leaflet'
+import { CENTRO_RIO_CUARTO, ZOOM_CALLE, ZOOM_CIUDAD } from '../../utils/mapa'
 import { iconoPin } from './iconos'
+import CapaBase from './CapaBase'
 
 /** Centra el mapa cuando llega una sugerencia nueva (no cuando el usuario arrastra el pin). */
 function Centrar({ centro, zoom, version }) {
@@ -51,7 +52,7 @@ export default function MapaSelector({ ubicacion, version, onCambiar }) {
       className="h-72 w-full rounded-lg"
       aria-label="Mapa para marcar la ubicación de la propiedad"
     >
-      <TileLayer url={CAPA_OSM.url} attribution={CAPA_OSM.atribucion} />
+      <CapaBase />
       <Centrar centro={centro} zoom={zoom} version={version} />
       <AlTocar onElegir={onCambiar} />
       {ubicacion && (
