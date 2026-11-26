@@ -7,7 +7,7 @@ export default function CapaBase() {
     <TileLayer
       url={CAPA_MAPA.url}
       attribution={CAPA_MAPA.atribucion}
-      {...(CAPA_MAPA.subdominios ? { subdomains: CAPA_MAPA.subdominios } : {})}
+      subdomains={CAPA_MAPA.subdominios}
       maxZoom={CAPA_MAPA.zoomMaximo}
     />
   )
