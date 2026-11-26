@@ -3,6 +3,7 @@ import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { ApiError } from '../services/api'
 import { Aviso, Button, Card, Input } from '../components/ui'
+import PantallaAcceso from '../components/PantallaAcceso'
 
 // Pantalla de login (#67)
 export default function Login() {
@@ -47,21 +48,19 @@ export default function Login() {
   }
 
   return (
-    <div className="max-w-sm mx-auto">
-      <h1 className="text-[2.25rem] leading-tight font-extrabold tracking-[-0.03em] text-center">Ingresar</h1>
-
+    <PantallaAcceso titulo="Ingresar">
       {estado.registrado && (
-        <Aviso tipo="exito" className="mt-4">
+        <Aviso tipo="exito" className="mb-4">
           Cuenta creada. Ya podés ingresar.
         </Aviso>
       )}
       {estado.sesionExpirada && (
-        <Aviso tipo="advertencia" className="mt-4">
+        <Aviso tipo="advertencia" className="mb-4">
           Tu sesión expiró. Volvé a ingresar.
         </Aviso>
       )}
 
-      <Card as="form" onSubmit={enviar} noValidate className="mt-6 space-y-4">
+      <Card as="form" onSubmit={enviar} noValidate className="space-y-4">
         <Input
           id="email"
           label="Email"
@@ -87,11 +86,11 @@ export default function Login() {
       </Card>
 
       <p className="mt-4 text-center text-sm text-gray-600">
-        ¿No tenés cuenta?{' '}
-        <Link to="/registro" className="text-rio-600 hover:underline">
+        ¿Sos nuevo?{' '}
+        <Link to="/registro" className="font-bold text-rio-600 hover:text-gray-900">
           Registrate
         </Link>
       </p>
-    </div>
+    </PantallaAcceso>
   )
 }
