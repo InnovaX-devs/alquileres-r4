@@ -20,10 +20,10 @@ const CAPA_OSM = {
 /** CARTO Voyager: colores más suaves y calles más claras. Necesita clave (la atribución a CARTO es obligatoria). */
 function capaVoyager(clave) {
   return {
-    // {r} pide las baldosas en alta resolución en pantallas retina
-    url: `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=${encodeURIComponent(clave)}`,
+    // Tal cual la URL que manda CARTO con la clave: sin subdominios (a., b., ...), que son el
+    // servicio viejo sin clave y devuelven baldosas con "API KEY REQUIRED"
+    url: `https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=${encodeURIComponent(clave)}`,
     atribucion: `${ATRIBUCION_OSM} &copy; <a href="https://carto.com/attributions">CARTO</a>`,
-    subdominios: 'abcd',
     zoomMaximo: 20,
   }
 }
