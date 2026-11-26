@@ -23,6 +23,7 @@ public class PropiedadFavoritaResponse {
     private Integer metrosCuadrados;
     private String imagenPrincipal;
     private LocalDateTime fechaGuardado;
+    private String estado; // DISPONIBLE | ALQUILADA
 
     public static PropiedadFavoritaResponse from(FavoritoPropiedad favorito) {
         Propiedad propiedad = favorito.getPropiedad();
@@ -43,6 +44,7 @@ public class PropiedadFavoritaResponse {
                 .filter(Objects::nonNull)
                 .orElse(null);
         dto.fechaGuardado = favorito.getFechaGuardado();
+        dto.estado = propiedad.getEstado().name();
         return dto;
     }
 
@@ -58,4 +60,5 @@ public class PropiedadFavoritaResponse {
     public Integer getMetrosCuadrados() { return metrosCuadrados; }
     public String getImagenPrincipal() { return imagenPrincipal; }
     public LocalDateTime getFechaGuardado() { return fechaGuardado; }
+    public String getEstado() { return estado; }
 }

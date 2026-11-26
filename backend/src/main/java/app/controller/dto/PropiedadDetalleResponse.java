@@ -35,6 +35,9 @@ public class PropiedadDetalleResponse {
     private Double latitud;
     private Double longitud;
     private Integer radioMetros;
+    private String estado; // DISPONIBLE | ALQUILADA
+    // Solo para quien publicó: las fotos con su id, para poder quitarlas al editar. En público es null.
+    private List<ImagenPropiedadResponse> fotos;
 
     /** Versión pública (listado y detalle): la ubicación va aproximada para no revelar la casa. */
     public static PropiedadDetalleResponse from(Propiedad propiedad, ContactoPublicadorResponse contacto) {
@@ -52,6 +55,12 @@ public class PropiedadDetalleResponse {
         PropiedadDetalleResponse dto = base(propiedad, null);
         dto.latitud = propiedad.getLatitud();
         dto.longitud = propiedad.getLongitud();
+        dto.fotos = propiedad.getImagenes() != null
+            ? propiedad.getImagenes().stream()
+                .sorted(ORDEN_IMAGENES)
+                .map(ImagenPropiedadResponse::from)
+                .toList()
+            : List.of();
         return dto;
     }
 
@@ -72,6 +81,7 @@ public class PropiedadDetalleResponse {
         dto.plazoActualizacionMeses = propiedad.getPlazoActualizacionMeses();
         dto.requisitosIngreso = propiedad.getRequisitosIngreso();
         dto.contacto = contacto;
+        dto.estado = propiedad.getEstado().name();
         dto.imagenes = propiedad.getImagenes() != null
             ? propiedad.getImagenes().stream()
                 .sorted(ORDEN_IMAGENES)
@@ -100,4 +110,6 @@ public class PropiedadDetalleResponse {
     public Double getLatitud() { return latitud; }
     public Double getLongitud() { return longitud; }
     public Integer getRadioMetros() { return radioMetros; }
+    public String getEstado() { return estado; }
+    public List<ImagenPropiedadResponse> getFotos() { return fotos; }
 }

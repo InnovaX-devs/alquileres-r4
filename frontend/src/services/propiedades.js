@@ -46,3 +46,23 @@ export function obtenerPropiedad(id) {
 export function listarMisPropiedades() {
   return api.get('/propiedades/mias')
 }
+
+/** Editar una propiedad propia: PUT /propiedades/{id}. Mismo cuerpo que publicar. */
+export function editarPropiedad(id, propiedad) {
+  return api.put(`/propiedades/${encodeURIComponent(id)}`, propiedad)
+}
+
+/** Marcar como alquilada o volver a publicar: PATCH /propiedades/{id}/estado. estado: 'ALQUILADA' | 'DISPONIBLE' */
+export function cambiarEstadoPropiedad(id, estado) {
+  return api.patch(`/propiedades/${encodeURIComponent(id)}/estado`, { estado })
+}
+
+/** Eliminar una propiedad propia, con sus fotos: DELETE /propiedades/{id}. */
+export function eliminarPropiedad(id) {
+  return api.delete(`/propiedades/${encodeURIComponent(id)}`)
+}
+
+/** Quitar una foto ya subida: DELETE /propiedades/{id}/imagenes/{imagenId}. */
+export function eliminarImagenPropiedad(propiedadId, imagenId) {
+  return api.delete(`/propiedades/${encodeURIComponent(propiedadId)}/imagenes/${encodeURIComponent(imagenId)}`)
+}

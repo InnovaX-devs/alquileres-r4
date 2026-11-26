@@ -12,23 +12,32 @@ const ESPERA_MS = 700 // se pide la sugerencia cuando el usuario deja de escribi
  * usuario lo pone tocando el mapa: así nunca se guarda una ubicación que nadie confirmó.
  * La ubicación que se guarda es la que dejó el usuario.
  *
+ * Al editar (`guardada`), el pin guardado ya lo confirmó quien publicó: no se pide sugerencia para
+ * la dirección con la que se abrió el formulario, solo si después la cambia.
+ *
  * @param {{latitud, longitud} | null} props.ubicacion
  * @param {Function} props.onCambiar  recibe { latitud, longitud } o null
+ * @param {boolean} [props.guardada]  la ubicación inicial viene de la propiedad ya publicada
  */
-export default function SelectorUbicacion({ calle, altura, ubicacion, onCambiar }) {
+export default function SelectorUbicacion({ calle, altura, ubicacion, onCambiar, guardada = false }) {
   const direccion = `${calle.trim()}|${altura.trim()}`
   const completa = calle.trim() !== '' && altura.trim() !== ''
 
   // Resultado de la última consulta y para qué dirección fue
-  const [consulta, setConsulta] = useState({ direccion: null, estado: null }) // estado: 'sugerida' | 'sin-sugerencia'
+  const conPinGuardado = guardada && ubicacion !== null
+  // estado: 'sugerida' | 'sin-sugerencia' | 'guardada'
+  const [consulta, setConsulta] = useState(() =>
+    conPinGuardado ? { direccion, estado: 'guardada' } : { direccion: null, estado: null },
+  )
   // De dónde salió el pin. Si la dirección nueva no tiene sugerencia, un pin que puso el usuario
   // se mantiene; uno que venía de la sugerencia de la dirección anterior se quita.
-  const [origen, setOrigen] = useState(null) // 'sugerencia' | 'usuario' | null
+  const [origen, setOrigen] = useState(conPinGuardado ? 'usuario' : null) // 'sugerencia' | 'usuario' | null
   // Cambia con cada sugerencia, para recentrar el mapa
   const [version, setVersion] = useState(0)
 
   useEffect(() => {
-    if (!completa) return
+    // Ya se consultó (o es la dirección guardada al editar)
+    if (!completa || consulta.direccion === direccion) return
     let vigente = true
     const timer = setTimeout(() => {
       sugerirUbicacion(calle.trim(), altura.trim())
@@ -56,7 +65,7 @@ export default function SelectorUbicacion({ calle, altura, ubicacion, onCambiar 
       vigente = false
       clearTimeout(timer)
     }
-    // Solo cuando cambia la dirección (onCambiar y origen no deben volver a disparar la consulta)
+    // Solo cuando cambia la dirección (onCambiar, origen y consulta no deben volver a disparar la consulta)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [direccion, completa])
 

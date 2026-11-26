@@ -6,6 +6,7 @@ import app.model.Usuario;
 import app.service.AlertaService;
 import app.service.AuthService;
 import app.service.FavoritoService;
+import app.service.GestionPropiedadService;
 import app.service.ImagenPropiedadService;
 import app.service.InmobiliariaService;
 import app.service.PropiedadService;
@@ -64,6 +65,7 @@ class AccessControlTest {
     @MockBean AuthService authService;
     @MockBean FavoritoService favoritoService;
     @MockBean GeocodificacionService geocodificacionService;
+    @MockBean GestionPropiedadService gestionPropiedadService;
     @MockBean ImagenPropiedadService imagenPropiedadService;
     @MockBean InmobiliariaService inmobiliariaService;
     @MockBean PropiedadService propiedadService;
@@ -131,6 +133,10 @@ class AccessControlTest {
     @CsvSource({
             "POST,/propiedades",
             "POST,/propiedades/1/imagenes",
+            "DELETE,/propiedades/1/imagenes/2",
+            "PUT,/propiedades/1",
+            "PATCH,/propiedades/1/estado",
+            "DELETE,/propiedades/1",
             "POST,/inmobiliarias",
             "POST,/alertas",
             "GET,/favoritos",
@@ -215,7 +221,10 @@ class AccessControlTest {
             "PATCH,/usuarios/perfil",
             "GET,/usuarios/me",
             "GET,/propiedades/mias",
-            "GET,/geocodificacion?calle=Sobremonte"
+            "GET,/geocodificacion?calle=Sobremonte",
+            "PATCH,/propiedades/1/estado",
+            "DELETE,/propiedades/1",
+            "DELETE,/propiedades/1/imagenes/2"
     })
     void privadosConTokenValidoNoDan401ni403(String metodo, String path) throws Exception {
         String token = jwtUtil.generateToken("user@test.com", Rol.USER);

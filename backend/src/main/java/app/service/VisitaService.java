@@ -47,6 +47,10 @@ public class VisitaService {
         Propiedad propiedad = propiedadRepository.findById(request.getPropiedadId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Propiedad no encontrada"));
 
+        if (propiedad.estaAlquilada()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Esta propiedad ya fue alquilada");
+        }
+
         boolean yaExiste = solicitudVisitaRepository
                 .existsByUsuarioAndPropiedad(usuario, propiedad);
 

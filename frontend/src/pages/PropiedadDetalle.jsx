@@ -86,6 +86,7 @@ export default function PropiedadDetalle() {
   // Viene del formulario de publicar (#76): se muestra un aviso de éxito
   const { state } = useLocation()
   const recienPublicada = state?.publicada === true
+  const recienEditada = state?.editada === true
   const imagenesSinSubir = state?.imagenesSinSubir ?? 0 // fotos que fallaron al publicar (#77)
   // El contacto depende de quién mira: se vuelve a pedir al iniciar o cerrar sesión
   const { token } = useAuth()
@@ -142,7 +143,9 @@ export default function PropiedadDetalle() {
     requisitosIngreso,
     imagenes,
     contacto,
+    estado,
   } = propiedad
+  const alquilada = estado === 'ALQUILADA'
 
   const ubicacion = formatearUbicacion(propiedad)
   const caracteristicas = [
@@ -161,6 +164,18 @@ export default function PropiedadDetalle() {
           ¡Listo! Tu propiedad ya está publicada.
           {imagenesSinSubir > 0 &&
             ` Quedaron ${imagenesSinSubir} ${imagenesSinSubir === 1 ? 'foto' : 'fotos'} sin subir.`}
+        </Aviso>
+      )}
+
+      {recienEditada && (
+        <Aviso tipo="exito" className="mt-4">
+          Cambios guardados.
+        </Aviso>
+      )}
+
+      {alquilada && (
+        <Aviso tipo="advertencia" titulo="Esta propiedad ya fue alquilada" className="mt-4">
+          La publicación queda visible como referencia, pero ya no recibe pedidos de visita.
         </Aviso>
       )}
 
@@ -193,7 +208,13 @@ export default function PropiedadDetalle() {
               <BotonFavorito tipo="propiedad" id={propiedad.id} className="shrink-0 border-2 border-gray-200 shadow-none" />
             </div>
             <div className="mt-5">
-              <SolicitarVisita propiedadId={propiedad.id} tituloPropiedad={titulo} />
+              {alquilada ? (
+                <p className="rounded-xl bg-gray-100 px-4 py-3 text-center text-[15px] font-bold text-gray-600">
+                  Alquilada
+                </p>
+              ) : (
+                <SolicitarVisita propiedadId={propiedad.id} tituloPropiedad={titulo} />
+              )}
             </div>
           </div>
           <ContactoPublicador contacto={contacto} />

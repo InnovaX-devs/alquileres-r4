@@ -1,36 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import SelectorImagenes from '../components/SelectorImagenes'
-import { Aviso, Button, Card, Input, Select, Textarea } from '../components/ui'
+import CamposPropiedad, { Seccion } from '../components/CamposPropiedad'
+import { Aviso, Button } from '../components/ui'
 import { publicarPropiedad, subirImagenPropiedad } from '../services/propiedades'
-import SelectorUbicacion from '../components/SelectorUbicacion'
 import { liberarPreview } from '../utils/imagenes'
 import {
-  MONEDAS,
-  OPCIONES_IMPUESTOS,
   PROPIEDAD_VACIA,
   armarPropiedadRequest,
+  enfocarPrimerError,
   erroresDelBackend,
   validarPropiedad,
 } from '../utils/formularioPropiedad'
-
-// PROPIEDAD_VACIA tiene los campos en el orden de la pantalla: al haber errores se enfoca el primero
-const ORDEN_CAMPOS = Object.keys(PROPIEDAD_VACIA)
-
-function Seccion({ titulo, children }) {
-  return (
-    <Card as="fieldset">
-      {/* float + clear: así el legend queda adentro de la tarjeta y no cortando el borde */}
-      <legend className="float-left w-full font-display text-xl font-bold tracking-tight text-gray-900">{titulo}</legend>
-      <div className="clear-both space-y-4 pt-4">{children}</div>
-    </Card>
-  )
-}
-
-function enfocarPrimerError(errores) {
-  const campo = ORDEN_CAMPOS.find((clave) => errores[clave])
-  if (campo) document.getElementById(campo)?.focus()
-}
 
 /**
  * Formulario de publicar propiedad (#76) con subida de imágenes (#77).
@@ -91,13 +72,10 @@ export default function PublicarPropiedad() {
 
   const imagenesSinSubir = imagenes.filter((imagen) => estadosImagenes[imagen.id] !== 'subida').length
 
-  const cambiar = (campo) => (event) => {
-    setDatos((anteriores) => ({ ...anteriores, [campo]: event.target.value }))
+  const cambiar = (campo, valor) => {
+    setDatos((anteriores) => ({ ...anteriores, [campo]: valor }))
     setErrores((anteriores) => ({ ...anteriores, [campo]: undefined }))
   }
-
-  // Props comunes de cada campo
-  const campo = (clave) => ({ id: clave, value: datos[clave], onChange: cambiar(clave), error: errores[clave] })
 
   const enviar = async (event) => {
     event.preventDefault()
@@ -157,103 +135,13 @@ export default function PublicarPropiedad() {
       <form onSubmit={enviar} noValidate className="mt-6 space-y-6">
         {/* Con la propiedad ya creada, sus datos no se pueden cambiar desde acá */}
         <fieldset disabled={enviando || propiedadId !== null} className="space-y-6">
-          <Seccion titulo="Datos principales">
-            <Input label="Título" placeholder="Ej: Departamento 2 ambientes con balcón" {...campo('titulo')} />
-            <Textarea
-              label="Descripción"
-              opcional
-              placeholder="Contá cómo es la propiedad, qué tiene cerca, estado, etc."
-              {...campo('descripcion')}
-            />
-          </Seccion>
-
-          <Seccion titulo="Precio">
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <Input
-                label="Precio mensual"
-                type="number"
-                inputMode="decimal"
-                min="0"
-                step="0.01"
-                placeholder="Ej: 350000"
-                {...campo('precio')}
-              />
-              <Select label="Moneda" opciones={MONEDAS} {...campo('moneda')} />
-              <Input
-                label="Expensas"
-                opcional
-                type="number"
-                inputMode="decimal"
-                min="0"
-                step="0.01"
-                placeholder="En la misma moneda del precio"
-                {...campo('expensas')}
-              />
-              <Select
-                label="¿El precio incluye impuestos?"
-                opcional
-                opciones={OPCIONES_IMPUESTOS}
-                {...campo('incluyeImpuestos')}
-              />
-              <Input
-                label="Actualización del precio (meses)"
-                opcional
-                type="number"
-                inputMode="numeric"
-                min="1"
-                step="1"
-                placeholder="Ej: 3"
-                {...campo('plazoActualizacionMeses')}
-              />
-            </div>
-          </Seccion>
-
-          <Seccion titulo="Ubicación">
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-              <div className="sm:col-span-2">
-                <Input label="Calle" autoComplete="address-line1" placeholder="Ej: Sobremonte" {...campo('calle')} />
-              </div>
-              <Input label="Altura" placeholder="Ej: 1234" {...campo('altura')} />
-              <Input label="Piso / depto" opcional placeholder="Ej: 5B" {...campo('piso')} />
-            </div>
-            <SelectorUbicacion
-              calle={datos.calle}
-              altura={datos.altura}
-              ubicacion={ubicacion}
-              onCambiar={setUbicacion}
-            />
-          </Seccion>
-
-          <Seccion titulo="Características">
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <Input
-                label="Habitaciones"
-                opcional
-                type="number"
-                inputMode="numeric"
-                min="0"
-                step="1"
-                placeholder="0 = monoambiente"
-                {...campo('habitaciones')}
-              />
-              <Input
-                label="Metros cuadrados"
-                opcional
-                type="number"
-                inputMode="numeric"
-                min="1"
-                step="1"
-                placeholder="Ej: 45"
-                {...campo('metrosCuadrados')}
-              />
-            </div>
-            <Textarea
-              label="Requisitos de ingreso"
-              opcional
-              placeholder="Ej: garantía propietaria, recibo de sueldo, depósito"
-              {...campo('requisitosIngreso')}
-            />
-          </Seccion>
+          <CamposPropiedad
+            datos={datos}
+            errores={errores}
+            onCambiar={cambiar}
+            ubicacion={ubicacion}
+            onCambiarUbicacion={setUbicacion}
+          />
         </fieldset>
 
         <Seccion titulo="Fotos">

@@ -96,6 +96,40 @@ public class ImagenPropiedadService {
         }
     }
 
+    /**
+     * Quita una foto de la propiedad: la borra de la base y después del almacenamiento. Si el
+     * almacenamiento falla, la foto ya no se muestra y solo queda huérfana allá.
+     */
+    public void eliminar(Long propiedadId, Long imagenId, String emailUsuario) {
+        Propiedad propiedad = propiedadRepository.findById(propiedadId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Propiedad no encontrada"));
+
+        Usuario usuario = usuarioRepository.findByEmail(emailUsuario)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuario no encontrado"));
+
+        if (!propiedad.esPublicadaPor(usuario)) {
+            log.warn("Eliminación de imagen denegada: propiedadId={}, usuarioId={}", propiedadId, usuario.getId());
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "Solo el publicador de la propiedad puede quitar imágenes");
+        }
+
+        ImagenPropiedad imagen = imagenPropiedadRepository.findById(imagenId)
+                .filter(i -> i.getPropiedad() != null && propiedadId.equals(i.getPropiedad().getId()))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Imagen no encontrada"));
+
+        imagenPropiedadRepository.delete(imagen);
+        log.info("Imagen de propiedad eliminada: id={}, propiedadId={}", imagenId, propiedadId);
+
+        if (imagen.getIdentificadorExterno() != null) {
+            try {
+                almacenamiento.eliminar(imagen.getIdentificadorExterno());
+            } catch (RuntimeException e) {
+                log.error("No se pudo eliminar la imagen del almacenamiento: identificador={}",
+                        imagen.getIdentificadorExterno(), e);
+            }
+        }
+    }
+
     private void validarArchivo(MultipartFile archivo) {
         if (archivo == null || archivo.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La imagen es obligatoria");

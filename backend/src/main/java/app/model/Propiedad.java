@@ -52,6 +52,11 @@ public class Propiedad {
 
     private Double longitud;
 
+    // Las propiedades publicadas antes de que existiera este campo quedan con null: cuentan como
+    // DISPONIBLE (ver getEstado).
+    @Enumerated(EnumType.STRING)
+    private EstadoPropiedad estado = EstadoPropiedad.DISPONIBLE;
+
     @ManyToOne
     @JoinColumn(name = "inmobiliaria_id")
     private Inmobiliaria inmobiliaria;
@@ -78,6 +83,10 @@ public class Propiedad {
         }
 
         return this.usuario != null && usuario.getId().equals(this.usuario.getId());
+    }
+
+    public boolean estaAlquilada() {
+        return getEstado() == EstadoPropiedad.ALQUILADA;
     }
 
     // Getters y setters
@@ -134,6 +143,9 @@ public class Propiedad {
 
     public Double getLongitud() { return longitud; }
     public void setLongitud(Double longitud) { this.longitud = longitud; }
+
+    public EstadoPropiedad getEstado() { return estado != null ? estado : EstadoPropiedad.DISPONIBLE; }
+    public void setEstado(EstadoPropiedad estado) { this.estado = estado; }
 
     public Inmobiliaria getInmobiliaria() { return inmobiliaria; }
     public void setInmobiliaria(Inmobiliaria inmobiliaria) { this.inmobiliaria = inmobiliaria; }
