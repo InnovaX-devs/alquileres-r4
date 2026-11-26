@@ -1,22 +1,43 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import BotonFavorito from './BotonFavorito'
-import { Card } from './ui'
 import { formatearHabitaciones, formatearPrecio, formatearUbicacion } from '../utils/propiedad'
+
+// Fondo de la foto mientras carga o si no hay: alterna coral, verde agua y arena
+const TONOS_FOTO = ['bg-sol-200', 'bg-rio-100', 'bg-gray-200']
 
 function SinFoto() {
   return (
-    <div className="flex h-full w-full flex-col items-center justify-center gap-1 bg-gray-200/70 text-gray-500">
-      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-10 w-10">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1v-9.5Z" />
+    <div className="flex h-full w-full flex-col items-center justify-center gap-1 text-pino-800/60">
+      <svg aria-hidden="true" viewBox="0 0 100 100" fill="none" className="h-14 w-14">
+        <path d="M22 80V45L50 22l28 23v35" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
       <span className="text-xs">Sin fotos</span>
     </div>
   )
 }
 
+/** "Marta · dueño directo" o el nombre de la inmobiliaria. Solo si el listado trae el contacto. */
+function Publicador({ contacto, tono }) {
+  const nombre = contacto?.nombre?.trim()
+  if (!nombre) return null
+  const texto = contacto.tipo === 'INMOBILIARIA' ? nombre : `${nombre} · dueño directo`
+  return (
+    <p className="mt-3.5 flex items-center gap-2 text-sm text-gray-600">
+      <span
+        aria-hidden="true"
+        className={`inline-flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-full text-xs font-bold text-pino-800 ${tono}`}
+      >
+        {nombre[0].toUpperCase()}
+      </span>
+      <span className="line-clamp-1">{texto}</span>
+    </p>
+  )
+}
+
 /**
- * Tarjeta del listado público (#72): foto, precio, ubicación y habitaciones.
+ * Tarjeta del listado público (#72): foto, precio con expensas, título y ubicación, detalle y
+ * quién publica. Sin caja: la foto redondeada y el texto debajo.
  * Toda la tarjeta es un link al detalle de la propiedad; el corazón de favorito (#82) va encima.
  *
  * @param {object} props.propiedad  un elemento de GET /propiedades
@@ -33,7 +54,10 @@ export default function TarjetaPropiedad({ propiedad, conFavorito = true, resalt
   const [fotoRota, setFotoRota] = useState(false)
 
   const ubicacion = formatearUbicacion(propiedad)
-  const ambientes = formatearHabitaciones(habitaciones)
+  const detalle = [formatearHabitaciones(habitaciones), metrosCuadrados && `${metrosCuadrados} m²`]
+    .filter(Boolean)
+    .join(' · ')
+  const tono = TONOS_FOTO[(Number(id) || 0) % TONOS_FOTO.length]
 
   return (
     <div
@@ -43,15 +67,15 @@ export default function TarjetaPropiedad({ propiedad, conFavorito = true, resalt
       onFocus={onResaltar ? () => onResaltar(id) : undefined}
       onBlur={onResaltar ? () => onResaltar(null) : undefined}
     >
-      <Card
-        as={Link}
+      <Link
         to={`/propiedades/${id}`}
-        padding="ninguno"
-        className={`group flex h-full flex-col overflow-hidden transition duration-200 hover:-translate-y-0.5 hover:border-gray-300 hover:shadow-xl hover:shadow-pino-900/10 focus:outline-none focus-visible:ring-3 focus-visible:ring-rio-600 ${
-          resaltada ? '-translate-y-0.5 border-rio-600 shadow-xl shadow-pino-900/10 ring-2 ring-rio-600' : ''
-        }`}
+        className="group block h-full rounded-[18px] focus:outline-none focus-visible:ring-3 focus-visible:ring-rio-600 focus-visible:ring-offset-4 focus-visible:ring-offset-gray-100"
       >
-        <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
+        <div
+          className={`relative aspect-[5/4] overflow-hidden rounded-[18px] transition ${tono} ${
+            resaltada ? 'ring-2 ring-sol-400 ring-offset-2 ring-offset-gray-100' : ''
+          }`}
+        >
           {foto && !fotoRota ? (
             <img
               src={foto}
@@ -70,36 +94,30 @@ export default function TarjetaPropiedad({ propiedad, conFavorito = true, resalt
           )}
         </div>
 
-        <div className="flex flex-1 flex-col p-5">
-          <p className="font-display text-[1.6rem] leading-tight font-extrabold tracking-tight text-gray-900 tabular-nums">
-            {formatearPrecio(precio, moneda)}
-          </p>
+        <p className="mt-4 font-display text-2xl font-bold leading-tight tracking-[-0.03em] text-gray-900 tabular-nums">
+          {formatearPrecio(precio, moneda)}{' '}
           {expensas > 0 && (
-            <p className="mt-0.5 font-display text-sm text-gray-500 tabular-nums">+ {formatearPrecio(expensas, moneda)} de expensas</p>
+            <span className="font-sans text-[15px] font-normal tracking-normal text-gray-600">
+              + {formatearPrecio(expensas, moneda)} de expensas
+            </span>
           )}
-          {expensas === 0 && <p className="mt-0.5 text-sm text-gray-500">Sin expensas</p>}
+          {expensas === 0 && <span className="font-sans text-[15px] font-normal tracking-normal text-gray-600">sin expensas</span>}
+        </p>
 
-          {titulo && <h2 className="mt-3 font-sans text-base font-bold tracking-normal text-gray-900 line-clamp-2">{titulo}</h2>}
-
-          <p className="mt-1 flex items-start gap-1 text-[15px] text-gray-600">
-            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="mt-0.5 h-4 w-4 shrink-0">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 21s-7-6.2-7-11.5a7 7 0 1 1 14 0C19 14.8 12 21 12 21Z" />
-              <circle cx="12" cy="9.5" r="2.5" />
-            </svg>
-            <span className="line-clamp-1">{ubicacion}</span>
-          </p>
-
-          {(ambientes || metrosCuadrados) && (
-            <ul aria-label="Características" className="mt-auto flex flex-wrap gap-1.5 pt-4">
-              {ambientes && <li className="rounded-lg bg-gray-100 px-2.5 py-1 text-sm text-gray-800">{ambientes}</li>}
-              {metrosCuadrados && (
-                <li className="rounded-lg bg-gray-100 px-2.5 py-1 text-sm text-gray-800">{metrosCuadrados} m²</li>
-              )}
-            </ul>
+        <div className="mt-1.5 line-clamp-2 text-base text-gray-900">
+          {titulo && (
+            <>
+              <h2 className="inline font-sans text-base font-normal tracking-normal">{titulo}</h2>,{' '}
+            </>
           )}
+          <span>{ubicacion}</span>
         </div>
-      </Card>
-      {conFavorito && <BotonFavorito tipo="propiedad" id={id} className="absolute right-3 top-3" />}
+
+        {detalle && <p className="mt-0.5 text-[15px] text-gray-600">{detalle}</p>}
+
+        <Publicador contacto={propiedad.contacto} tono={tono} />
+      </Link>
+      {conFavorito && <BotonFavorito tipo="propiedad" id={id} className="absolute right-2.5 top-2.5" />}
     </div>
   )
 }

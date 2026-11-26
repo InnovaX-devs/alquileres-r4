@@ -36,7 +36,7 @@ export default function MapaPropiedades({ propiedades, resaltadaId, onResaltar, 
   const sinUbicacion = propiedades.length - conUbicacion.length
 
   return (
-    <div className={`relative overflow-hidden rounded-xl border border-gray-200 ${className}`}>
+    <div className={`relative overflow-hidden rounded-[22px] ${className}`}>
       <MapContainer
         center={CENTRO_RIO_CUARTO}
         zoom={ZOOM_CIUDAD}

@@ -2,36 +2,27 @@ import { useEffect, useState } from 'react'
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { useVisitasPendientes } from '../hooks/useVisitasPendientes'
+import logoAlkilea from '../assets/alkilea-wordmark-petroleo.svg'
 
-// Barra verde pino: links claros, el activo con fondo y el de Publicar en amarillo (acción principal)
-const foco = 'focus:outline-none focus-visible:ring-3 focus-visible:ring-sol-400'
+// Barra clara sobre el fondo arena: links en gris, el activo en negrita petróleo y Publicar en un botón petróleo
+const foco = 'focus:outline-none focus-visible:ring-3 focus-visible:ring-rio-600'
 
 const linkEscritorio = ({ isActive }) =>
-  `px-3 py-2 rounded-lg text-[15px] whitespace-nowrap transition-colors ${foco} ${
-    isActive ? 'bg-white/12 text-white font-bold' : 'text-gray-300 hover:bg-white/8 hover:text-white'
+  `px-2.5 py-2 rounded-lg text-[15px] whitespace-nowrap transition-colors ${foco} ${
+    isActive ? 'text-gray-900 font-bold' : 'text-gray-600 hover:text-gray-900'
   }`
 
 const linkMovil = ({ isActive }) =>
   `block px-3 py-3 rounded-lg text-base ${foco} ${
-    isActive ? 'bg-white/12 text-white font-bold' : 'text-gray-200 hover:bg-white/8'
+    isActive ? 'text-gray-900 font-bold' : 'text-gray-600 hover:bg-gray-200/60 hover:text-gray-900'
   }`
 
 const publicarEscritorio = ({ isActive }) =>
-  `ml-1 px-4 py-2 rounded-xl text-[15px] font-bold whitespace-nowrap transition-colors ${foco} ${
-    isActive ? 'bg-sol-300 text-pino-800' : 'bg-sol-400 text-pino-800 hover:bg-sol-300'
+  `ml-2 px-5 py-2.5 rounded-[14px] text-[15px] font-bold whitespace-nowrap transition-colors ${foco} ${
+    isActive ? 'bg-pino-700 text-gray-100' : 'bg-pino-800 text-gray-100 hover:bg-pino-700'
   }`
 
-const publicarMovil = () => `block px-3 py-3 rounded-xl text-base font-bold bg-sol-400 text-pino-800 ${foco}`
-
-/** Marca: el techo (amarillo) sobre el río (verde agua). */
-export function Logo({ className = 'h-8 w-8' }) {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 32 32" fill="none" className={className}>
-      <path d="M3 23c4-3 7-3 10 0s6 3 10 0 5-2 6-1" stroke="#7fc4b6" strokeWidth="2.4" strokeLinecap="round" />
-      <path d="M6 16 16 7l10 9" stroke="#f2b33d" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  )
-}
+const publicarMovil = () => `mt-1 block px-5 py-3 rounded-[14px] text-base font-bold bg-pino-800 text-gray-100 ${foco}`
 
 function Contador({ cantidad }) {
   if (cantidad <= 0) return null
@@ -46,10 +37,22 @@ function Contador({ cantidad }) {
 }
 
 /** Links de la barra. Se usan dos veces: en fila (escritorio) y en columna (menú del celular). */
-function Links({ claseLink, clasePublicar, claseSalir, estaAutenticado, usuario, pendientes, onSalir }) {
+function Links({ claseLink, clasePublicar, claseSalir, estaAutenticado, usuario, pendientes, onSalir, enAcceso }) {
   return (
     <>
-      <NavLink to="/" end className={claseLink}>Propiedades</NavLink>
+      {enAcceso ? (
+        // En ingreso y registro: una vuelta clara al listado en lugar del link "Propiedades"
+        <NavLink to="/" end className={claseLink}>
+          <span className="inline-flex items-center gap-1.5">
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+              <path d="m15 6-6 6 6 6" />
+            </svg>
+            Continuar viendo propiedades
+          </span>
+        </NavLink>
+      ) : (
+        <NavLink to="/" end className={claseLink}>Propiedades</NavLink>
+      )}
       {estaAutenticado ? (
         <>
           <NavLink to="/mis-propiedades" className={claseLink}>Mis propiedades</NavLink>
@@ -81,8 +84,8 @@ function Links({ claseLink, clasePublicar, claseSalir, estaAutenticado, usuario,
         </>
       ) : (
         <>
-          <NavLink to="/login" className={claseLink}>Ingresar</NavLink>
-          <NavLink to="/registro" className={claseLink}>Registrarse</NavLink>
+          {/* Sin sesión, un solo botón (mismo estilo que Publicar): el registro se ofrece en la pantalla de ingreso */}
+          {!enAcceso && <NavLink to="/login" className={clasePublicar}>Iniciar sesión</NavLink>}
         </>
       )}
     </>
@@ -121,22 +124,24 @@ export default function Navbar() {
     navigate('/login')
   }
 
-  const propsLinks = { estaAutenticado, usuario, pendientes, onSalir: cerrarSesion }
+  // En las pantallas de ingreso y registro no se ofrece "Iniciar sesión" (ya se está ahí)
+  const enAcceso = ['/login', '/registro'].includes(location.pathname)
+  const propsLinks = { estaAutenticado, usuario, pendientes, onSalir: cerrarSesion, enAcceso }
 
   return (
-    <header className="bg-pino-800">
+    <header>
       <nav aria-label="Principal" className="mx-auto max-w-6xl px-4">
-        <div className="flex h-16 items-center justify-between gap-4">
-          <Link to="/" className={`flex shrink-0 items-center gap-2.5 rounded-lg text-white ${foco}`}>
-            <Logo />
-            <span className="font-display text-[21px] font-extrabold tracking-tight">Alquileres R4</span>
+        <div className="flex h-[84px] items-center justify-between gap-4">
+          {/* Marca: el logotipo de Alkilea (el alt es el nombre del link) */}
+          <Link to="/" className={`flex shrink-0 items-center rounded-lg ${foco}`}>
+            <img src={logoAlkilea} alt="Alkilea" className="h-8 w-auto" />
           </Link>
 
-          <div className="hidden items-center gap-1 xl:flex">
+          <div className="hidden items-center gap-2 xl:flex">
             <Links
               claseLink={linkEscritorio}
               clasePublicar={publicarEscritorio}
-              claseSalir={`px-3 py-2 rounded-lg text-[15px] whitespace-nowrap text-gray-300 hover:bg-white/8 hover:text-white ${foco}`}
+              claseSalir={`px-2.5 py-2 rounded-lg text-[15px] whitespace-nowrap text-gray-600 hover:text-gray-900 ${foco}`}
               {...propsLinks}
             />
           </div>
@@ -147,7 +152,7 @@ export default function Navbar() {
             aria-expanded={abierto}
             aria-controls="menu-movil"
             aria-label={abierto ? 'Cerrar menú' : 'Abrir menú'}
-            className={`relative flex h-11 w-11 items-center justify-center rounded-lg text-white hover:bg-white/10 xl:hidden ${foco}`}
+            className={`relative flex h-11 w-11 items-center justify-center rounded-lg text-gray-900 hover:bg-gray-200/60 xl:hidden ${foco}`}
           >
             <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-6 w-6">
               {abierto ? (
@@ -158,17 +163,17 @@ export default function Navbar() {
             </svg>
             {/* Aviso de visitas pendientes también con el menú cerrado */}
             {!abierto && pendientes > 0 && (
-              <span aria-hidden="true" className="absolute right-1.5 top-1.5 h-2.5 w-2.5 rounded-full bg-sol-400 ring-2 ring-pino-800" />
+              <span aria-hidden="true" className="absolute right-1.5 top-1.5 h-2.5 w-2.5 rounded-full bg-sol-400 ring-2 ring-gray-100" />
             )}
           </button>
         </div>
 
         {abierto && (
-          <div id="menu-movil" className="flex animate-aparecer flex-col gap-1 border-t border-white/10 py-3 xl:hidden">
+          <div id="menu-movil" className="flex animate-aparecer flex-col gap-1 border-t border-gray-300 py-3 xl:hidden">
             <Links
               claseLink={linkMovil}
               clasePublicar={publicarMovil}
-              claseSalir={`block w-full px-3 py-3 rounded-lg text-left text-base text-gray-200 hover:bg-white/8 ${foco}`}
+              claseSalir={`block w-full px-3 py-3 rounded-lg text-left text-base text-gray-600 hover:bg-gray-200/60 hover:text-gray-900 ${foco}`}
               {...propsLinks}
             />
           </div>

@@ -3,6 +3,7 @@ import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { api } from '../services/api'
 import { Aviso, Button, Card, Input } from '../components/ui'
+import PantallaAcceso from '../components/PantallaAcceso'
 
 const PASSWORD_MIN = 8
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -67,10 +68,8 @@ export default function Register() {
   }
 
   return (
-    <div className="max-w-sm mx-auto">
-      <h1 className="text-[2.25rem] leading-tight font-extrabold tracking-[-0.03em] text-center">Crear cuenta</h1>
-
-      <Card as="form" onSubmit={enviar} noValidate className="mt-6 space-y-4">
+    <PantallaAcceso titulo="Crear cuenta">
+      <Card as="form" onSubmit={enviar} noValidate className="space-y-4">
         <Input
           id="nombre"
           label="Nombre"
@@ -88,24 +87,27 @@ export default function Register() {
           onChange={cambiar('email')}
           error={errores.email}
         />
-        <Input
-          id="password"
-          label="Contraseña"
-          type="password"
-          autoComplete="new-password"
-          value={datos.password}
-          onChange={cambiar('password')}
-          error={errores.password}
-        />
-        <Input
-          id="confirmacion"
-          label="Repetir contraseña"
-          type="password"
-          autoComplete="new-password"
-          value={datos.confirmacion}
-          onChange={cambiar('confirmacion')}
-          error={errores.confirmacion}
-        />
+        {/* Las dos contraseñas lado a lado: así el formulario entra sin scroll */}
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Input
+            id="password"
+            label="Contraseña"
+            type="password"
+            autoComplete="new-password"
+            value={datos.password}
+            onChange={cambiar('password')}
+            error={errores.password}
+          />
+          <Input
+            id="confirmacion"
+            label="Repetir contraseña"
+            type="password"
+            autoComplete="new-password"
+            value={datos.confirmacion}
+            onChange={cambiar('confirmacion')}
+            error={errores.confirmacion}
+          />
+        </div>
 
         {errorGeneral && <Aviso tipo="error">{errorGeneral}</Aviso>}
 
@@ -116,10 +118,10 @@ export default function Register() {
 
       <p className="mt-4 text-center text-sm text-gray-600">
         ¿Ya tenés cuenta?{' '}
-        <Link to="/login" className="text-rio-600 hover:underline">
+        <Link to="/login" className="font-bold text-rio-600 hover:text-gray-900">
           Ingresá
         </Link>
       </p>
-    </div>
+    </PantallaAcceso>
   )
 }
