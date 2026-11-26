@@ -6,6 +6,7 @@ import GaleriaImagenes from '../components/GaleriaImagenes'
 import ContactoPublicador from '../components/ContactoPublicador'
 import SolicitarVisita from '../components/SolicitarVisita'
 import BotonFavorito from '../components/BotonFavorito'
+import BotonCompartir from '../components/BotonCompartir'
 import { ErrorConReintento } from '../components/EstadoCarga'
 import { Aviso, Button } from '../components/ui'
 import { MapaZona } from '../components/mapa'
@@ -216,6 +217,8 @@ export default function PropiedadDetalle() {
                 <SolicitarVisita propiedadId={propiedad.id} tituloPropiedad={titulo} />
               )}
             </div>
+            {/* Compartir por WhatsApp con vista previa (#151) */}
+            <BotonCompartir propiedad={propiedad} className="mt-3 w-full" />
           </div>
           <ContactoPublicador contacto={contacto} />
         </aside>

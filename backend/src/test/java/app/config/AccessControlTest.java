@@ -5,6 +5,7 @@ import app.model.Rol;
 import app.model.Usuario;
 import app.service.AlertaService;
 import app.service.AuthService;
+import app.service.CompartirPropiedadService;
 import app.service.FavoritoService;
 import app.service.GestionPropiedadService;
 import app.service.ImagenPropiedadService;
@@ -63,6 +64,7 @@ class AccessControlTest {
 
     @MockBean AlertaService alertaService;
     @MockBean AuthService authService;
+    @MockBean CompartirPropiedadService compartirPropiedadService;
     @MockBean FavoritoService favoritoService;
     @MockBean GeocodificacionService geocodificacionService;
     @MockBean GestionPropiedadService gestionPropiedadService;
@@ -104,6 +106,7 @@ class AccessControlTest {
     @CsvSource({
             "GET,/propiedades",
             "GET,/propiedades/1",
+            "GET,/compartir/propiedades/1",
             "POST,/auth/login",
             "POST,/auth/register"
     })

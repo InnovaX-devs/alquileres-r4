@@ -50,6 +50,7 @@ Las tablas se crean solas al arrancar el backend (`ddl-auto=update`).
 | `CLOUDINARY_API_KEY` | ídem |
 | `CLOUDINARY_API_SECRET` | ídem |
 | `CORS_ALLOWED_ORIGINS` | por ahora `http://localhost:5173` (se cambia en el paso 4) |
+| `FRONTEND_URL` | por ahora `http://localhost:5173` (se cambia en el paso 4) |
 
 **Deploy.** El primer build tarda varios minutos. Cuando termine, la URL queda
 como `https://<nombre>.onrender.com`. Para comprobarla, abrí
@@ -78,7 +79,13 @@ En Render → **Environment**, cambiá `CORS_ALLOWED_ORIGINS` a:
 https://<proyecto>.vercel.app,https://<proyecto>-*.vercel.app
 ```
 
-El segundo valor habilita las previews de los PR. Guardá: Render redeploya solo.
+El segundo valor habilita las previews de los PR.
+
+En la misma pantalla cambiá `FRONTEND_URL` a `https://<proyecto>.vercel.app` (sin barra
+final). La usa el link para compartir por WhatsApp: redirige ahí al detalle de la
+propiedad y toma de ahí la imagen genérica de la vista previa.
+
+Guardá: Render redeploya solo.
 
 ## 5. Probar
 

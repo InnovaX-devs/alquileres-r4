@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import BotonCompartir from './BotonCompartir'
 import BotonFavorito from './BotonFavorito'
 import { formatearHabitaciones, formatearPrecio, formatearUbicacion } from '../utils/propiedad'
 
@@ -38,7 +39,8 @@ function Publicador({ contacto, tono }) {
 /**
  * Tarjeta del listado público (#72): foto, precio con expensas, título y ubicación, detalle y
  * quién publica. Sin caja: la foto redondeada y el texto debajo.
- * Toda la tarjeta es un link al detalle de la propiedad; el corazón de favorito (#82) va encima.
+ * Toda la tarjeta es un link al detalle de la propiedad; encima van el corazón de favorito (#82) y
+ * el botón de compartir por WhatsApp (#151).
  *
  * @param {object} props.propiedad  un elemento de GET /propiedades
  * @param {boolean} [props.conFavorito=true]  false en Mis propiedades (#78): no se guardan las propias
@@ -117,6 +119,11 @@ export default function TarjetaPropiedad({ propiedad, conFavorito = true, resalt
 
         <Publicador contacto={propiedad.contacto} tono={tono} />
       </Link>
+      <BotonCompartir
+        propiedad={propiedad}
+        variante="icono"
+        className={`absolute top-2.5 ${conFavorito ? 'right-[3.75rem]' : 'right-2.5'}`}
+      />
       {conFavorito && <BotonFavorito tipo="propiedad" id={id} className="absolute right-2.5 top-2.5" />}
     </div>
   )
