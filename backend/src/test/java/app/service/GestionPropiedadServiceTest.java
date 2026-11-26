@@ -251,7 +251,7 @@ class GestionPropiedadServiceTest {
 
         assertEquals(403, statusDe(() -> service.eliminar(10L, "otro@test.com")));
 
-        verify(propiedadRepository, never()).delete(any());
+        verify(propiedadRepository, never()).delete(any(Propiedad.class));
         verify(favoritoRepository, never()).deleteByPropiedadId(anyLong());
         verify(visitaRepository, never()).deleteByPropiedadId(anyLong());
     }
@@ -264,7 +264,7 @@ class GestionPropiedadServiceTest {
         ajeno.setInmobiliaria(inmobiliaria(99L));
 
         assertEquals(403, statusDe(() -> service.eliminar(10L, "ajeno@test.com")));
-        verify(propiedadRepository, never()).delete(any());
+        verify(propiedadRepository, never()).delete(any(Propiedad.class));
     }
 
     @Test
