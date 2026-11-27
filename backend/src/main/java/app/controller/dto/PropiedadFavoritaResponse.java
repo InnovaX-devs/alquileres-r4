@@ -5,6 +5,7 @@ import app.model.ImagenPropiedad;
 import app.model.Moneda;
 import app.model.Propiedad;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.Objects;
@@ -24,6 +25,7 @@ public class PropiedadFavoritaResponse {
     private String imagenPrincipal;
     private LocalDateTime fechaGuardado;
     private String estado; // DISPONIBLE | ALQUILADA
+    private LocalDate disponibleDesde; // null = disponible ya
 
     public static PropiedadFavoritaResponse from(FavoritoPropiedad favorito) {
         Propiedad propiedad = favorito.getPropiedad();
@@ -45,6 +47,7 @@ public class PropiedadFavoritaResponse {
                 .orElse(null);
         dto.fechaGuardado = favorito.getFechaGuardado();
         dto.estado = propiedad.getEstado().name();
+        dto.disponibleDesde = propiedad.getDisponibleDesde();
         return dto;
     }
 
@@ -61,4 +64,5 @@ public class PropiedadFavoritaResponse {
     public String getImagenPrincipal() { return imagenPrincipal; }
     public LocalDateTime getFechaGuardado() { return fechaGuardado; }
     public String getEstado() { return estado; }
+    public LocalDate getDisponibleDesde() { return disponibleDesde; }
 }

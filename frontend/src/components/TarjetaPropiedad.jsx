@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import BotonCompartir from './BotonCompartir'
 import BotonFavorito from './BotonFavorito'
+import { disponibleYa, formatearDisponibilidad } from '../utils/disponibilidad'
 import { formatearHabitaciones, formatearPrecio, formatearUbicacion } from '../utils/propiedad'
 
 // Fondo de la foto mientras carga o si no hay: alterna coral, verde agua y arena
@@ -50,7 +51,7 @@ function Publicador({ contacto, tono }) {
  * Si `propiedad.estado` es ALQUILADA lleva un cartel (se ve en Mis propiedades y en Favoritos).
  */
 export default function TarjetaPropiedad({ propiedad, conFavorito = true, resaltada = false, onResaltar }) {
-  const { id, titulo, precio, moneda, expensas, habitaciones, metrosCuadrados, imagenes, estado } = propiedad
+  const { id, titulo, precio, moneda, expensas, habitaciones, metrosCuadrados, imagenes, estado, disponibleDesde } = propiedad
   const alquilada = estado === 'ALQUILADA'
   const foto = imagenes?.[0]
   const [fotoRota, setFotoRota] = useState(false)
@@ -116,6 +117,13 @@ export default function TarjetaPropiedad({ propiedad, conFavorito = true, resalt
         </div>
 
         {detalle && <p className="mt-0.5 text-[15px] text-gray-600">{detalle}</p>}
+
+        {/* Desde cuándo se puede entrar (#154); las alquiladas ya tienen su cartel */}
+        {!alquilada && (
+          <p className={`mt-0.5 text-[15px] ${disponibleYa(disponibleDesde) ? 'text-gray-600' : 'font-bold text-gray-900'}`}>
+            {formatearDisponibilidad(disponibleDesde)}
+          </p>
+        )}
 
         <Publicador contacto={propiedad.contacto} tono={tono} />
       </Link>

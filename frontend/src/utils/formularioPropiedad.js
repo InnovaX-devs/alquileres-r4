@@ -4,6 +4,8 @@
 // Si cambian allá, hay que cambiarlas acá. Igual el backend vuelve a validar y sus
 // errores se muestran en el campo que corresponde (ver erroresDelBackend).
 
+import { esFechaValida, hoyISO } from './disponibilidad'
+
 const LARGO_MAXIMO = 255 // columnas VARCHAR(255)
 const ENTERO_MAXIMO = 2_147_483_647 // Integer de Java: más grande, Jackson rechaza el cuerpo entero
 const DECIMALES_MONEDA = 2
@@ -33,6 +35,7 @@ export const PROPIEDAD_VACIA = {
   piso: '',
   habitaciones: '',
   metrosCuadrados: '',
+  disponibleDesde: '', // 'YYYY-MM-DD'; vacío = ya disponible (#154)
   requisitosIngreso: '',
 }
 
@@ -67,8 +70,23 @@ function errorEntero(valor, { minimo, mensajeMinimo }) {
   return null
 }
 
-/** Errores por campo ({ campo: mensaje }); vacío si está todo bien. */
-export function validarPropiedad(datos) {
+/**
+ * "Disponible desde" (#154): una fecha real y no anterior a hoy. Al editar se acepta la que ya tenía
+ * aunque haya pasado (el backend hace lo mismo), así se pueden cambiar otros datos sin tocarla.
+ */
+function errorDisponibleDesde(valor, original) {
+  if (vacio(valor)) return null
+  if (!esFechaValida(valor)) return 'Ingresá una fecha válida'
+  if (valor < hoyISO() && valor !== original) return 'No puede ser anterior a hoy'
+  return null
+}
+
+/**
+ * Errores por campo ({ campo: mensaje }); vacío si está todo bien.
+ *
+ * @param {object} [opciones.disponibleDesdeOriginal]  al editar, la fecha que la propiedad ya tenía
+ */
+export function validarPropiedad(datos, { disponibleDesdeOriginal = '' } = {}) {
   const errores = {
     titulo: errorTexto(datos.titulo, { obligatorio: true, mensajeObligatorio: 'Ingresá un título' }),
     precio: errorMonto(datos.precio, { obligatorio: true, mensajeObligatorio: 'Ingresá el precio' }),
@@ -79,6 +97,7 @@ export function validarPropiedad(datos) {
     piso: errorTexto(datos.piso, { obligatorio: false }),
     habitaciones: errorEntero(datos.habitaciones, { minimo: 0, mensajeMinimo: 'No puede ser negativo' }),
     metrosCuadrados: errorEntero(datos.metrosCuadrados, { minimo: 1, mensajeMinimo: 'Tiene que ser mayor a 0' }),
+    disponibleDesde: errorDisponibleDesde(datos.disponibleDesde, disponibleDesdeOriginal),
     plazoActualizacionMeses: errorEntero(datos.plazoActualizacionMeses, {
       minimo: 1,
       mensajeMinimo: 'Tiene que ser de al menos 1 mes',
@@ -108,6 +127,7 @@ export function armarPropiedadRequest(datos, ubicacion = null) {
     piso: textoONull(datos.piso),
     habitaciones: numeroONull(datos.habitaciones),
     metrosCuadrados: numeroONull(datos.metrosCuadrados),
+    disponibleDesde: textoONull(datos.disponibleDesde),
     requisitosIngreso: textoONull(datos.requisitosIngreso),
     latitud: ubicacion?.latitud ?? null,
     longitud: ubicacion?.longitud ?? null,
@@ -159,6 +179,7 @@ export function datosDesdePropiedad(propiedad) {
     piso: textoDe(propiedad.piso),
     habitaciones: textoDe(propiedad.habitaciones),
     metrosCuadrados: textoDe(propiedad.metrosCuadrados),
+    disponibleDesde: textoDe(propiedad.disponibleDesde),
     requisitosIngreso: textoDe(propiedad.requisitosIngreso),
   }
 }
